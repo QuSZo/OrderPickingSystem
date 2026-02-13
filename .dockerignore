@@ -1,0 +1,16 @@
+# Visual Studio / IDE
+**/.vs/
+**/.vscode/
+
+# Build output
+**/bin/
+**/obj/
+**/out/
+**/publish/
+
+# Dockerfile
+**/Dockerfile
+
+# Git
+**/.git
+**/.github

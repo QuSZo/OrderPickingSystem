@@ -1,0 +1,8 @@
+services:
+  api:
+    image: api:latest
+    profiles: ["api", "full"]
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
