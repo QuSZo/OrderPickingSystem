@@ -22,3 +22,29 @@ Example
 ### Check Api
 Run
 `curl -v http://localhost:8080`
+
+## Backend
+`.NET 10`
+Creation of backend `api` project:
+`dotnet new webapi -n Api -o Api/src`
+`cd Api`
+`dotnet new sln -n Api`
+`dotnet sln Api.slnx add src/Api.csproj`
+`cd ../..`
+`dotnet new sln -n OrderPickingSystem`
+`dotnet sln OrderPickingSystem.slnx add apps/Api/src/Api.csproj`
+
+## Frontend
+`nodeJs v24.13.1`
+Creation of frontend `web` project:
+`npm create vite@latest`
+Project name: Web
+Package name: web
+Select a framework: React
+Select a variant: TypeScript + React Compiler
+Use Vite 8 beta (Experimental)?: No
+Install with npm and start now: Yes
+
+### first run
+`npm install`
+`npm run dev`
