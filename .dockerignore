@@ -7,6 +7,8 @@
 **/obj/
 **/out/
 **/publish/
+**/log*
+**/*.log*
 
 # Dockerfile
 **/Dockerfile
@@ -14,3 +16,13 @@
 # Git
 **/.git
 **/.github
+
+# Frontend
+**/node_modules
+**/dist
+
+# Temp files
+**/.DS_Store
+**/*.swp
+**/*.tmp
+**/*.temp

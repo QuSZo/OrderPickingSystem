@@ -6,3 +6,8 @@ services:
       - "8080:8080"
     environment:
       ASPNETCORE_URLS: http://+:8080
+  web:
+    image: web:latest
+    profiles: ["web", "full"]
+    ports:
+      - "3000:80"
