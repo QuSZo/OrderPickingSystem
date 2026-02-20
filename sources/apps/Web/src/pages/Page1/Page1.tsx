@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import styles from './Page1.module.css'
 
 const API_URL = "http://localhost:8080/api/home";
 
@@ -13,7 +14,7 @@ export default function Page1() {
   }, []);
 
   return (
-    <div>
+    <div className={styles.container}>
       <p>Page1</p>
       <p>Pobrane dane: {data}</p>
     </div>

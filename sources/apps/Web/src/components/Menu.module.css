@@ -1,0 +1,19 @@
+.container {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    z-index: 1;
+    position: sticky;
+    top: 0;
+    background-color: rgb(gray);
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    padding: 30px 5vw;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    list-style: none;
+    gap: 5vw;
+}
