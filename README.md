@@ -49,3 +49,19 @@ Install with npm and start now: Yes
 ### first run
 `npm install`
 `npm run dev`
+
+## AlphaBot app
+Python version: 3.11.4
+
+Local (Windows psh)
+`python -m venv venv`
+`Set-ExecutionPolicy RemoteSigned -Scope CurrentUser`
+`.\.venv\Scripts\Activate.ps1`
+`pip install -r requirements.txt`
+`python main.py`
+
+RaspberryPi
+`python -m venv venv`
+`source venv/bin/activate`
+`pip install -r requirements.txt`
+`python main.py`
