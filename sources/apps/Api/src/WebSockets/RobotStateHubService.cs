@@ -11,7 +11,7 @@ public class RobotStateHubService
         _hub = hub;
     }
 
-    public async Task SendMessage(string message, CancellationToken cancellationToken = default)
+    public async Task SendMessageAsync(string message, CancellationToken cancellationToken = default)
     {
         await _hub.Clients.All.SendAsync("ReceiveRobotState", message);
     }

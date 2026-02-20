@@ -2,25 +2,17 @@ using Api.WebSockets;
 
 namespace Api.Mqtt;
 
-public class MqttConsumer : BackgroundService
+public class MqttConsumer
 {
-    private readonly RobotStateHubService _robotHub;
+    private readonly MqttConnection _mqttConnection;
 
-    public MqttConsumer(RobotStateHubService robotHub)
+    public MqttConsumer(MqttConnection mqttConnection)
     {
-        _robotHub = robotHub;        
+        _mqttConnection = mqttConnection;
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    public async Task Subscibe(string topic)
     {
-        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
-        int counter = 0;
-
-        while (await timer.WaitForNextTickAsync(stoppingToken))
-        {
-            counter++;
-
-            await _robotHub.SendMessage($"Tick: {counter}", cancellationToken: stoppingToken);
-        }
+        
     }
 }
