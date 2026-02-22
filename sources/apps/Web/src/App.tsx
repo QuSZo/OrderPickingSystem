@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css'
-import { Menu } from './components/Menu';
+import { Menu } from './components/Menu/Menu';
 import Page1 from './pages/Page1/Page1';
 import Page2 from './pages/Page2/Page2';
 
