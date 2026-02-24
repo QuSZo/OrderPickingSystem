@@ -4,7 +4,7 @@ public static class Extensions
 {
     public static void AddRobotService(this IServiceCollection services)
     {
-        services.AddHostedService<RobotInbound>();
+        services.AddSingleton<RobotInbound>();
         services.AddHostedService<RobotOutbound>();
     }
 }

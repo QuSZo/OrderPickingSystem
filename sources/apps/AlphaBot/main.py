@@ -1,19 +1,18 @@
-from mqtt_publisher import MqttPublisher
+from mqtt_subscriber import ControlledPublisher
 import time
 
 if __name__ == "__main__":
-    publisher = MqttPublisher(
-        host="localhost",
+    app = ControlledPublisher(
+        host="localhost",  # lub adres IP serwera z Mosquitto
         port=1883,
-        client_id="robot_publisher"
+        client_id="robot_controlled"
     )
 
-    publisher.connect()
-    publisher.start_periodic_publish("robot/status", interval=1.0)
+    app.connect()
 
     try:
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
-        print("Zatrzymywanie...")
-        publisher.disconnect()
+        print("Zamykanie...")
+        app.disconnect()
