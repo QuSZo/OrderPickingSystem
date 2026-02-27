@@ -23,4 +23,11 @@ public class RobotController : ControllerBase
         await _robotInbound.HandleCommand(message);
         return Ok();
     }
+
+    [HttpPost("stop")]
+    public async Task<ActionResult<string>> RobotStop()
+    {
+        await _robotInbound.HandleStop();
+        return Ok();
+    }
 }

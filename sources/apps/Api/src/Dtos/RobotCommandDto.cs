@@ -1,3 +1,3 @@
 namespace Api.Dtos;
 
-public record RobotCommandDto(string commands);
+public record RobotCommandDto(List<string> commands);

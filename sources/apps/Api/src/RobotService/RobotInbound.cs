@@ -15,4 +15,9 @@ public class RobotInbound
     {
         await _mqttProducer.PublishAsync(MqttTopics.RobotCommand, message);
     }
+
+    public async Task HandleStop()
+    {
+        await _mqttProducer.PublishAsync(MqttTopics.RobotStop, string.Empty);
+    }
 }
