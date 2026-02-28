@@ -1,3 +1,4 @@
+using Api.Logging;
 using MQTTnet;
 using MQTTnet.Formatter;
 
@@ -5,12 +6,14 @@ namespace Api.Mqtt;
 
 public class MqttConnection : IDisposable
 {
+    private readonly ILogger _logger;
     private readonly SemaphoreSlim _connectLock = new(1, 1);
     private readonly IMqttClient _mqttClient;
     private bool _disposed;
 
-    public MqttConnection(MqttClientFactory mqttClientFactory)
+    public MqttConnection(ILoggerFactory loggerFactory, MqttClientFactory mqttClientFactory)
     {
+        _logger = loggerFactory.CreateLoggerApi();
         _mqttClient = mqttClientFactory.CreateMqttClient();
     }
 
@@ -29,6 +32,8 @@ public class MqttConnection : IDisposable
                 return _mqttClient;
             }
 
+            _logger.LogInformation("Connecting to mqtt broker");
+
             var options = new MqttClientOptionsBuilder()
                 .WithTcpServer(MqttConfiguration.MqttBrokerUrl, MqttConfiguration.MqttBrokerPort)
                 .WithProtocolVersion(MqttProtocolVersion.V500)
@@ -38,9 +43,9 @@ public class MqttConnection : IDisposable
             _mqttClient.ConnectedAsync += OnConnected;
             await _mqttClient.ConnectAsync(options);
         }
-        catch
+        catch (Exception exception)
         {
-            throw;
+            _logger.LogError($"Error during connecting to mqtt broker, error message: {exception.Message}");
         }
         finally
         {

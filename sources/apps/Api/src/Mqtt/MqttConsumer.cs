@@ -1,19 +1,23 @@
 using System.Text;
+using Api.Logging;
 using MQTTnet;
 
 namespace Api.Mqtt;
 
 public class MqttConsumer
 {
+    private readonly ILogger _logger;
     private readonly MqttConnection _mqttConnection;
     private readonly MqttClientFactory _mqttClientFactory;
     private IMqttClient? _mqttClient;
     private string? _topic = null;
 
     public MqttConsumer(
+        ILoggerFactory loggerFactory,
         MqttConnection mqttConnection, 
         MqttClientFactory mqttClientFactory)
     {
+        _logger = loggerFactory.CreateLoggerApi();
         _mqttConnection = mqttConnection;
         _mqttClientFactory = mqttClientFactory;
     }
@@ -29,6 +33,7 @@ public class MqttConsumer
                 return;
             }
 
+            _logger.LogInformation($"Subscribing to mqtt topic: {topic}");
             _mqttClient = await _mqttConnection.ConnectAsync();
 
             MqttClientSubscribeOptions mqttSubscribeOptions = _mqttClientFactory
@@ -40,8 +45,9 @@ public class MqttConsumer
             await _mqttClient.SubscribeAsync(mqttSubscribeOptions);
             _topic = topic;
         }
-        catch
+        catch (Exception exception)
         {
+            _logger.LogError($"Error during subscribing to mqtt topic {_topic}, error message {exception.Message}");
             throw;
         }
     }
@@ -55,6 +61,8 @@ public class MqttConsumer
                 return;
             }
 
+            _logger.LogInformation($"Unsubscribing mqtt topic: {_topic}");
+
             MqttClientUnsubscribeOptions mqttUnubscribeOptions = _mqttClientFactory
                 .CreateUnsubscribeOptionsBuilder()
                 .WithTopicFilter(_topic)
@@ -64,8 +72,9 @@ public class MqttConsumer
             await _mqttClient.UnsubscribeAsync(mqttUnubscribeOptions);
             _topic = null;
         }
-        catch
+        catch (Exception exception)
         {
+            _logger.LogError($"Error during unsubscribing mqtt topic {_topic}, error message {exception.Message}");
             throw;
         }
     }
@@ -76,6 +85,7 @@ public class MqttConsumer
         {
             var byteMessage = receivedEventArgs.ApplicationMessage.Payload;
             string message = Encoding.UTF8.GetString(byteMessage);
+            _logger.LogDebug($"Consumed message on mqtt topic: {_topic}, message {message}");
             ReceivedMessage?.Invoke(message);
         }
         
