@@ -14,7 +14,7 @@ You have to build image from main directory (it would work the same with github 
 
 Example
 `docker build . -f sources/apps/Api/Dockerfile --target release -t api:latest`  
-`docker build . -f sources/apps/Web/Dockerfile --target release -t web:latest`
+`docker build . -f sources/apps/Web/Dockerfile --target release --build-arg VITE_API_URL="http://172.30.0.199:8080/" -t web:latest`
 
 ### Running containers
 `cd sources/compose`  
