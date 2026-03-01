@@ -3,18 +3,12 @@ import * as signalR from "@microsoft/signalr";
 import { useEffect, useState } from "react";
 import { API_URL } from '../../api/const';
 import { TextContainer } from '../../components/TextContainer/TextContainer';
+import WarehouseMap from '../../components/WarehouseMap/WarehouseMap';
+import type { RobotCommand, RobotEvent } from '../../types/RobotTypes';
 
 const ROBOT_API_URL = API_URL + "api/robot-hub";
 const ROBOT_COMMAND_API_URL = API_URL + "api/robot/command";
 const ROBOT_STOP_API_URL = API_URL + "api/robot/stop";
-
-type RobotCommand = "forward" | "back" | "left" | "right";
-
-interface RobotEvent {
-    event: "movement" | "finished" | "stopped";
-    timestamp: number;
-    command?: string;
-}
 
 export default function Page2() {
     const [robotState, setRobotState] = useState<RobotEvent | null>(null);
@@ -79,35 +73,39 @@ export default function Page2() {
 
     return (
         <div className={styles.container}>
-            <div className={styles.robotStatus}>
-                <p>Status robota</p>
-                <TextContainer title="Akcja" text={robotState?.event}></TextContainer>
-                <TextContainer title="Wykonany ruch" text={robotState?.command}></TextContainer>
-                <TextContainer title="Ostatnia synchronizacja" text={robotState ? new Date(robotState.timestamp * 1000).toLocaleString() : undefined}></TextContainer>
+            <div className={styles.leftContainer}>
+                <div className={styles.robotStatus}>
+                    <p>Status robota</p>
+                    <TextContainer title="Akcja" text={robotState?.event}></TextContainer>
+                    <TextContainer title="Wykonany ruch" text={robotState?.command}></TextContainer>
+                    <TextContainer title="Ostatnia synchronizacja" text={robotState ? new Date(robotState.timestamp * 1000).toLocaleString() : undefined}></TextContainer>
+                </div>
+                
+                <div className={styles.robotControl}>
+                    <p>Sterowanie robotem</p>
+                    <div>
+                        <button onClick={() => addCommand("forward")}>Forward</button>
+                        <button onClick={() => addCommand("back")}>Back</button>
+                        <button onClick={() => addCommand("left")}>Left</button>
+                        <button onClick={() => addCommand("right")}>Right</button>
+                    </div>
+
+                    <div>
+                        <h4>Wybrane komendy:</h4>
+                        <p>{commands.join(", ") || "Brak komend"}</p>
+                    </div>
+
+                    <div>
+                        <button onClick={resetCommands}>Reset</button>
+                        <button onClick={sendCommands} disabled={commands.length === 0}>Wyślij</button>
+                        <button onClick={handleStop}>Stop</button>
+                    </div>
+                </div>
             </div>
-            
-            <div className={styles.robotControl}>
-                <p>Sterowanie robotem</p>
-                <div>
-                    <button onClick={() => addCommand("forward")}>Forward</button>
-                    <button onClick={() => addCommand("back")}>Back</button>
-                    <button onClick={() => addCommand("left")}>Left</button>
-                    <button onClick={() => addCommand("right")}>Right</button>
-                </div>
-
-                <div>
-                    <h4>Wybrane komendy:</h4>
-                    <p>{commands.join(", ") || "Brak komend"}</p>
-                </div>
-
-                <div>
-                    <button onClick={resetCommands}>Reset</button>
-                    <button onClick={sendCommands} disabled={commands.length === 0}>Wyślij</button>
-                    <button onClick={handleStop}>Stop</button>
-                </div>
+            <div className={styles.rightContainer}>
+                <p>Trasa robota</p>
+                <WarehouseMap cols={5} rows={3} robotEvent={robotState}></WarehouseMap>
             </div>
-
-
         </div>
     );
 }
