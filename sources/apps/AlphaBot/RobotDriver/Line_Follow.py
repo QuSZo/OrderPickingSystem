@@ -71,11 +71,13 @@ previousOnTransverseLine = False
 #'forward', 'forward', 'right', 'forward', 'right', 'forward', 'forward', 'forward', 'forward', 'forward', 'forward',
 #'forward', 'forward', 'forward', 'forward', 'forward', 'right']
 
-instrukcje = ['right', 'forward', 'forward', 'forward', 'forward', 'forward', 'right', 'left',
-'forward', 'forward', 'forward', 'forward', 'forward', 'right', 'right',
-'forward', 'forward', 'forward', 'forward', 'forward', 'right', 'left',
-'forward', 'forward', 'forward', 'forward', 'forward', 'right'
-]
+# instrukcje = ['right', 'forward', 'forward', 'forward', 'forward', 'forward', 'right', 'left',
+# 'forward', 'forward', 'forward', 'forward', 'forward', 'right', 'right',
+# 'forward', 'forward', 'forward', 'forward', 'forward', 'right', 'left',
+# 'forward', 'forward', 'forward', 'forward', 'forward', 'right'
+# ]
+
+instrukcje = ['forward', 'left', 'right', 'right', 'right']
 
 def Countdown():
 	for x in range(1, -1, -1):

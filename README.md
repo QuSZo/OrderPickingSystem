@@ -66,7 +66,7 @@ Local (Windows psh)
 
 RaspberryPi  
 `python -m venv .venv`  
-`source venv/bin/activate`  
+`source .venv/bin/activate`  
 `pip install -r requirements.txt`  
 
 If you want to run it locally:  
