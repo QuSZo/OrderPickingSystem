@@ -58,14 +58,20 @@ Install with npm and start now: Yes
 Python version: 3.11.4
 
 Local (Windows psh)  
-`python -m venv venv`  
+`python -m venv .venv`  
 `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser`  
 `.\.venv\Scripts\Activate.ps1`  
 `pip install -r requirements.txt`  
 `python main.py`
 
 RaspberryPi  
-`python -m venv venv`  
+`python -m venv .venv`  
 `source venv/bin/activate`  
 `pip install -r requirements.txt`  
-`python main.py`
+
+If you want to run it locally:
+`python main.py --mqttBrokerUrl localhost`
+
+If you want to run it on external device (raspberry pi):
+`python main.py --mqttBrokerUrl 172.30.0.199`
+`python main.py --mqttBrokerUrl 192.168.0.100`
