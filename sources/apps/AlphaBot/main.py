@@ -1,5 +1,6 @@
 from Mqtt.mqtt_consumer import MqttConsumer
 from robot_controller import RobotController
+from prod_robot_controller import ProdRobotController
 import time
 import paho.mqtt.client as mqtt
 import Mqtt.mqtt_configuration as mqtt_configuration
@@ -11,8 +12,10 @@ def on_connect(client, userdata, flags, rc):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--mqttBrokerUrl", type=str, required=True)
+    parser.add_argument("--simulate", type=str, required=True)
     args = parser.parse_args()
     mqtt_broker_url = args.mqttBrokerUrl
+    simulate = args.simulate
     
     client = mqtt.Client()
     client.on_connect = on_connect
@@ -25,9 +28,14 @@ if __name__ == "__main__":
     mqtt_consumer_stop_robot.subscribe("robot/stop")
 
     robot_controller = RobotController(client)
+    prod_robot_controller = ProdRobotController(client)
 
-    mqtt_consumer_command.add_received_message_handler(robot_controller.start_robot)
-    mqtt_consumer_stop_robot.add_received_message_handler(robot_controller.stop_robot)
+    if(simulate == "true"):
+        mqtt_consumer_command.add_received_message_handler(robot_controller.start_robot)
+        mqtt_consumer_stop_robot.add_received_message_handler(robot_controller.stop_robot)
+    else:
+        mqtt_consumer_command.add_received_message_handler(prod_robot_controller.start_robot)
+        mqtt_consumer_stop_robot.add_received_message_handler(prod_robot_controller.stop_robot)
 
     try:
         while True:
@@ -35,7 +43,12 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("Zamykanie...")
     finally:
-        mqtt_consumer_command.remove_received_message_handler(robot_controller.start_robot)
-        mqtt_consumer_stop_robot.remove_received_message_handler(robot_controller.stop_robot)
+        if(simulate == "true"):
+            mqtt_consumer_command.remove_received_message_handler(robot_controller.start_robot)
+            mqtt_consumer_stop_robot.remove_received_message_handler(robot_controller.stop_robot)
+        else:
+            mqtt_consumer_command.remove_received_message_handler(prod_robot_controller.start_robot)
+            mqtt_consumer_stop_robot.remove_received_message_handler(prod_robot_controller.stop_robot)
+
         client.loop_stop()
         client.disconnect()

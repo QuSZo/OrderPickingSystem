@@ -69,9 +69,9 @@ RaspberryPi
 `source venv/bin/activate`  
 `pip install -r requirements.txt`  
 
-If you want to run it locally:
-`python main.py --mqttBrokerUrl localhost`
+If you want to run it locally:  
+`python main.py --simulate true --mqttBrokerUrl localhost`
 
-If you want to run it on external device (raspberry pi):
-`python main.py --mqttBrokerUrl 172.30.0.199`
-`python main.py --mqttBrokerUrl 192.168.0.100`
+If you want to run it on external device (raspberry pi):  
+`python main.py --simulate false --mqttBrokerUrl 172.30.0.199`  
+`python main.py --simulate false --mqttBrokerUrl 192.168.0.100`  
