@@ -1,4 +1,4 @@
-import styles from './Page2.module.css'
+import styles from './RobotStatusPage.module.css'
 import * as signalR from "@microsoft/signalr";
 import { useEffect, useState } from "react";
 import { API_URL } from '../../api/const';
@@ -10,7 +10,7 @@ const ROBOT_API_URL = API_URL + "api/robot-hub";
 const ROBOT_COMMAND_API_URL = API_URL + "api/robot/command";
 const ROBOT_STOP_API_URL = API_URL + "api/robot/stop";
 
-export default function Page2() {
+export default function RobotStatusPage() {
     const [robotState, setRobotState] = useState<RobotEvent | null>(null);
     const [commands, setCommands] = useState<RobotCommand[]>([]);
 

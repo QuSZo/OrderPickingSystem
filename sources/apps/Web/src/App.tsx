@@ -1,8 +1,9 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css'
 import { Menu } from './components/Menu/Menu';
-import Page1 from './pages/Page1/Page1';
-import Page2 from './pages/Page2/Page2';
+import HomePage from './pages/HomePage/HomePage';
+import RobotStatusPage from './pages/RobotStatusPage/RobotStatusPage';
+import OrderPage from './pages/OrderPage/OrderPage';
 
 function App() {
   return (
@@ -11,8 +12,9 @@ function App() {
         <Menu />
         <main className='main'>
           <Routes>
-            <Route path="/" element={<Page1 />} />
-            <Route path="/Page2" element={<Page2 />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/robot-status" element={<RobotStatusPage />} />
+            <Route path="/order-page" element={<OrderPage />} />
           </Routes>
         </main>
       </BrowserRouter>

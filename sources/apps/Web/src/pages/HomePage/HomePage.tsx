@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import styles from './Page1.module.css'
+import styles from './HomePage.module.css'
 import { API_URL } from "../../api/const";
 
 const HOME_API_URL = API_URL + "api/home";
 
-export default function Page1() {
+export default function HomePage() {
   const [data, setData] = useState("");
 
   useEffect(() => {
