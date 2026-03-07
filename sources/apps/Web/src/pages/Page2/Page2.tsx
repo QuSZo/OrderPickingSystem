@@ -104,7 +104,7 @@ export default function Page2() {
             </div>
             <div className={styles.rightContainer}>
                 <p>Trasa robota</p>
-                <WarehouseMap cols={5} rows={3} robotEvent={robotState}></WarehouseMap>
+                <WarehouseMap cols={10} rows={3} stops={5} robotEvent={robotState}></WarehouseMap>
             </div>
         </div>
     );
