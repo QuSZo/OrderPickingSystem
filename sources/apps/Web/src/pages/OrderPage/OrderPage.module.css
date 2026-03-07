@@ -1,0 +1,35 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: right;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border-bottom: 1px solid black;
+}
+
+th {
+    text-align: left;
+}
+
+th, td {
+    padding: 5px 20px;
+}
+
+tr:nth-child(even) {
+    background-color: #f7f7f7;
+}
+
+tr:hover {
+    background-color: #d8d8d8;
+}
