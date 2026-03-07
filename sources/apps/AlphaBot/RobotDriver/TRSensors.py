@@ -1,7 +1,10 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
-import RPi.GPIO as GPIO
 import time
+try:
+    import RPi.GPIO as GPIO
+except ModuleNotFoundError:
+    GPIO = None
 
 CS = 5
 Clock = 25

@@ -1,5 +1,8 @@
-import RPi.GPIO as GPIO
 import time
+try:
+    import RPi.GPIO as GPIO
+except ModuleNotFoundError:
+    GPIO = None
 
 class AlphaBot2(object):
 	
