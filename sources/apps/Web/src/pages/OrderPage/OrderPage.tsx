@@ -1,28 +1,31 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './OrderPage.module.css'
+import { API_URL } from '../../api/const';
 
-type Products = {
-    name: string,
-    position: string
-}
+const PRODUCTS_API_URL = API_URL + "api/products";
+const ORDERS_API_URL = API_URL + "api/orders";
 
-const products: Products[] = [
-    { name: "woda", position: "x:0 y: 0" },
-    { name: "chleb", position: "x:0 y: 1" },
-    { name: "masło", position: "x:0 y: 2" },
-    { name: "cukier", position: "x:0 y: 3" },
-    { name: "sól", position: "x:0 y: 4" },
-    { name: "ryż", position: "x:0 y: 0" },
-    { name: "makaron", position: "x:1 y: 1" },
-    { name: "ziemniaki", position: "x:1 y: 2" },
-    { name: "kapusta", position: "x:1 y: 3" },
-    { name: "szynka", position: "x:1 y: 4" },
-    { name: "ser", position: "x:2 y: 0" },
-    { name: "twaróg", position: "x:2 y: 1" },
-] 
+type Position = {
+    x: number;
+    y: number;
+};
+
+type Product = {
+    id: string;
+    name: string;
+    position: Position;
+};
 
 export default function OrderPage() {
+    const [products, setProducts] = useState<Product[]>([])
     const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
+
+    useEffect(() => {
+        fetch(PRODUCTS_API_URL)
+            .then((response) => response.json())
+            .then((data: Product[]) => setProducts(data))
+            .catch((error) => console.error("Błąd podczas fetch:", error));
+    }, []);
 
     const toggleProduct = (index: number) => {
         setSelectedProducts(prev =>
@@ -35,7 +38,7 @@ export default function OrderPage() {
             selectedProducts.includes(index)
         );
 
-        await fetch("http://localhost:8080/api/orders", {
+        await fetch(ORDERS_API_URL, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -61,7 +64,7 @@ export default function OrderPage() {
                     {products.map((product, index) => (
                         <tr key={index}>
                             <td>{product.name}</td>
-                            <td>{product.position}</td>
+                            <td>x:{product.position.x} y:{product.position.y}</td>
                             <td>
                                 <button onClick={() => toggleProduct(index)} className={selectedProducts.includes(index) ? styles.buttonRemove : styles.buttonAdd}>
                                     {selectedProducts.includes(index) ? "Usuń" : "Dodaj"}
@@ -81,7 +84,7 @@ export default function OrderPage() {
                         <ul>
                             {selectedList.map((product, index) => (
                                 <li key={index}>
-                                    {product.name} ({product.position})
+                                    {product.name} (x:{product.position.x} y:{product.position.y})
                                 </li>
                             ))}
                         </ul>
