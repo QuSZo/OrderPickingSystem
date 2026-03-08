@@ -17,17 +17,13 @@ public class MqttConnection : IDisposable
         _mqttClient = mqttClientFactory.CreateMqttClient();
     }
 
-    public bool IsConnected => _mqttClient.IsConnected;
-    public event Action? Connected;
-    public event Action? Disconnected;
-
     public async Task<IMqttClient> ConnectAsync()
     {
         await _connectLock.WaitAsync();
 
         try
         {
-            if (IsConnected)
+            if (_mqttClient.IsConnected)
             {
                 return _mqttClient;
             }
@@ -39,8 +35,6 @@ public class MqttConnection : IDisposable
                 .WithProtocolVersion(MqttProtocolVersion.V500)
                 .Build();
 
-            _mqttClient.DisconnectedAsync += OnDisconnected;
-            _mqttClient.ConnectedAsync += OnConnected;
             await _mqttClient.ConnectAsync(options);
         }
         catch (Exception exception)
@@ -55,18 +49,6 @@ public class MqttConnection : IDisposable
         return _mqttClient;
     }
 
-    private Task OnConnected(MqttClientConnectedEventArgs args)
-    {
-        Connected?.Invoke();
-        return Task.CompletedTask;
-    }
-
-    private Task OnDisconnected(MqttClientDisconnectedEventArgs args)
-    {
-        Disconnected?.Invoke();
-        return Task.CompletedTask;
-    }
-
     protected virtual void Dispose(bool disposing)
     {
         if (_disposed)
@@ -76,8 +58,6 @@ public class MqttConnection : IDisposable
 
         if (disposing)
         {
-            _mqttClient.ConnectedAsync -= OnConnected;
-            _mqttClient.DisconnectedAsync -= OnDisconnected;
             _mqttClient.Dispose();
         }
 
