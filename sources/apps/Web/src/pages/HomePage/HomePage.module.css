@@ -1,3 +1,29 @@
 .container {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.routeContainer {
+  display: flex;
+}
+
+.apiStatusContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.apiStatusConfirmation {
+  display: flex;
+}
+
+.denialText {
+  color: #ff5151;
+}
+
+.confirmationText {
+  color: #009218;
+  font-weight: 700;
 }

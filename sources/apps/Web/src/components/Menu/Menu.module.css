@@ -1,13 +1,19 @@
 .container {
     display: flex;
-    justify-content: right;
+    justify-content: space-between;
     align-items: center;
     z-index: 1;
     position: sticky;
     top: 0;
     background-color: rgb(218, 218, 218);
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-    padding: 30px 5vw;
+    padding: 20px 5vw;
+    height: 100px;
+}
+
+.aghLogo {
+    height: 100%;
+    object-fit: contain;
 }
 
 .menu {
