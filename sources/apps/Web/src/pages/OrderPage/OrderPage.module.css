@@ -1,12 +1,32 @@
 .container {
     display: flex;
+    flex-direction: row;
+    gap: 50px;
+}
+
+.leftContainer {
+    display: flex;
     flex-direction: column;
-    gap: 20px;
+    width: 50%;
+}
+
+.rightContainer {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    gap: 50px;
 }
 
 .buttonContainer {
     display: flex;
-    justify-content: right;
+}
+
+.buttonAdd {
+    background-color: #71b176;
+}
+
+.buttonRemove {
+    background-color: #d37575;
 }
 
 table {
