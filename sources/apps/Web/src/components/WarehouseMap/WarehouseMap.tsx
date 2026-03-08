@@ -113,9 +113,9 @@ export default function WarehouseMap({ rows, cols, stops, robotEvent }: Warehous
   const stopCount = rows * stops + rows+1;
   
   return (
-    <svg width={width} height={height} style={{ border: "1px solid black", overflow: "visible" }}>
+    <svg width={width} height={height} style={{ overflow: "visible" }}>
       
-      {Array.from({ length: cols }).map((_, i) => (
+      {Array.from({ length: cols+1 }).map((_, i) => (
         <line
           key={`v-${i}`}
           x1={i * CELL_SIZE_X}
@@ -126,7 +126,7 @@ export default function WarehouseMap({ rows, cols, stops, robotEvent }: Warehous
         />
       ))}
 
-      {Array.from({ length: rows }).map((_, i) => (
+      {Array.from({ length: rows+1 }).map((_, i) => (
         <line
           key={`h-${i}`}
           x1={0}
