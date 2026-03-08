@@ -1,5 +1,6 @@
 using Api.Mqtt;
 using Api.Policies;
+using Api.Products;
 using Api.RobotService;
 using Api.WebSockets;
 
@@ -13,6 +14,7 @@ builder.Services.AddControllers();
 builder.Services.AddCorsPolicy();
 
 builder.Services.AddRobotService();
+builder.Services.AddProductsService();
 
 var app = builder.Build();
 
