@@ -74,4 +74,7 @@ If you want to run it locally:
 
 If you want to run it on external device (raspberry pi):  
 `python main.py --simulate false --mqttBrokerUrl 172.30.0.199`  
-`python main.py --simulate false --mqttBrokerUrl 192.168.0.100`  
+`python main.py --simulate false --mqttBrokerUrl 192.168.0.150`  
+
+In case of host key issues (after SD card change) remember to clean old ones:  
+`ssh-keygen -R 192.168.0.151`
