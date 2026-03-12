@@ -12,6 +12,9 @@ services:
       - "8080:8080"
     environment:
       ASPNETCORE_URLS: http://+:8080
+      PYTHONNET_PYDLL: /usr/lib/x86_64-linux-gnu/libpython3.12.so
+      PYTHONHOME: /opt/venv
+      PYTHONPATH: /app
   web:
     image: web:latest
     profiles: ["web", "full"]

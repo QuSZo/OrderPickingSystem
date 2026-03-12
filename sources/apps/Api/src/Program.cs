@@ -1,7 +1,9 @@
 using Api.Mqtt;
 using Api.Policies;
 using Api.Products;
+using Api.PythonNet;
 using Api.RobotService;
+using Api.TravelingSalesmanAlgorithms;
 using Api.WebSockets;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +17,9 @@ builder.Services.AddCorsPolicy();
 
 builder.Services.AddRobotService();
 builder.Services.AddProductsService();
+builder.Services.AddTspAlgorithm();
+
+builder.Services.AddHostedService<InitializePythonEngine>();
 
 var app = builder.Build();
 

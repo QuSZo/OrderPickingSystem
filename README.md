@@ -12,17 +12,23 @@ Add to file `127.0.0.1   mqtt-broker`
 You have to build image from main directory (it would work the same with github actions)
 `docker build . -f sources/apps/{Selected Application}/Dockerfile --target release -t {Selected Application}:latest`
 
-Example
-`docker build . -f sources/apps/Api/Dockerfile --target release -t api:latest`  
+#### Backend
+`docker build . -f sources/apps/Api/Dockerfile --target release -t api:latest`
+
+#### Frontend
 `docker build . -f sources/apps/Web/Dockerfile --target release --build-arg VITE_API_URL="http://172.30.0.199:8080/" -t web:latest`
 
 ### Running containers
-`cd sources/compose`  
-`docker compose --profile {Selected profile} up --abort-on-container-exit; docker compose --profile {Selected profile} down`
+```
+cd sources/compose  
+docker compose --profile {Selected profile} up --abort-on-container-exit; docker compose --profile {Selected profile} down
+```
 
-Example
-`cd sources/compose`  
-`docker compose --profile full up --abort-on-container-exit; docker compose --profile full down`
+Example for all services
+```
+cd sources/compose  
+docker compose --profile full up --abort-on-container-exit; docker compose --profile full down
+```
 
 ### Check Api
 Run
@@ -31,13 +37,20 @@ Run
 ## Backend
 `.NET 10`  
 Creation of backend `api` project:  
-`dotnet new webapi -n Api -o Api/src`  
-`cd Api`  
-`dotnet new sln -n Api`  
-`dotnet sln Api.slnx add src/Api.csproj`  
-`cd ../..`  
-`dotnet new sln -n OrderPickingSystem`  
-`dotnet sln OrderPickingSystem.slnx add apps/Api/src/Api.csproj`
+```
+dotnet new webapi -n Api -o Api/src
+cd Api
+dotnet new sln -n Api
+dotnet sln Api.slnx add src/Api.csproj
+cd ../..
+dotnet new sln -n OrderPickingSystem
+dotnet sln OrderPickingSystem.slnx add apps/Api/src/Api.csproj
+```
+
+### Local prerequisites
+.NET application uses `Python.NET` package. It means that you have to have installed `python`.  
+Before your first run ensure you have installed `python` and execute commands below:  
+`{todo}`
 
 ## Frontend
 `nodeJs v24.13.1`  
@@ -58,16 +71,20 @@ Install with npm and start now: Yes
 Python version: 3.11.4
 
 Local (Windows psh)  
-`python -m venv .venv`  
-`Set-ExecutionPolicy RemoteSigned -Scope CurrentUser`  
-`.\.venv\Scripts\Activate.ps1`  
-`pip install -r requirements.txt`  
-`python main.py`
+```
+python -m venv .venv
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python main.py
+```
 
 RaspberryPi  
-`python -m venv .venv`  
-`source .venv/bin/activate`  
-`pip install -r requirements.txt`  
+```
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
 
 If you want to run it locally:  
 `python main.py --simulate true --mqttBrokerUrl localhost`
