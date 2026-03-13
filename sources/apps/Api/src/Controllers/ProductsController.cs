@@ -33,15 +33,18 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPost("buy")]
-    public IActionResult BuyAndCollectProducts()
+    public IActionResult BuyAndCollectProducts([FromBody] List<Product> products)
     {
         _logger.LogDebug("Handle api call to buy and collect products");
 
-        // temp
-        List<Position> positions = new List<Position>() { new Position() { X = 0, Y = 0 }, new Position() { X = 0, Y = 1 } };
+        Position startPosition = new Position() { X = 0, Y = -1 };
+
+        List<Position> positions = new List<Position>() { startPosition };
+        positions.AddRange(products.Select(product => product.Position).ToList());
+        positions.Add(startPosition);
+
+        List<Position> path = _algorithmProvider.GetAlgorithm().FindPath(positions);
         
-        _algorithmProvider.GetAlgorithm().FindPath(positions);
-        
-        return Ok();
+        return Ok(path);
     }
 }
