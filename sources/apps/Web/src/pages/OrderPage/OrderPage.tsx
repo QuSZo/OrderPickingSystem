@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import styles from './OrderPage.module.css'
 import { API_URL } from '../../api/const';
+import { ToastContainer, toast } from "react-toastify";
 
 const PRODUCTS_API_URL = API_URL + "api/products";
-const ORDERS_API_URL = API_URL + "api/orders";
 
 type Position = {
     x: number;
@@ -16,9 +16,16 @@ type Product = {
     position: Position;
 };
 
+type OrderedProduct = {
+    id: string;
+    name: string;
+    position: Position;
+    quantity: number;
+}
+
 export default function OrderPage() {
     const [products, setProducts] = useState<Product[]>([])
-    const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
+    const [orderedProducts, setOrderedProducts] = useState<OrderedProduct[]>([]);
 
     useEffect(() => {
         fetch(PRODUCTS_API_URL)
@@ -27,73 +34,129 @@ export default function OrderPage() {
             .catch((error) => console.error("Błąd podczas fetch:", error));
     }, []);
 
-    const toggleProduct = (index: number) => {
-        setSelectedProducts(prev =>
-            prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
-        );
-    };
+    const selectProduct = (product: Product) => {
+        setOrderedProducts(prev => {
+            const existing = prev.find(p => p.id === product.id);
 
-    const buy = async () => {
-        const selected = products.filter((_, index) =>
-            selectedProducts.includes(index)
-        );
+            if (!existing) {
+                const orderedProduct : OrderedProduct = { id: product.id, name: product.name, position: product.position, quantity: 1 }
+                return [...prev, orderedProduct];
+            }
 
-        await fetch(ORDERS_API_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(selected)
+            return prev.map(orderedProduct =>
+                orderedProduct.id === product.id ? { ...orderedProduct, quantity: orderedProduct.quantity + 1 } : orderedProduct
+            );
         });
     };
 
-    const selectedList = selectedProducts.map(index => products[index]);
+    const removeOne = (productToRemove: OrderedProduct) => {
+        setOrderedProducts(prev => 
+            prev.map(product => product.id === productToRemove.id ? { ...product, quantity: product.quantity - 1 } : product)
+            .filter(product => product.quantity > 0)
+        );
+    };
+
+    const removeProduct = (productToRemove: OrderedProduct) => {
+        setOrderedProducts(prev => prev.filter(product => product.id !== productToRemove.id));
+    };
+
+    const clearOrder = () => {
+        setOrderedProducts([]);
+    };
+
+    const buy = async () => {
+        try {
+            const response = await fetch(`${PRODUCTS_API_URL}/buy`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(orderedProducts)
+            });
+
+            if (!response.ok) {
+                throw new Error("Server error");
+            }
+
+            setOrderedProducts([]);
+            toast.success("Zakup zakończony sukcesem", {
+                position: "top-center",
+                autoClose: 2000
+            });
+        }
+        catch (error) {
+            toast.error("Nie udało się wykonać zakupu", {
+                position: "top-center",
+                autoClose: 2000
+            });
+
+            console.error(error);
+        }   
+    };
 
     return (
-        <div className={styles.container}>
-            <div className={styles.leftContainer}>
-                <table className={styles.table}>
-                    <thead>
-                        <tr className={styles.tableRow}>
-                            <th>Produkt</th>
-                            <th>Pozycja</th>
-                            <th>Czy pobrać?</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {products.map((product, index) => (
-                        <tr key={index}>
-                            <td>{product.name}</td>
-                            <td>x:{product.position.x} y:{product.position.y}</td>
-                            <td>
-                                <button onClick={() => toggleProduct(index)} className={selectedProducts.includes(index) ? styles.buttonRemove : styles.buttonAdd}>
-                                    {selectedProducts.includes(index) ? "Usuń" : "Dodaj"}
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
-            </div>
-            <div className={styles.rightContainer}>
-                <div className={styles.orderList}>
-                    <h3>Lista zakupów</h3>
-                    {selectedList.length === 0 ? (
-                        <p>Brak produktów</p>
-                    ) : (
-                        <ul>
-                            {selectedList.map((product, index) => (
-                                <li key={index}>
-                                    {product.name} (x:{product.position.x} y:{product.position.y})
-                                </li>
-                            ))}
-                        </ul>
-                    )}
+        <>
+            <ToastContainer />
+            <div className={styles.container}>
+                <div className={styles.leftContainer}>
+                    <table className={styles.table}>
+                        <thead>
+                            <tr className={styles.tableRow}>
+                                <th>Produkt</th>
+                                <th>Pozycja</th>
+                                <th>Czy pobrać?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {products.map((product, index) => (
+                            <tr key={index}>
+                                <td>{product.name}</td>
+                                <td>x:{product.position.x} y:{product.position.y}</td>
+                                <td>
+                                    <button onClick={() => selectProduct(product)} className={styles.buttonAddProduct}>Dodaj</button>
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
                 </div>
-                <div className={styles.buttonContainer}>
-                    <button onClick={buy} className={styles.buttonAdd} disabled={selectedList.length === 0}>Zatwiedź zakupy</button>
+                <div className={styles.rightContainer}>
+                    <div className={styles.orderList}>
+                        <h3>Lista zakupów</h3>
+                        {orderedProducts.length === 0 ? (
+                            <p>Brak produktów</p>
+                        ) : (
+                            <table className={styles.table}>
+                                <thead>
+                                    <tr className={styles.tableRow}>
+                                        <th>Zakupiony produkt</th>
+                                        <th>Ilość</th>
+                                        <th>Akcje</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {orderedProducts.map((orderedProduct, index) => (
+                                    <tr key={index}>
+                                        <td>{orderedProduct.name} (x:{orderedProduct.position.x} y:{orderedProduct.position.y})</td>
+                                        <td>{orderedProduct.quantity}</td>
+                                        <td>
+                                            <div className={styles.orderedActionContainer}>
+                                                <button onClick={() => removeOne(orderedProduct)} className={styles.buttonProductUpdate}>Usuń jedno</button>
+                                                <button onClick={() => removeProduct(orderedProduct)} className={styles.buttonProductRemove}>Usuń produkt</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+                    <div className={styles.buttonContainer}>
+                        <button onClick={() => clearOrder()} className={styles.buttonRemove}>Wyczyść zamówienie</button>
+                        <button onClick={buy} className={styles.buttonAdd} disabled={orderedProducts.length === 0}>Zatwiedź zakupy</button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }

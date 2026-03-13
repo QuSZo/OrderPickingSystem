@@ -7,26 +7,57 @@
 .leftContainer {
     display: flex;
     flex-direction: column;
-    width: 50%;
+    width: 40%;
 }
 
 .rightContainer {
     display: flex;
     flex-direction: column;
-    width: 50%;
+    width: 60%;
     gap: 50px;
 }
 
 .buttonContainer {
     display: flex;
+    gap: 20px
 }
 
 .buttonAdd {
     background-color: #71b176;
 }
 
+.buttonAddProduct {
+    background-color: #71b176;
+    font-size: 13px;
+    padding: 0.3em 0.6em;
+}
+
+.buttonAdd:disabled {
+    background-color: #c8c8c8;
+    color: #6b6b6b;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
 .buttonRemove {
     background-color: #d37575;
+}
+
+.orderedActionContainer {
+    display: flex;
+    gap: 10px
+}
+
+.buttonProductUpdate {
+    font-size: 13px;
+    background-color: #ca9545;
+    padding: 0.3em 0.6em;
+}
+
+.buttonProductRemove {
+    font-size: 13px;
+    background-color: #d37575;
+    padding: 0.3em 0.6em;
 }
 
 table {
