@@ -7,7 +7,9 @@
       "launchBrowser": false,
       "applicationUrl": "http://localhost:8080",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "PYTHONNET_PYDLL": "C:\\Users\\KuSZo\\AppData\\Local\\Programs\\Python\\Python311\\python311.dll",
+        "PYTHONPATH": "C:\\Users\\KuSZo\\Documents\\Apps\\AGH\\Magisterka\\OrderPickingSystem\\sources\\apps\\Api\\src;C:\\Users\\KuSZo\\Documents\\Apps\\AGH\\Magisterka\\OrderPickingSystem\\sources\\apps\\Api\\.venv\\Lib\\site-packages"
       }
     },
   }
