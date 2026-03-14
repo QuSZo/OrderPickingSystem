@@ -2,6 +2,7 @@ using Api.Mqtt;
 using Api.Policies;
 using Api.Products;
 using Api.PythonNet;
+using Api.RobotOperations;
 using Api.RobotService;
 using Api.TravelingSalesmanAlgorithms;
 using Api.WebSockets;
@@ -18,6 +19,7 @@ builder.Services.AddCorsPolicy();
 builder.Services.AddRobotService();
 builder.Services.AddProductsService();
 builder.Services.AddTspAlgorithm();
+builder.Services.AddRobotOperation();
 
 builder.Services.AddHostedService<InitializePythonEngine>();
 

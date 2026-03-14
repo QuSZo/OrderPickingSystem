@@ -1,5 +1,7 @@
 using Api.Logging;
 using Api.Products;
+using Api.RobotOperations;
+using Api.RobotService;
 using Api.TravelingSalesmanAlgorithms;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,16 +13,16 @@ public class ProductsController : ControllerBase
 {
     private readonly ILogger _logger;
     private readonly ProductsService _productsService;
-    private readonly TravelingSalesmanAlgorithmProvider _algorithmProvider;
+    private readonly RobotInbound _robotInbound;
 
     public ProductsController(
         ILoggerFactory loggerFactory, 
         ProductsService productsService, 
-        TravelingSalesmanAlgorithmProvider algorithmProvider)
+        RobotInbound robotInbound)
     {
         _logger = loggerFactory.CreateLoggerApi();
         _productsService = productsService;
-        _algorithmProvider = algorithmProvider;
+        _robotInbound = robotInbound;
     }
 
     [HttpGet]
@@ -33,7 +35,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPost("buy")]
-    public IActionResult BuyAndCollectProducts([FromBody] List<Product> products)
+    public async Task<IActionResult> BuyAndCollectProducts([FromBody] List<Product> products)
     {
         _logger.LogDebug("Handle api call to buy and collect products");
 
@@ -43,8 +45,8 @@ public class ProductsController : ControllerBase
         positions.AddRange(products.Select(product => product.Position).ToList());
         positions.Add(startPosition);
 
-        List<Position> path = _algorithmProvider.GetAlgorithm().FindPath(positions);
+        await _robotInbound.StartPicking(positions);
         
-        return Ok(path);
+        return Ok();
     }
 }

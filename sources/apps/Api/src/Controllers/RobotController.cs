@@ -24,7 +24,7 @@ public class RobotController : ControllerBase
     {
         _logger.LogDebug("Handle api call with new robot commands");
         string message = JsonSerializer.Serialize(dto);
-        await _robotInbound.HandleCommand(message);
+        await _robotInbound.SendCommands(message);
         
         return Ok();
     }
@@ -33,7 +33,7 @@ public class RobotController : ControllerBase
     public async Task<ActionResult<string>> RobotStop()
     {
         _logger.LogDebug("Handle api call to stop the robot");
-        await _robotInbound.HandleStop();
+        await _robotInbound.SendStop();
 
         return Ok();
     }
