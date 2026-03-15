@@ -92,17 +92,21 @@ def run_robot(commands, mqtt_client):
 					if direction == "left":
 						print("Turn: " + direction)
 						AlphaBot.left()
-						time.sleep(0.5)
+						time.sleep(0.6)
 					elif direction == "right":
 						print("Turn: " + direction)
 						AlphaBot.right()
-						time.sleep(0.5)
+						time.sleep(0.6)
 					elif direction == "forward":
 						print("Turn: " + direction)
 						AlphaBot.setPWMA(maximum)
 						AlphaBot.setPWMB(maximum)
 						AlphaBot.forward()
 						time.sleep(0.2)
+					elif direction == "back":
+						print("Turn: " + direction)
+						AlphaBot.right()
+						time.sleep(1.5)
 					else:
 						break
 					AlphaBot.forward()
