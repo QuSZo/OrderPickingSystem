@@ -15,8 +15,23 @@ docker build . -f sources/apps/{Selected Application}/Dockerfile --target releas
 ```
 
 ### Backend
+Check python dll path: 
 ```
-docker build . -f sources/apps/Api/Dockerfile --target release -t api:latest
+docker run -it --rm mcr.microsoft.com/dotnet/aspnet:10.0 bash
+apt update
+apt install -y python3 python3-dev
+find /usr -name "libpython3*.so"
+```
+
+Examples:  
+WSL2 Debian
+```
+docker build . -f sources/apps/Api/Dockerfile --target release --build-arg PYTHONNET_PYDLL=/usr/lib/x86_64-linux-gnu/libpython3.12.so -t api:latest
+```
+
+Raspberry Pi OS
+```
+docker build . -f sources/apps/Api/Dockerfile --target release --build-arg PYTHONNET_PYDLL=/usr/lib/arm-linux-gnueabihf/libpython3.12.so -t api:latest
 ```
 
 ### Frontend
