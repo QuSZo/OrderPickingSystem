@@ -39,6 +39,7 @@ public class RobotInbound
 
         List<Position> path = _algorithmProvider.GetAlgorithm().FindPath(positions);
         List<RobotMoveEnum> moves = _robotOperation.GenerateMoves(path, DirectionEnum.South);
+        Commands commands = new Commands(moves);
 
         JsonSerializerOptions options = new JsonSerializerOptions()
         {
@@ -46,7 +47,7 @@ public class RobotInbound
             Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
         };
 
-        string message = JsonSerializer.Serialize(moves, options);
+        string message = JsonSerializer.Serialize(commands, options);
 
         await _mqttProducer.PublishAsync(MqttTopics.RobotCommand, message);
     }
