@@ -1,108 +1,43 @@
 import { useState, useEffect } from "react";
-import type { RobotEvent } from "../../types/RobotTypes";
-
-
-type Direction = "N" | "E" | "S" | "W";
+import type { Direction, Position, RobotState } from "../../types/RobotTypes";
 
 interface WarehouseMapProps {
   rows: number;
   cols: number;
   stops: number;
-  robotEvent: RobotEvent | null;
+  robotState: RobotState | null;
 }
 
 const CELL_SIZE_X = 60;
 const CELL_SIZE_Y = 180;
 
-const calculateDirection = (command: string, direction: Direction) => {
-  let newDirection : Direction = "N";
-
-  switch (command) {
-    case "forward":
-      newDirection = direction;
-      break;
-    case "left":
-      newDirection = direction === "N" ? "W" : direction === "W" ? "S" : direction === "S" ? "E" : "N";
-      break;
-    case "right":
-      newDirection = direction === "N" ? "E" : direction === "E" ? "S" : direction === "S" ? "W" : "N";
-      break;
-    case "back":
-      newDirection = direction === "N" ? "S" : direction === "W" ? "E" : direction === "S" ? "N" : "W";
-      break;
-    default:
-      newDirection = "N";
-      break;
-  }
-
-  return newDirection;
-}
-
 const getDirectionOffset = (direction: Direction) => {
   const offset = 15;
 
   switch (direction) {
-    case "N":
+    case "north":
       return { dx: 0, dy: -offset };
-    case "S":
+    case "south":
       return { dx: 0, dy: offset };
-    case "E":
+    case "east":
       return { dx: offset, dy: 0 };
-    case "W":
+    case "west":
       return { dx: -offset, dy: 0 };
   }
 };
 
-export default function WarehouseMap({ rows, cols, stops, robotEvent }: WarehouseMapProps) {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [direction, setDirection] = useState<Direction>("S");
+export default function WarehouseMap({ rows, cols, stops, robotState }: WarehouseMapProps) {
+  const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
+  const [direction, setDirection] = useState<Direction>("south");
 
   useEffect(() => {
-    if (!robotEvent || robotEvent.event !== "movement") return;
-    if (!robotEvent.command) return;
+    if (!robotState || robotState.event !== "movement") return;
+    if (!robotState.command) return;
 
-    setPosition(prev => {
-      let { x, y } = prev;
+    setPosition(robotState.position);
+    setDirection(robotState.direction);
 
-      switch (robotEvent.command) {
-        case "forward":
-          if (direction === "N") y -= 1;
-          if (direction === "S") y += 1;
-          if (direction === "E") x += 1;
-          if (direction === "W") x -= 1;
-          break;
-
-        case "left":
-          if (direction === "N") x -= 1;
-          if (direction === "S") x += 1;
-          if (direction === "E") y -= 1;
-          if (direction === "W") y += 1;
-          break;
-
-        case "right":
-          if (direction === "N") x += 1;
-          if (direction === "S") x -= 1;
-          if (direction === "E") y += 1;
-          if (direction === "W") y -= 1;
-          break;
-
-        case "back":
-          if (direction === "N") y += 1;
-          if (direction === "S") y -= 1;
-          if (direction === "E") x -= 1;
-          if (direction === "W") x += 1;
-          break;
-      }
-
-      setDirection(calculateDirection(robotEvent.command ?? "", direction))
-
-      x = Math.max(0, Math.min(cols, x));
-      y = Math.max(0, Math.min(rows * stops + rows + 1 - 1, y));
-
-      return { x, y };
-    });
-
-  }, [robotEvent]);
+  }, [robotState]);
 
   const width = cols * CELL_SIZE_X;
   const height = rows * CELL_SIZE_Y;

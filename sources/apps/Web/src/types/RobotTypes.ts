@@ -1,7 +1,18 @@
+export interface RobotState {
+    position: Position;
+    direction: Direction;
+    event: Event;
+    timestamp: number;
+    command?: RobotCommand;
+}
+
+export interface Position {
+    x: number;
+    y: number;
+} 
+
 export type RobotCommand = "forward" | "back" | "left" | "right";
 
-export interface RobotEvent {
-    event: "movement" | "finished" | "stopped";
-    timestamp: number;
-    command?: string;
-}
+export type Direction = "north" | "east" | "south" | "west";
+
+export type Event = "movement" | "finished" | "stopped";

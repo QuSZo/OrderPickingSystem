@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 import { API_URL } from '../../api/const';
 import { TextContainer } from '../../components/TextContainer/TextContainer';
 import WarehouseMap from '../../components/WarehouseMap/WarehouseMap';
-import type { RobotCommand, RobotEvent } from '../../types/RobotTypes';
+import type { RobotCommand, RobotState } from '../../types/RobotTypes';
 
 const ROBOT_API_URL = API_URL + "api/robot-hub";
 const ROBOT_COMMAND_API_URL = API_URL + "api/robot/command";
 const ROBOT_STOP_API_URL = API_URL + "api/robot/stop";
 
 export default function RobotStatusPage() {
-    const [robotState, setRobotState] = useState<RobotEvent | null>(null);
+    const [robotState, setRobotState] = useState<RobotState | null>(null);
     const [commands, setCommands] = useState<RobotCommand[]>([]);
 
     const addCommand = (command: RobotCommand) => {
@@ -58,7 +58,7 @@ export default function RobotStatusPage() {
 
         connection.on("ReceiveRobotState", (message) => {
             try {
-                const parsed: RobotEvent = JSON.parse(message);
+                const parsed: RobotState = JSON.parse(message);
                 setRobotState(parsed);
                 console.log(message);
             } catch (err) {
@@ -104,7 +104,7 @@ export default function RobotStatusPage() {
             </div>
             <div className={styles.rightContainer}>
                 <p>Trasa robota</p>
-                <WarehouseMap cols={10} rows={3} stops={5} robotEvent={robotState}></WarehouseMap>
+                <WarehouseMap cols={10} rows={3} stops={5} robotState={robotState}></WarehouseMap>
             </div>
         </div>
     );
