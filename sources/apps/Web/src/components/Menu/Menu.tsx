@@ -10,6 +10,7 @@ export function Menu() {
         <Link to="/">Start</Link>
         <Link to="/order-page">Zamówienia</Link>
         <Link to="/robot-status">Status robota</Link>
+        <Link to="/robot-control">Manualne sterowanie</Link>
       </nav>
     </div>
   );

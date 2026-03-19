@@ -1,0 +1,47 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  gap: 50px
+}
+
+.robotControl {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.addMovesContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.selectedCommandsContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.buttonsContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.normalButton {
+    background-color: rgb(218, 218, 218);
+}
+
+.addButton {
+    background-color: #71b176;
+}
+
+.addButton:disabled {
+    background-color: #c8c8c8;
+    color: #6b6b6b;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.stopButton {
+    background-color: #d37575;
+}

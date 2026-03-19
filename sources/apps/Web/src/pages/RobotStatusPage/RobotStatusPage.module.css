@@ -17,12 +17,6 @@
   gap: 20px;
 }
 
-.robotControl {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
 .rightContainer {
   display: flex;
   width: 50%;
