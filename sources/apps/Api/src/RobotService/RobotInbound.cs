@@ -27,13 +27,11 @@ public class RobotInbound
         _robotState = robotState;
     }
 
-    public async Task SendCommands(List<RobotMoveEnum> moves)
+    public async Task SendCommands(RobotCommandDto commands)
     {
         _logger.LogInformation("Processing message from server with new robot commands");
 
-        RobotCommandDto listRobotCommandDto = new RobotCommandDto(moves);
-
-        string message = JsonSerializer.Serialize(listRobotCommandDto);
+        string message = Serializer.Serialize(commands);
         await _mqttProducer.PublishAsync(MqttTopics.RobotCommand, message);
     }
 

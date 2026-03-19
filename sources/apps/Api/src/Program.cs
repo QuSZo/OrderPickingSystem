@@ -2,7 +2,6 @@ using Api.Mqtt;
 using Api.Policies;
 using Api.Products;
 using Api.PythonNet;
-using Api.RobotOperations;
 using Api.RobotService;
 using Api.TravelingSalesmanAlgorithms;
 using Api.WebSockets;
@@ -13,7 +12,15 @@ builder.Services.AddOpenApi();
 builder.Services.AddSignalR();
 builder.Services.AddWebSocketServices();
 builder.Services.AddMqtt();
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new System.Text.Json.Serialization.JsonStringEnumConverter(
+                System.Text.Json.JsonNamingPolicy.CamelCase
+            )
+        );
+    });
 builder.Services.AddCorsPolicy();
 
 builder.Services.AddRobotService();

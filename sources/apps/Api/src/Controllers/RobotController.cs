@@ -1,3 +1,4 @@
+using Api.Dtos;
 using Api.Logging;
 using Api.RobotOperations;
 using Api.RobotService;
@@ -19,10 +20,10 @@ public class RobotController : ControllerBase
     }
 
     [HttpPost("command")]
-    public async Task<ActionResult<string>> RobotCommand([FromBody] List<RobotMoveEnum> moves)
+    public async Task<ActionResult<string>> RobotCommand([FromBody] RobotCommandDto commands)
     {
         _logger.LogDebug("Handle api call with new robot commands");
-        await _robotInbound.SendCommands(moves);
+        await _robotInbound.SendCommands(commands);
         
         return Ok();
     }
