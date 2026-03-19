@@ -1,10 +1,10 @@
 using System.Text.Json;
-using System.Text.Json.Serialization;
+using Api.Dtos;
 using Api.Logging;
 using Api.Mqtt;
-using Api.Products;
 using Api.RobotOperations;
 using Api.TravelingSalesmanAlgorithms;
+using Api.Utils;
 
 namespace Api.RobotService;
 
@@ -13,42 +13,51 @@ public class RobotInbound
     private readonly ILogger _logger;
     private readonly MqttProducer _mqttProducer;
     private readonly TravelingSalesmanAlgorithmProvider _algorithmProvider;
-    private readonly RobotOperation _robotOperation;
+    private readonly RobotState _robotState;
 
     public RobotInbound(
         ILoggerFactory loggerFactory, 
         MqttProducer mqttProducer, 
         TravelingSalesmanAlgorithmProvider algorithmProvider,
-        RobotOperation robotOperation)
+        RobotState robotState)
     {
         _logger = loggerFactory.CreateLoggerApi();
         _mqttProducer = mqttProducer;
         _algorithmProvider = algorithmProvider;
-        _robotOperation = robotOperation;
+        _robotState = robotState;
     }
 
-    public async Task SendCommands(string message)
+    public async Task SendCommands(List<RobotMoveEnum> moves)
     {
         _logger.LogInformation("Processing message from server with new robot commands");
+
+        RobotCommandDto listRobotCommandDto = new RobotCommandDto(moves);
+
+        string message = JsonSerializer.Serialize(listRobotCommandDto);
         await _mqttProducer.PublishAsync(MqttTopics.RobotCommand, message);
     }
 
-    public async Task StartPicking(List<Position> positions)
+    public async Task StartPicking(List<OrderedProductDto> products)
     {
         _logger.LogInformation("Processing message from server with new products to pick");
 
-        List<Position> path = _algorithmProvider.GetAlgorithm().FindPath(positions);
-        List<RobotMoveEnum> moves = _robotOperation.GenerateMoves(path, DirectionEnum.South);
-        Commands commands = new Commands(moves);
+        DirectionEnum startDirection = _robotState.Direction;
+        Position startPosition = _robotState.Position;
+        Position finishPosition = startPosition;
 
-        JsonSerializerOptions options = new JsonSerializerOptions()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
-        };
+        List<Position> positionsToSee = new List<Position>();
 
-        string message = JsonSerializer.Serialize(commands, options);
+        List<Position> productPositions = products.Select(product => product.Position).ToList();
+        positionsToSee.Add(startPosition);
+        positionsToSee.AddRange(productPositions);
+        positionsToSee.Add(finishPosition);
 
+        List<Position> path = _algorithmProvider.GetAlgorithm().FindPath(positionsToSee);
+        List<RobotMoveEnum> moves = GenerateCommands(path, startDirection);
+
+        RobotCommandDto commands = new RobotCommandDto(moves);
+
+        string message = Serializer.Serialize(commands);
         await _mqttProducer.PublishAsync(MqttTopics.RobotCommand, message);
     }
 
@@ -56,5 +65,33 @@ public class RobotInbound
     {
         _logger.LogInformation("Processing message from server to stop the robot");
         await _mqttProducer.PublishAsync(MqttTopics.RobotStop, string.Empty);
+    }
+
+    private List<RobotMoveEnum> GenerateCommands(List<Position> positions, DirectionEnum startDirection)
+    {
+        _logger.LogDebug("Generating robot moves from positions");
+
+        List<RobotMoveEnum> moves = new List<RobotMoveEnum>();
+
+        DirectionEnum oldDirection = startDirection;
+
+        for (int i = 0; i < positions.Count - 1; i++)
+        {
+            int x_prev = positions[i].X;
+            int y_prev = positions[i].Y;
+
+            int x_next = positions[i+1].X;
+            int y_next = positions[i+1].Y;
+
+            DirectionEnum newDirection = RobotOperation.FindNewDirection(x_prev, y_prev, x_next, y_next);
+            RobotMoveEnum newMove = RobotOperation.GenerateMove(oldDirection, newDirection);
+
+            moves.Add(newMove);
+
+            oldDirection = newDirection;
+        }
+
+        _logger.LogDebug($"Generated moves: { string.Join(" -> ", moves) }");
+        return moves;
     }
 }

@@ -1,4 +1,4 @@
-namespace Api.Products;
+namespace Api.RobotOperations;
 
 public record Position
 {

@@ -1,3 +1,5 @@
+using Api.RobotOperations;
+
 namespace Api.Products;
 
 public class ProductsService

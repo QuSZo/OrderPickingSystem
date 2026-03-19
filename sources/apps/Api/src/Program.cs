@@ -19,7 +19,6 @@ builder.Services.AddCorsPolicy();
 builder.Services.AddRobotService();
 builder.Services.AddProductsService();
 builder.Services.AddTspAlgorithm();
-builder.Services.AddRobotOperation();
 
 builder.Services.AddHostedService<InitializePythonEngine>();
 

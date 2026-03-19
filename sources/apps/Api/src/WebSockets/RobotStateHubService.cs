@@ -16,7 +16,7 @@ public class RobotStateHubService
 
     public async Task SendMessageAsync(string message, CancellationToken cancellationToken = default)
     {
-        _logger.LogDebug("Sending new robot state via WebSocket");
+        _logger.LogDebug($"Sending new robot state via WebSocket, message: {message}");
         await _hub.Clients.All.SendAsync("ReceiveRobotState", message);
     }
 }

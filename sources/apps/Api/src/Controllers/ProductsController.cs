@@ -1,8 +1,7 @@
+using Api.Dtos;
 using Api.Logging;
 using Api.Products;
-using Api.RobotOperations;
 using Api.RobotService;
-using Api.TravelingSalesmanAlgorithms;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -35,17 +34,11 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPost("buy")]
-    public async Task<IActionResult> BuyAndCollectProducts([FromBody] List<Product> products)
+    public async Task<IActionResult> BuyAndCollectProducts([FromBody] List<OrderedProductDto> products)
     {
         _logger.LogDebug("Handle api call to buy and collect products");
 
-        Position startPosition = new Position() { X = 0, Y = -1 };
-
-        List<Position> positions = new List<Position>() { startPosition };
-        positions.AddRange(products.Select(product => product.Position).ToList());
-        positions.Add(startPosition);
-
-        await _robotInbound.StartPicking(positions);
+        await _robotInbound.StartPicking(products);
         
         return Ok();
     }

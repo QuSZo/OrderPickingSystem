@@ -1,3 +1,5 @@
+using Api.RobotOperations;
+
 namespace Api.Dtos;
 
-public record RobotCommandDto(List<string> commands);
+public record RobotCommandDto(List<RobotMoveEnum> commands);

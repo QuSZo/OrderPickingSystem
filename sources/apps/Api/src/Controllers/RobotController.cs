@@ -1,6 +1,5 @@
-using System.Text.Json;
-using Api.Dtos;
 using Api.Logging;
+using Api.RobotOperations;
 using Api.RobotService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,11 +19,10 @@ public class RobotController : ControllerBase
     }
 
     [HttpPost("command")]
-    public async Task<ActionResult<string>> RobotCommand([FromBody] RobotCommandDto dto)
+    public async Task<ActionResult<string>> RobotCommand([FromBody] List<RobotMoveEnum> moves)
     {
         _logger.LogDebug("Handle api call with new robot commands");
-        string message = JsonSerializer.Serialize(dto);
-        await _robotInbound.SendCommands(message);
+        await _robotInbound.SendCommands(moves);
         
         return Ok();
     }

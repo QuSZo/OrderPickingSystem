@@ -18,7 +18,7 @@ def build_graph(columns, rows, stops_in_seperated_alley):
         for y in range(0, stops_in_column, stepsToCross):
             graph.add_edge((x-1,y), (x,y), weight = 3)
 
-    graph.add_edge((0,0), (0,-1), weight=2)
+    # graph.add_edge((0,0), (0,-1), weight=2)
 
     return graph
 

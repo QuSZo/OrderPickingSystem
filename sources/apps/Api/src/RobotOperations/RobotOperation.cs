@@ -1,56 +1,112 @@
-using Api.Logging;
-using Api.Products;
-
 namespace Api.RobotOperations;
 
-public class RobotOperation
+public static class RobotOperation
 {
-    private readonly ILogger _logger; 
-
-    public RobotOperation(ILoggerFactory loggerFactory)
+    public static DirectionEnum FindNewDirection(int xPrev, int yPrev, int xNext, int yNext)
     {
-        _logger = loggerFactory.CreateLoggerApi();
-    }
-
-    public List<RobotMoveEnum> GenerateMoves(List<Position> positions, DirectionEnum startDirection)
-    {
-        _logger.LogDebug("Generating robot moves from positions");
-
-        List<RobotMoveEnum> moves = new List<RobotMoveEnum>();
-
-        DirectionEnum oldDirection = startDirection;
-
-        for (int i = 0; i < positions.Count - 1; i++)
-        {
-            int x_prev = positions[i].X;
-            int y_prev = positions[i].Y;
-
-            int x_next = positions[i+1].X;
-            int y_next = positions[i+1].Y;
-
-            DirectionEnum newDirection = FindNewDirection(x_prev, y_prev, x_next, y_next);
-            RobotMoveEnum newMove = GenerateMove(oldDirection, newDirection);
-
-            moves.Add(newMove);
-
-            oldDirection = newDirection;
-        }
-
-        _logger.LogDebug($"Generated moves: { string.Join(" -> ", moves) }");
-        return moves;
-    }
-
-    private DirectionEnum FindNewDirection(int x_prev, int y_prev, int x_next, int y_next)
-    {
-        if (x_prev - x_next == -1) return DirectionEnum.East;
-        if (x_prev - x_next == 1) return DirectionEnum.West;
-        if (y_prev - y_next == -1) return DirectionEnum.South;
-        if (y_prev - y_next == 1) return DirectionEnum.North;
+        if (xPrev - xNext == -1) return DirectionEnum.East;
+        if (xPrev - xNext == 1) return DirectionEnum.West;
+        if (yPrev - yNext == -1) return DirectionEnum.South;
+        if (yPrev - yNext == 1) return DirectionEnum.North;
 
         throw new InvalidOperationException("Invalid move");
     }
 
-    private RobotMoveEnum GenerateMove(DirectionEnum oldDirection, DirectionEnum newDirection)
+    public static Position CalculatePosition(Position position, DirectionEnum oldDirection, RobotMoveEnum? move)
+    {
+        int deltaX = 0;
+        int deltaY = 0;
+
+        switch (move)
+        {
+            case RobotMoveEnum.Forward:
+                switch (oldDirection)
+                {
+                    case DirectionEnum.North:
+                        deltaY = -1;
+                        break;
+                    case DirectionEnum.East:
+                        deltaX = 1;
+                        break;
+                    case DirectionEnum.South:
+                        deltaY = 1;
+                        break;
+                    case DirectionEnum.West:
+                        deltaX = -1;
+                        break;
+                }
+                break;
+
+            case RobotMoveEnum.Right:
+                switch (oldDirection)
+                {
+                    case DirectionEnum.North:
+                        deltaX = 1;
+                        break;
+                    case DirectionEnum.East:
+                        deltaY = 1;
+                        break;
+                    case DirectionEnum.South:
+                        deltaX = -1;
+                        break;
+                    case DirectionEnum.West:
+                        deltaY = -1;
+                        break;
+                }
+                break;
+
+            case RobotMoveEnum.Back:
+                switch (oldDirection)
+                {
+                    case DirectionEnum.North:
+                        deltaY = 1;
+                        break;
+                    case DirectionEnum.East:
+                        deltaX = -1;
+                        break;
+                    case DirectionEnum.South:
+                        deltaY = -1;
+                        break;
+                    case DirectionEnum.West:
+                        deltaX = 1;
+                        break;
+                }
+                break;
+
+            case RobotMoveEnum.Left:
+                switch (oldDirection)
+                {
+                    case DirectionEnum.North:
+                        deltaX = -1;
+                        break;
+                    case DirectionEnum.East:
+                        deltaY = -1;
+                        break;
+                    case DirectionEnum.South:
+                        deltaX = 1;
+                        break;
+                    case DirectionEnum.West:
+                        deltaY = 1;
+                        break;
+                }
+                break;
+        }
+
+        if (deltaX != 0 || deltaY != 0)
+        {
+            int xPrev = position.X;
+            int yPrev = position.Y;
+
+            int xNext = xPrev + deltaX;
+            int yNext = yPrev + deltaY;
+
+            return new Position() { X = xNext, Y = yNext };
+        }
+
+        throw new InvalidOperationException();
+    }
+
+    public static RobotMoveEnum GenerateMove(DirectionEnum oldDirection, DirectionEnum newDirection)
     {
         switch (newDirection)
         {
