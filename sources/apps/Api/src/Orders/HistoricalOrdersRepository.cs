@@ -8,7 +8,7 @@ public class HistoricalOrdersRepository
 
     public IReadOnlyList<Order> GetAll()
     {
-        return _historicalOrders;
+        return _historicalOrders.OrderByDescending(order => order.Timestamp).ToList();
     }
 
     public void Add(Order order)

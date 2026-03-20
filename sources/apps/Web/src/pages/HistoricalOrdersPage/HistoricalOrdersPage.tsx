@@ -65,6 +65,9 @@ export default function HistoricalOrdersPage() {
                             <tr>
                                 <th className={styles.arrowTh}></th>
                                 <th>Produkty</th>
+                                <th>Data zamówienia</th>
+                                <th>Wykorzystany algorytm</th>
+                                <th>Czas trwania zbierania</th>
                                 <th className={styles.actionsTh}>Czy zamówić ponownie?</th>
                             </tr>
                         </thead>
@@ -79,6 +82,9 @@ export default function HistoricalOrdersPage() {
                                     <td className={styles.productsPreviewTd} onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}>
                                         {order.orderedProducts.map(orderedProducts => orderedProducts.name).join(", ")}
                                     </td>
+                                    <td>{new Date(order.timestamp).toLocaleString()}</td>
+                                    <td>{order.tspAlgorithm}</td>
+                                    <td>Brak danych</td>
                                     <td>
                                         <button className={styles.buttonOrderAgain} onClick={() => orderAgain(order.orderedProducts)}>Zamów ponownie</button>
                                     </td>
@@ -86,7 +92,7 @@ export default function HistoricalOrdersPage() {
 
                                 {expandedIndex === index && (
                                     <tr>
-                                        <td colSpan={3} className={styles.productCellAllInformation}>
+                                        <td colSpan={6} className={styles.productCellAllInformation}>
                                             <ul>
                                                 {order.orderedProducts.map((orderedProduct, index) => (
                                                     <li key={index}>
