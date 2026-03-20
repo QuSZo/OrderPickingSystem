@@ -23,9 +23,19 @@ export interface Product {
     position: Position;
 };
 
+export interface Order {
+    orderedProducts: OrderedProduct[];
+    tspAlgorithm: TspAlgorithms;
+    timestamp: number;
+}
+
 export interface OrderedProduct {
     id: string;
     name: string;
     position: Position;
     quantity: number;
 }
+
+export type TspAlgorithms = "Naive";
+
+export const algorithms: TspAlgorithms[] = ["Naive"];

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { OrderedProduct } from '../../types/Types';
+import { algorithms, type Order, type OrderedProduct, type TspAlgorithms } from '../../types/Types';
 import styles from './HistoricalOrdersPage.module.css'
 import { API_URL } from '../../api/const';
 import { toast, ToastContainer } from 'react-toastify';
@@ -7,13 +7,14 @@ import { toast, ToastContainer } from 'react-toastify';
 const ORDERS_API_URL = API_URL + "api/orders";
 
 export default function HistoricalOrdersPage() {
-    const [historicalOrders, setHistoricalOrders] = useState<OrderedProduct[][]>([]);
+    const [historicalOrders, setHistoricalOrders] = useState<Order[]>([]);
     const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+    const [selectedAlgorithm, setSelectedAlgorithm] = useState<TspAlgorithms>("Naive");
 
     const loadOrders = () => {
         fetch(ORDERS_API_URL)
             .then((response) => response.json())
-            .then((data: OrderedProduct[][]) => setHistoricalOrders(data))
+            .then((data: Order[]) => setHistoricalOrders(data))
             .catch((error) => console.error("Błąd podczas fetch:", error));
     }
 
@@ -23,12 +24,14 @@ export default function HistoricalOrdersPage() {
 
     const orderAgain = async (orderedProducts: OrderedProduct[]) => {
         try {
+            const order: Order = {orderedProducts: orderedProducts, tspAlgorithm: selectedAlgorithm, timestamp: Date.now()}
+
             const response = await fetch(`${ORDERS_API_URL}/buy`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(orderedProducts)
+                body: JSON.stringify(order)
             });
 
             if (!response.ok) {
@@ -59,7 +62,7 @@ export default function HistoricalOrdersPage() {
                 <div className={styles.leftContainer}>
                     <table className={styles.table}>
                         <thead>
-                            <tr className={styles.tableRow}>
+                            <tr>
                                 <th className={styles.arrowTh}></th>
                                 <th>Produkty</th>
                                 <th className={styles.actionsTh}>Czy zamówić ponownie?</th>
@@ -74,10 +77,10 @@ export default function HistoricalOrdersPage() {
                                             {expandedIndex === index ? "▲" : "▼"}
                                         </span></td>
                                     <td className={styles.productsPreviewTd} onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}>
-                                        {order.map(p => p.name).join(", ")}
+                                        {order.orderedProducts.map(orderedProducts => orderedProducts.name).join(", ")}
                                     </td>
                                     <td>
-                                        <button className={styles.buttonOrderAgain} onClick={() => orderAgain(order)}>Zamów ponownie</button>
+                                        <button className={styles.buttonOrderAgain} onClick={() => orderAgain(order.orderedProducts)}>Zamów ponownie</button>
                                     </td>
                                 </tr>
 
@@ -85,7 +88,7 @@ export default function HistoricalOrdersPage() {
                                     <tr>
                                         <td colSpan={3} className={styles.productCellAllInformation}>
                                             <ul>
-                                                {order.map((orderedProduct, index) => (
+                                                {order.orderedProducts.map((orderedProduct, index) => (
                                                     <li key={index}>
                                                         {orderedProduct.name} (x:{orderedProduct.position.x} y:{orderedProduct.position.y}) — ilość: {orderedProduct.quantity}
                                                     </li>
@@ -101,6 +104,13 @@ export default function HistoricalOrdersPage() {
                 </div>
                 <div className={styles.rightContainer}>
                     <h3>Wybór algorytmu</h3>
+                    <select value={selectedAlgorithm} onChange={(e) => setSelectedAlgorithm(e.target.value as TspAlgorithms)}>
+                        {algorithms.map((alg) => (
+                            <option key={alg} value={alg}>
+                                {alg}
+                            </option>
+                        ))}
+                    </select>
                 </div>
             </div>
         </>

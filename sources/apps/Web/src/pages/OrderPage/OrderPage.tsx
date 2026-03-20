@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import styles from './OrderPage.module.css'
 import { API_URL } from '../../api/const';
 import { ToastContainer, toast } from "react-toastify";
-import type { OrderedProduct, Product } from '../../types/Types';
+import { algorithms, type Order, type OrderedProduct, type Product, type TspAlgorithms } from '../../types/Types';
 
 const PRODUCTS_API_URL = API_URL + "api/products";
 const ORDERS_API_URL = API_URL + "api/orders";
@@ -10,6 +10,7 @@ const ORDERS_API_URL = API_URL + "api/orders";
 export default function OrderPage() {
     const [products, setProducts] = useState<Product[]>([])
     const [orderedProducts, setOrderedProducts] = useState<OrderedProduct[]>([]);
+    const [selectedAlgorithm, setSelectedAlgorithm] = useState<TspAlgorithms>("Naive");
 
     useEffect(() => {
         fetch(PRODUCTS_API_URL)
@@ -50,12 +51,14 @@ export default function OrderPage() {
 
     const buy = async () => {
         try {
+            const order: Order = {orderedProducts: orderedProducts, tspAlgorithm: selectedAlgorithm, timestamp: Date.now()}
+ 
             const response = await fetch(`${ORDERS_API_URL}/buy`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(orderedProducts)
+                body: JSON.stringify(order)
             });
 
             if (!response.ok) {
@@ -85,7 +88,7 @@ export default function OrderPage() {
                 <div className={styles.leftContainer}>
                     <table className={styles.table}>
                         <thead>
-                            <tr className={styles.tableRow}>
+                            <tr>
                                 <th>Produkt</th>
                                 <th>Pozycja</th>
                                 <th>Czy pobrać?</th>
@@ -112,10 +115,10 @@ export default function OrderPage() {
                         ) : (
                             <table className={styles.table}>
                                 <thead>
-                                    <tr className={styles.tableRow}>
+                                    <tr>
                                         <th>Zakupiony produkt</th>
                                         <th>Ilość</th>
-                                        <th>Akcje</th>
+                                        <th className={styles.actionsTh}>Akcje</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -135,9 +138,26 @@ export default function OrderPage() {
                             </table>
                         )}
                     </div>
-                    <div className={styles.buttonContainer}>
-                        <button onClick={() => clearOrder()} className={styles.buttonRemove}>Wyczyść zamówienie</button>
-                        <button onClick={buy} className={styles.buttonAdd} disabled={orderedProducts.length === 0}>Zatwiedź zakupy</button>
+                    <div className={styles.orderSummaryContainer}>
+                        <h2>Podsumowanie</h2>
+                        <div className={styles.summary}>
+                            <h4>Łącznie produktów: {orderedProducts.length}</h4>
+                            <h4>Łączna ilość: {orderedProducts.reduce((sum, product) => sum + product.quantity, 0)}</h4>
+                            <div className={styles.algorithmContainer}>
+                                <h4>Algorytm</h4>
+                                <select value={selectedAlgorithm} onChange={(e) => setSelectedAlgorithm(e.target.value as TspAlgorithms)}>
+                                    {algorithms.map((alg) => (
+                                        <option key={alg} value={alg}>
+                                            {alg}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                        <div className={styles.buttonContainer}>
+                            <button onClick={() => clearOrder()} className={styles.buttonRemove}>Wyczyść zamówienie</button>
+                            <button onClick={buy} className={styles.buttonAdd} disabled={orderedProducts.length === 0}>Zatwiedź zakupy</button>
+                        </div>
                     </div>
                 </div>
             </div>

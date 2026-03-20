@@ -7,14 +7,38 @@
 .leftContainer {
     display: flex;
     flex-direction: column;
-    width: 40%;
+    width: 50%;
 }
 
 .rightContainer {
     display: flex;
     flex-direction: column;
-    width: 60%;
+    width: 50%;
     gap: 50px;
+}
+
+.orderList {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.orderSummaryContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.summary {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.algorithmContainer {
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
 
 .buttonContainer {
@@ -60,9 +84,14 @@
     padding: 0.3em 0.6em;
 }
 
+.actionsTh {
+    width: 240px;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
 }
 
 table, th, td {
