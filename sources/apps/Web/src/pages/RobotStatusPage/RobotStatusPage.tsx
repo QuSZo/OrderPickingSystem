@@ -41,14 +41,14 @@ export default function RobotStatusPage() {
         <div className={styles.container}>
             <div className={styles.leftContainer}>
                 <div className={styles.robotStatus}>
-                    <p>Status robota</p>
+                    <h3>Status robota</h3>
                     <TextContainer title="Akcja" text={robotState?.event}></TextContainer>
                     <TextContainer title="Wykonany ruch" text={robotState?.command}></TextContainer>
                     <TextContainer title="Ostatnia synchronizacja" text={robotState ? new Date(robotState.timestamp * 1000).toLocaleString() : undefined}></TextContainer>
                 </div>
             </div>
             <div className={styles.rightContainer}>
-                <p>Trasa robota</p>
+                <h3>Trasa robota</h3>
                 <WarehouseMap cols={10} rows={3} stops={5} robotState={robotState}></WarehouseMap>
             </div>
         </div>

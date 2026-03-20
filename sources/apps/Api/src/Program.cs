@@ -1,4 +1,5 @@
 using Api.Mqtt;
+using Api.Orders;
 using Api.Policies;
 using Api.Products;
 using Api.PythonNet;
@@ -24,7 +25,8 @@ builder.Services.AddControllers()
 builder.Services.AddCorsPolicy();
 
 builder.Services.AddRobotService();
-builder.Services.AddProductsService();
+builder.Services.AddProducts();
+builder.Services.AddOrders();
 builder.Services.AddTspAlgorithm();
 
 builder.Services.AddHostedService<InitializePythonEngine>();

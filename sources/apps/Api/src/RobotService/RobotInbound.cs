@@ -2,6 +2,7 @@ using System.Text.Json;
 using Api.Dtos;
 using Api.Logging;
 using Api.Mqtt;
+using Api.Orders;
 using Api.RobotOperations;
 using Api.TravelingSalesmanAlgorithms;
 using Api.Utils;
@@ -35,7 +36,7 @@ public class RobotInbound
         await _mqttProducer.PublishAsync(MqttTopics.RobotCommand, message);
     }
 
-    public async Task StartPicking(List<OrderedProductDto> products)
+    public async Task StartPicking(List<OrderedProduct> products)
     {
         _logger.LogInformation("Processing message from server with new products to pick");
 

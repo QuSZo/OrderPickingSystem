@@ -11,17 +11,14 @@ namespace Api.Controllers;
 public class ProductsController : ControllerBase
 {
     private readonly ILogger _logger;
-    private readonly ProductsService _productsService;
-    private readonly RobotInbound _robotInbound;
+    private readonly ProductsRepository _productsService;
 
     public ProductsController(
         ILoggerFactory loggerFactory, 
-        ProductsService productsService, 
-        RobotInbound robotInbound)
+        ProductsRepository productsService)
     {
         _logger = loggerFactory.CreateLoggerApi();
         _productsService = productsService;
-        _robotInbound = robotInbound;
     }
 
     [HttpGet]
@@ -31,15 +28,5 @@ public class ProductsController : ControllerBase
         IReadOnlyList<Product> products = _productsService.GetProducts();
 
         return Ok(products);
-    }
-
-    [HttpPost("buy")]
-    public async Task<IActionResult> BuyAndCollectProducts([FromBody] List<OrderedProductDto> products)
-    {
-        _logger.LogDebug("Handle api call to buy and collect products");
-
-        await _robotInbound.StartPicking(products);
-        
-        return Ok();
     }
 }

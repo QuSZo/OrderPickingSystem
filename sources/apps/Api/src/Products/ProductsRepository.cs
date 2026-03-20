@@ -2,7 +2,7 @@ using Api.RobotOperations;
 
 namespace Api.Products;
 
-public class ProductsService
+public class ProductsRepository
 {
     private static readonly IReadOnlyList<Product> _products = Initialize();
 

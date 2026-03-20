@@ -1,8 +1,8 @@
 using Api.RobotOperations;
 
-namespace Api.Dtos;
+namespace Api.Orders;
 
-public record OrderedProductDto
+public record OrderedProduct
 {
     public required Guid Id { get; init; }
     public required string Name { get; init; }

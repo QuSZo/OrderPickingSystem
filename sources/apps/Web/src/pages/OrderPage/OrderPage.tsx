@@ -4,6 +4,7 @@ import { API_URL } from '../../api/const';
 import { ToastContainer, toast } from "react-toastify";
 
 const PRODUCTS_API_URL = API_URL + "api/products";
+const ORDERS_API_URL = API_URL + "api/orders";
 
 type Position = {
     x: number;
@@ -66,7 +67,7 @@ export default function OrderPage() {
 
     const buy = async () => {
         try {
-            const response = await fetch(`${PRODUCTS_API_URL}/buy`, {
+            const response = await fetch(`${ORDERS_API_URL}/buy`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
