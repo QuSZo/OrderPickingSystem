@@ -1,0 +1,73 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    gap: 50px;
+}
+
+.leftContainer {
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+}
+
+.rightContainer {
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+    gap: 50px;
+}
+
+.buttonOrderAgain {
+    background-color: #71b176;
+    font-size: 13px;
+    padding: 0.3em 0.6em;
+}
+
+.arrow {
+    font-size: 12px;
+    transition: transform 0.2s ease;
+}
+
+.productsPreviewTd {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.arrowTh {
+    width: 20px;
+}
+
+.actionsTh {
+    width: 250px;
+}
+
+.productCellAllInformation {
+    padding: 5px 80px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+table, th, td {
+    border-bottom: 1px solid black;
+}
+
+th {
+    text-align: left;
+}
+
+th, td {
+    padding: 5px 20px;
+}
+
+tr:nth-child(even) {
+    background-color: #f7f7f7;
+}
+
+tr:hover {
+    background-color: #d8d8d8;
+}

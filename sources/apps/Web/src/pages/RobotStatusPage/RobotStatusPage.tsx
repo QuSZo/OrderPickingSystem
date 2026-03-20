@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { API_URL } from '../../api/const';
 import { TextContainer } from '../../components/TextContainer/TextContainer';
 import WarehouseMap from '../../components/WarehouseMap/WarehouseMap';
-import type { RobotState } from '../../types/RobotTypes';
+import type { RobotState } from '../../types/Types';
 
 const ROBOT_API_URL = API_URL + "api/robot-hub";
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Direction, Position, RobotState } from "../../types/RobotTypes";
+import type { Direction, Position, RobotState } from "../../types/Types";
 
 interface WarehouseMapProps {
   rows: number;

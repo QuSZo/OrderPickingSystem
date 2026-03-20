@@ -2,27 +2,10 @@ import { useEffect, useState } from 'react';
 import styles from './OrderPage.module.css'
 import { API_URL } from '../../api/const';
 import { ToastContainer, toast } from "react-toastify";
+import type { OrderedProduct, Product } from '../../types/Types';
 
 const PRODUCTS_API_URL = API_URL + "api/products";
 const ORDERS_API_URL = API_URL + "api/orders";
-
-type Position = {
-    x: number;
-    y: number;
-};
-
-type Product = {
-    id: string;
-    name: string;
-    position: Position;
-};
-
-type OrderedProduct = {
-    id: string;
-    name: string;
-    position: Position;
-    quantity: number;
-}
 
 export default function OrderPage() {
     const [products, setProducts] = useState<Product[]>([])

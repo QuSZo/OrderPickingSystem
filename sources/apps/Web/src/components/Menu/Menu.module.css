@@ -21,5 +21,6 @@
     align-items: center;
     justify-content: right;
     list-style: none;
-    gap: 5vw;
+    gap: 3vw;
+    font-size: 15px;
 }

@@ -9,6 +9,7 @@ export function Menu() {
       <nav className={styles.menu}>
         <Link to="/">Start</Link>
         <Link to="/order-page">Zamówienia</Link>
+        <Link to="/order-history">Historia zamówień</Link>
         <Link to="/robot-status">Status robota</Link>
         <Link to="/robot-control">Manualne sterowanie</Link>
       </nav>

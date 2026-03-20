@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { API_URL } from '../../api/const';
 import styles from './ControlRobotPage.module.css'
-import type { RobotCommand } from '../../types/RobotTypes';
+import type { RobotCommand } from '../../types/Types';
 
 const ROBOT_COMMAND_API_URL = API_URL + "api/robot/command";
 const ROBOT_STOP_API_URL = API_URL + "api/robot/stop";
