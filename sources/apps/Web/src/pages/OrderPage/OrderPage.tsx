@@ -11,6 +11,7 @@ export default function OrderPage() {
     const [products, setProducts] = useState<Product[]>([])
     const [orderedProducts, setOrderedProducts] = useState<OrderedProduct[]>([]);
     const [selectedAlgorithm, setSelectedAlgorithm] = useState<TspAlgorithms>("Naive");
+    const [randomCount, setRandomCount] = useState<number>(1);
 
     useEffect(() => {
         fetch(PRODUCTS_API_URL)
@@ -47,6 +48,29 @@ export default function OrderPage() {
 
     const clearOrder = () => {
         setOrderedProducts([]);
+    };
+
+    const randomlySelectProducts = () => {
+        if (products.length === 0) return;
+
+        const count = Math.min(randomCount, products.length);
+
+        const shuffled = [...products];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+
+        const selected = shuffled.slice(0, count);
+
+        const randomOrdered: OrderedProduct[] = selected.map(p => ({
+            id: p.id,
+            name: p.name,
+            position: p.position,
+            quantity: Math.floor(Math.random() * 10)
+        }));
+
+        setOrderedProducts(randomOrdered);
     };
 
     const buy = async () => {
@@ -158,6 +182,14 @@ export default function OrderPage() {
                             <button onClick={() => clearOrder()} className={styles.buttonRemove}>Wyczyść zamówienie</button>
                             <button onClick={buy} className={styles.buttonAdd} disabled={orderedProducts.length === 0}>Zatwiedź zakupy</button>
                         </div>
+                    </div>
+                    <div>
+                        <h3>Losowanie produktów</h3>
+                        <div>
+                            <label>Liczba produktów do wylosowania: </label>
+                            <input type="number" min={1} max={products.length} value={randomCount} onChange={(e) => setRandomCount(Number(e.target.value))}/>
+                        </div>
+                        <button onClick={randomlySelectProducts} className={styles.buttonAdd} disabled={orderedProducts.length !== 0}>Wylosuj produkty</button>
                     </div>
                 </div>
             </div>
