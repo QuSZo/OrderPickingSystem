@@ -4,14 +4,14 @@ namespace Api.Orders;
 
 public class HistoricalOrdersRepository
 {
-    private static readonly List<List<OrderedProduct>> _historicalOrders = new List<List<OrderedProduct>>();
+    private static readonly List<Order> _historicalOrders = new List<Order>();
 
-    public IReadOnlyList<IReadOnlyList<OrderedProduct>> GetAll()
+    public IReadOnlyList<Order> GetAll()
     {
         return _historicalOrders;
     }
 
-    public void Add(List<OrderedProduct> order)
+    public void Add(Order order)
     {
         _historicalOrders.Add(order);
     }

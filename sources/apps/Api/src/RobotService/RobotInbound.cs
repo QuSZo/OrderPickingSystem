@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Api.Dtos;
 using Api.Logging;
 using Api.Mqtt;
@@ -36,22 +35,14 @@ public class RobotInbound
         await _mqttProducer.PublishAsync(MqttTopics.RobotCommand, message);
     }
 
-    public async Task StartPicking(List<OrderedProduct> products)
+    public async Task StartPicking(Order order)
     {
         _logger.LogInformation("Processing message from server with new products to pick");
 
+        List<Position> robotStops = PrepareRobotStops(order);
+        List<Position> path = _algorithmProvider.GetAlgorithm(order.TspAlgorithm).FindPath(robotStops);
+
         DirectionEnum startDirection = _robotState.Direction;
-        Position startPosition = _robotState.Position;
-        Position finishPosition = startPosition;
-
-        List<Position> positionsToSee = new List<Position>();
-
-        List<Position> productPositions = products.Select(product => product.Position).ToList();
-        positionsToSee.Add(startPosition);
-        positionsToSee.AddRange(productPositions);
-        positionsToSee.Add(finishPosition);
-
-        List<Position> path = _algorithmProvider.GetAlgorithm().FindPath(positionsToSee);
         List<RobotMoveEnum> moves = GenerateCommands(path, startDirection);
 
         RobotCommandDto commands = new RobotCommandDto(moves);
@@ -64,6 +55,21 @@ public class RobotInbound
     {
         _logger.LogInformation("Processing message from server to stop the robot");
         await _mqttProducer.PublishAsync(MqttTopics.RobotStop, string.Empty);
+    }
+
+    private List<Position> PrepareRobotStops(Order order)
+    {
+        Position startPosition = _robotState.Position;
+        Position finishPosition = startPosition;
+
+        List<Position> positionsToSee = new List<Position>();
+
+        List<Position> productPositions = order.OrderedProducts.Select(product => product.Position).ToList();
+        positionsToSee.Add(startPosition);
+        positionsToSee.AddRange(productPositions);
+        positionsToSee.Add(finishPosition);
+
+        return positionsToSee;
     }
 
     private List<RobotMoveEnum> GenerateCommands(List<Position> positions, DirectionEnum startDirection)

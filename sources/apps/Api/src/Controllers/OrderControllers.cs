@@ -27,18 +27,18 @@ public class OrderControllers : ControllerBase
     public ActionResult<string> GetHistoricalOrders()
     {
         _logger.LogDebug("Handle api call to get all historical orders");
-        IReadOnlyList<IReadOnlyList<OrderedProduct>> orders = _historicalOrdersRepository.GetAll();
+        IReadOnlyList<Order> orders = _historicalOrdersRepository.GetAll();
 
         return Ok(orders);
     }
 
     [HttpPost("buy")]
-    public async Task<IActionResult> BuyAndCollectProducts([FromBody] List<OrderedProduct> products)
+    public async Task<IActionResult> BuyAndCollectProducts([FromBody] Order order)
     {
         _logger.LogDebug("Handle api call to buy and collect products");
 
-        _historicalOrdersRepository.Add(products);
-        await _robotInbound.StartPicking(products);
+        _historicalOrdersRepository.Add(order);
+        await _robotInbound.StartPicking(order);
         
         return Ok();
     }
