@@ -2,4 +2,7 @@ using Api.RobotOperations;
 
 namespace Api.Dtos;
 
-public record RobotCommandDto(List<RobotMoveEnum> commands);
+public record RobotCommandDto
+{
+    public required List<RobotMoveEnum> Commands { get; init; }
+}

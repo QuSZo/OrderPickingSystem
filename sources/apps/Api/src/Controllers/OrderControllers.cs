@@ -1,3 +1,4 @@
+using Api.Dtos;
 using Api.Logging;
 using Api.Orders;
 using Api.RobotService;
@@ -33,12 +34,11 @@ public class OrderControllers : ControllerBase
     }
 
     [HttpPost("buy")]
-    public async Task<IActionResult> BuyAndCollectProducts([FromBody] Order order)
+    public async Task<IActionResult> BuyAndCollectProducts([FromBody] OrderDto orderDto)
     {
         _logger.LogDebug("Handle api call to buy and collect products");
 
-        _historicalOrdersRepository.Add(order);
-        await _robotInbound.StartPicking(order);
+        await _robotInbound.StartPicking(orderDto);
         
         return Ok();
     }

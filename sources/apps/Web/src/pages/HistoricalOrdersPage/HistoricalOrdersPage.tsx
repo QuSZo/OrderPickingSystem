@@ -1,10 +1,30 @@
 import { useEffect, useState } from 'react';
-import { algorithms, type Order, type OrderedProduct, type TspAlgorithms } from '../../types/Types';
+import { algorithms, type Order, type OrderDto, type OrderedProduct, type TspAlgorithms } from '../../types/Types';
 import styles from './HistoricalOrdersPage.module.css'
 import { API_URL } from '../../api/const';
 import { toast, ToastContainer } from 'react-toastify';
 
 const ORDERS_API_URL = API_URL + "api/orders";
+
+const formatDuration = (ms: number) => {
+    const h = Math.floor(ms / 3600000);
+    ms %= 3600000;
+
+    const m = Math.floor(ms / 60000);
+    ms %= 60000;
+
+    const s = Math.floor(ms / 1000);
+    ms %= 1000;
+
+    const parts = [];
+
+    if (h > 0) parts.push(`${h}h`);
+    if (m > 0) parts.push(`${m}m`);
+    if (s > 0) parts.push(`${s}s`);
+    if (ms > 0 || parts.length === 0) parts.push(`${ms}ms`);
+
+    return parts.join(' ');
+}
 
 export default function HistoricalOrdersPage() {
     const [historicalOrders, setHistoricalOrders] = useState<Order[]>([]);
@@ -24,7 +44,7 @@ export default function HistoricalOrdersPage() {
 
     const orderAgain = async (orderedProducts: OrderedProduct[]) => {
         try {
-            const order: Order = {orderedProducts: orderedProducts, tspAlgorithm: selectedAlgorithm, timestamp: Date.now()}
+            const order: OrderDto = {orderedProducts: orderedProducts, tspAlgorithm: selectedAlgorithm, timestamp: Date.now()}
 
             const response = await fetch(`${ORDERS_API_URL}/buy`, {
                 method: "POST",
@@ -55,6 +75,13 @@ export default function HistoricalOrdersPage() {
         loadOrders();
     };
 
+    const calculatePickingTime = (startPickingTime: number, finishPickingTime: number | null) => {
+        if (finishPickingTime !== null) {
+            return formatDuration(finishPickingTime - startPickingTime);
+        }
+        return "Oczekiwanie na wynik";
+    }
+
     return (
         <>
             <ToastContainer />
@@ -68,6 +95,7 @@ export default function HistoricalOrdersPage() {
                                 <th>Data zamówienia</th>
                                 <th>Wykorzystany algorytm</th>
                                 <th>Czas trwania zbierania</th>
+                                <th>Przejechana odległość</th>
                                 <th className={styles.actionsTh}>Czy zamówić ponownie?</th>
                             </tr>
                         </thead>
@@ -84,6 +112,7 @@ export default function HistoricalOrdersPage() {
                                     </td>
                                     <td>{new Date(order.timestamp).toLocaleString()}</td>
                                     <td>{order.tspAlgorithm}</td>
+                                    <td>{calculatePickingTime(order.startPickingTime, order.finishPickingTime)}</td>
                                     <td>Brak danych</td>
                                     <td>
                                         <button className={styles.buttonOrderAgain} onClick={() => orderAgain(order.orderedProducts)}>Zamów ponownie</button>
@@ -92,7 +121,7 @@ export default function HistoricalOrdersPage() {
 
                                 {expandedIndex === index && (
                                     <tr>
-                                        <td colSpan={6} className={styles.productCellAllInformation}>
+                                        <td colSpan={7} className={styles.productCellAllInformation}>
                                             <ul>
                                                 {order.orderedProducts.map((orderedProduct, index) => (
                                                     <li key={index}>

@@ -23,10 +23,19 @@ export interface Product {
     position: Position;
 };
 
-export interface Order {
+export interface OrderDto {
     orderedProducts: OrderedProduct[];
     tspAlgorithm: TspAlgorithms;
     timestamp: number;
+}
+
+export interface Order {
+    orderId: string;
+    orderedProducts: OrderedProduct[];
+    tspAlgorithm: TspAlgorithms;
+    timestamp: number;
+    startPickingTime: number;
+    finishPickingTime: number | null;
 }
 
 export interface OrderedProduct {

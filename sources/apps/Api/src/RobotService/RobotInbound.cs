@@ -14,17 +14,20 @@ public class RobotInbound
     private readonly MqttProducer _mqttProducer;
     private readonly TravelingSalesmanAlgorithmProvider _algorithmProvider;
     private readonly RobotState _robotState;
+    private readonly HistoricalOrdersRepository _historicalOrdersRepository;
 
     public RobotInbound(
         ILoggerFactory loggerFactory, 
         MqttProducer mqttProducer, 
         TravelingSalesmanAlgorithmProvider algorithmProvider,
-        RobotState robotState)
+        RobotState robotState,
+        HistoricalOrdersRepository historicalOrdersRepository)
     {
         _logger = loggerFactory.CreateLoggerApi();
         _mqttProducer = mqttProducer;
         _algorithmProvider = algorithmProvider;
         _robotState = robotState;
+        _historicalOrdersRepository = historicalOrdersRepository;
     }
 
     public async Task SendCommands(RobotCommandDto commands)
@@ -35,8 +38,20 @@ public class RobotInbound
         await _mqttProducer.PublishAsync(MqttTopics.RobotCommand, message);
     }
 
-    public async Task StartPicking(Order order)
+    public async Task StartPicking(OrderDto orderDto)
     {
+        Order order = new Order()
+        {
+            OrderId = Guid.NewGuid(),
+            OrderedProducts = orderDto.OrderedProducts,
+            TspAlgorithm = orderDto.TspAlgorithm,
+            Timestamp = orderDto.Timestamp,
+            StartPickingTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+        };
+
+        _historicalOrdersRepository.Add(order);
+        _robotState.StartPicking(order.OrderId);
+
         _logger.LogInformation("Processing message from server with new products to pick");
 
         List<Position> robotStops = PrepareRobotStops(order);
@@ -45,9 +60,9 @@ public class RobotInbound
         DirectionEnum startDirection = _robotState.Direction;
         List<RobotMoveEnum> moves = GenerateCommands(path, startDirection);
 
-        RobotCommandDto commands = new RobotCommandDto(moves);
-
+        RobotCommandDto commands = new RobotCommandDto() { Commands = moves };
         string message = Serializer.Serialize(commands);
+        
         await _mqttProducer.PublishAsync(MqttTopics.RobotCommand, message);
     }
 

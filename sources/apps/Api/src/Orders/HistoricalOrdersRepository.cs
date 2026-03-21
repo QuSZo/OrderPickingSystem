@@ -15,4 +15,14 @@ public class HistoricalOrdersRepository
     {
         _historicalOrders.Add(order);
     }
+
+    public void SetFinishPickingTime(Guid? id)
+    {
+        Order? order = _historicalOrders.SingleOrDefault(order => order.OrderId == id);
+
+        if (order != null)
+        {
+            order.FinishPickingTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        }
+    }
 }

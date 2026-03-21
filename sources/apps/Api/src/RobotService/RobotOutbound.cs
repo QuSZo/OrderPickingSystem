@@ -1,7 +1,7 @@
 using Api.Dtos;
 using Api.Logging;
 using Api.Mqtt;
-using Api.Products;
+using Api.Orders;
 using Api.RobotOperations;
 using Api.Utils;
 using Api.WebSockets;
@@ -14,16 +14,20 @@ public class RobotOutbound : IHostedService
     private readonly MqttConsumer _mqttConsumer;
     private readonly RobotStateHubService _robotStateHubService;
     private readonly RobotState _robotState;
+    private readonly HistoricalOrdersRepository _historicalOrdersRepository;
+    
     public RobotOutbound(
         ILoggerFactory loggerFactory, 
         MqttConsumer mqttConsumer, 
         RobotStateHubService robotStateHubService,
-        RobotState robotState)
+        RobotState robotState,
+        HistoricalOrdersRepository historicalOrdersRepository)
     {
         _logger = loggerFactory.CreateLoggerApi();
         _mqttConsumer = mqttConsumer;
         _robotStateHubService = robotStateHubService;
         _robotState = robotState;
+        _historicalOrdersRepository = historicalOrdersRepository;
 
         _mqttConsumer.ReceivedMessage += ProcessMessage;
     }
@@ -64,8 +68,13 @@ public class RobotOutbound : IHostedService
         string robotStateMessage = Serializer.Serialize(_robotState);
         await _robotStateHubService.SendMessageAsync(robotStateMessage);
 
-        if (robotStatusDto.Command == null)
+        if (robotStatusDto.Event == RobotEventEnum.Finished)
         {
+            if (_robotState.OrderId is not null)
+            {
+                _historicalOrdersRepository.SetFinishPickingTime(_robotState.OrderId);
+            }
+            
             _robotState.Reset();
         }
     }

@@ -1,4 +1,3 @@
-using Api.Products;
 using Api.RobotOperations;
 
 namespace Api.RobotService;
@@ -8,10 +7,16 @@ public class RobotState
     public Position Position { get; set; } = new Position() { X = 0, Y = 0 };
     public DirectionEnum Direction { get; set; } = DirectionEnum.South;
     public RobotMoveEnum? Command { get; set; }
-    public string? Event { get; set; }
+    public RobotEventEnum? Event { get; set; }
     public double? Timestamp { get; set; }
+    public Guid? OrderId { get; set; }
 
-    public void Update(Position position, DirectionEnum direction, RobotMoveEnum? move, string currEvent, double timestamp)
+    public void StartPicking(Guid orderId)
+    {
+        OrderId = orderId;
+    }
+
+    public void Update(Position position, DirectionEnum direction, RobotMoveEnum? move, RobotEventEnum currEvent, double timestamp)
     {
         Position = position;
         Direction = direction;
@@ -27,5 +32,6 @@ public class RobotState
         Command = null;
         Event = null;
         Timestamp = null;
+        OrderId = null;
     }
 }
