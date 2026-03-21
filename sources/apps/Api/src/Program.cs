@@ -4,6 +4,7 @@ using Api.Policies;
 using Api.Products;
 using Api.PythonNet;
 using Api.RobotService;
+using Api.Services;
 using Api.TravelingSalesmanAlgorithms;
 using Api.WebSockets;
 
@@ -28,6 +29,7 @@ builder.Services.AddRobotService();
 builder.Services.AddProducts();
 builder.Services.AddOrders();
 builder.Services.AddTspAlgorithm();
+builder.Services.AddStatisticsService();
 
 builder.Services.AddHostedService<InitializePythonEngine>();
 

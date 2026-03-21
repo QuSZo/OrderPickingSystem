@@ -48,3 +48,14 @@ export interface OrderedProduct {
 export type TspAlgorithms = "Naive";
 
 export const algorithms: TspAlgorithms[] = ["Naive"];
+
+export interface AverageDuration{
+    algorithm: TspAlgorithms;
+    averageDurationMs: number;
+}
+
+export interface AverageDurationByOrderSize{
+    algorithm: TspAlgorithms;
+    productCount: number;
+    averageDurationMs: number;
+}

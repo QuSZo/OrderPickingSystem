@@ -6,6 +6,7 @@ import RobotStatusPage from './pages/RobotStatusPage/RobotStatusPage';
 import OrderPage from './pages/OrderPage/OrderPage';
 import ControlRobotPage from './pages/ControlRobotPage/ControlRobotPage';
 import HistoricalOrdersPage from './pages/HistoricalOrdersPage/HistoricalOrdersPage';
+import StatisticsPage from './pages/StatisticsPage/StatisticsPage';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/order-history" element={<HistoricalOrdersPage />} />
             <Route path="/robot-status" element={<RobotStatusPage />} />
             <Route path="/robot-control" element={<ControlRobotPage />} />
+            <Route path="/statistics" element={<StatisticsPage />} />
           </Routes>
         </main>
       </BrowserRouter>

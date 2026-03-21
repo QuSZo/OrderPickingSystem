@@ -12,6 +12,7 @@ export function Menu() {
         <Link to="/order-history">Historia zamówień</Link>
         <Link to="/robot-status">Status robota</Link>
         <Link to="/robot-control">Manualne sterowanie</Link>
+        <Link to="/statistics">Statystyki</Link>
       </nav>
     </div>
   );

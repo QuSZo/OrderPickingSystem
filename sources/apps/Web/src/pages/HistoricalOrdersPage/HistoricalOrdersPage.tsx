@@ -3,28 +3,9 @@ import { algorithms, type Order, type OrderDto, type OrderedProduct, type TspAlg
 import styles from './HistoricalOrdersPage.module.css'
 import { API_URL } from '../../api/const';
 import { toast, ToastContainer } from 'react-toastify';
+import { formatDuration } from '../../utils/TimeUtils';
 
 const ORDERS_API_URL = API_URL + "api/orders";
-
-const formatDuration = (ms: number) => {
-    const h = Math.floor(ms / 3600000);
-    ms %= 3600000;
-
-    const m = Math.floor(ms / 60000);
-    ms %= 60000;
-
-    const s = Math.floor(ms / 1000);
-    ms %= 1000;
-
-    const parts = [];
-
-    if (h > 0) parts.push(`${h}h`);
-    if (m > 0) parts.push(`${m}m`);
-    if (s > 0) parts.push(`${s}s`);
-    if (ms > 0 || parts.length === 0) parts.push(`${ms}ms`);
-
-    return parts.join(' ');
-}
 
 export default function HistoricalOrdersPage() {
     const [historicalOrders, setHistoricalOrders] = useState<Order[]>([]);
