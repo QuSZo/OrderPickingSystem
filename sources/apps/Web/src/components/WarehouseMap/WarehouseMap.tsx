@@ -71,7 +71,6 @@ export default function WarehouseMap({ rows, cols, stops, robotState }: Warehous
           stroke="gray"
         />
       ))}
-
       
       {Array.from({ length: cols }).map((_, colNumber) => (
         Array.from({ length: stopCount }).map((_, stopNumber) => (
@@ -84,6 +83,13 @@ export default function WarehouseMap({ rows, cols, stops, robotState }: Warehous
             stroke="gray"
           />
         ))
+      ))}
+
+      {robotState?.order?.orderedProducts.map((orderedProduct) => (
+        <g>
+          <circle cx={orderedProduct.position.x*CELL_SIZE_X} cy={orderedProduct.position.y*CELL_SIZE_Y/6} r={10} fill="orange" />
+          <text fontWeight="bold" x={orderedProduct.position.x*CELL_SIZE_X + 20} y={orderedProduct.position.y*CELL_SIZE_Y/6 + 5}>{orderedProduct.name}</text>
+        </g>
       ))}
 
       <circle cx={robotX} cy={robotY} r={18} fill="red" />

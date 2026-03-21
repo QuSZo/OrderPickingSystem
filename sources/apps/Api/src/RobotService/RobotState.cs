@@ -1,3 +1,4 @@
+using Api.Orders;
 using Api.RobotOperations;
 
 namespace Api.RobotService;
@@ -9,11 +10,11 @@ public class RobotState
     public RobotMoveEnum? Command { get; set; }
     public RobotEventEnum? Event { get; set; }
     public double? Timestamp { get; set; }
-    public Guid? OrderId { get; set; }
+    public Order? Order { get; set; }
 
-    public void StartPicking(Guid orderId)
+    public void StartPicking(Order order)
     {
-        OrderId = orderId;
+        Order = order;
     }
 
     public void Update(Position position, DirectionEnum direction, RobotMoveEnum? move, RobotEventEnum currEvent, double timestamp)
@@ -32,6 +33,6 @@ public class RobotState
         Command = null;
         Event = null;
         Timestamp = null;
-        OrderId = null;
+        Order = null;
     }
 }

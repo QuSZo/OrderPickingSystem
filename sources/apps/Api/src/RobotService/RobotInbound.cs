@@ -50,7 +50,7 @@ public class RobotInbound
         };
 
         _historicalOrdersRepository.Add(order);
-        _robotState.StartPicking(order.OrderId);
+        _robotState.StartPicking(order);
 
         _logger.LogInformation("Processing message from server with new products to pick");
 

@@ -70,9 +70,9 @@ public class RobotOutbound : IHostedService
 
         if (robotStatusDto.Event == RobotEventEnum.Finished)
         {
-            if (_robotState.OrderId is not null)
+            if (_robotState.Order != null)
             {
-                _historicalOrdersRepository.SetFinishPickingTime(_robotState.OrderId);
+                _historicalOrdersRepository.SetFinishPickingTime(_robotState.Order.OrderId);
             }
             
             _robotState.Reset();

@@ -4,6 +4,7 @@ export interface RobotState {
     event: Event;
     timestamp: number;
     command?: RobotCommand;
+    order?: Order;
 }
 
 export interface Position {
