@@ -49,7 +49,7 @@ export default function RobotStatusPage() {
             </div>
             <div className={styles.rightContainer}>
                 <h3>Trasa robota</h3>
-                <WarehouseMap cols={10} rows={3} stops={5} robotState={robotState}></WarehouseMap>
+                <WarehouseMap cols={3} rows={3} stops={5} robotState={robotState}></WarehouseMap>
             </div>
         </div>
     );

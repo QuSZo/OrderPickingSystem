@@ -8,8 +8,8 @@ interface WarehouseMapProps {
   robotState: RobotState | null;
 }
 
-const CELL_SIZE_X = 60;
-const CELL_SIZE_Y = 180;
+const CELL_SIZE_X = 300;
+const CELL_SIZE_Y = 300;
 
 const getDirectionOffset = (direction: Direction) => {
   const offset = 15;
@@ -39,18 +39,18 @@ export default function WarehouseMap({ rows, cols, stops, robotState }: Warehous
 
   }, [robotState]);
 
-  const width = cols * CELL_SIZE_X;
-  const height = rows * CELL_SIZE_Y;
+  const width = (cols - 1) * CELL_SIZE_X;
+  const height = (rows - 1) * CELL_SIZE_Y;
 
   const robotX = position.x * CELL_SIZE_X;
   const robotY = position.y * CELL_SIZE_Y/6;
 
-  const stopCount = rows * stops + rows+1;
+  const stopCount = (rows - 1) * stops + rows;
   
   return (
     <svg width={width} height={height} style={{ overflow: "visible" }}>
       
-      {Array.from({ length: cols+1 }).map((_, i) => (
+      {Array.from({ length: cols }).map((_, i) => (
         <line
           key={`v-${i}`}
           x1={i * CELL_SIZE_X}
@@ -61,7 +61,7 @@ export default function WarehouseMap({ rows, cols, stops, robotState }: Warehous
         />
       ))}
 
-      {Array.from({ length: rows+1 }).map((_, i) => (
+      {Array.from({ length: rows }).map((_, i) => (
         <line
           key={`h-${i}`}
           x1={0}
@@ -73,7 +73,7 @@ export default function WarehouseMap({ rows, cols, stops, robotState }: Warehous
       ))}
 
       
-      {Array.from({ length: cols+1 }).map((_, colNumber) => (
+      {Array.from({ length: cols }).map((_, colNumber) => (
         Array.from({ length: stopCount }).map((_, stopNumber) => (
           <line
             key={`stop-${colNumber}-${stopNumber}`}
