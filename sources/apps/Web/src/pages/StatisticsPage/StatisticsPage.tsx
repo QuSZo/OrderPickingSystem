@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { API_URL } from '../../api/const';
 import styles from './StatisticsPage.module.css'
-import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Label, LineChart, Legend, Line } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, LineChart, Legend, Line } from "recharts";
 import { formatDuration } from '../../utils/TimeUtils';
 import type { AverageDuration, AverageDurationByOrderSize } from '../../types/Types';
 
@@ -37,23 +37,27 @@ export default function StatisticsPage() {
 
     return (
         <div className={styles.container}>
-            <BarChart width={600} height={300} data={averageDuration}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="algorithm" />
-                <YAxis tickFormatter={(value) => formatDuration(value)} tick={{ fontSize: 12 }} >
-                    <Label value="Czas" angle={-90} position="insideLeft" style={{ textAnchor: "middle" }} />
-                </YAxis>
-                <Tooltip formatter={(value) => formatDuration(value as number)} />
-                <Bar dataKey="averageDurationMs" fill="#dadada" />
-            </BarChart>
-            <LineChart width={600} height={300} data={transformData(averageDurationByOrderSize)}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis dataKey="productCount" />
-                <YAxis tickFormatter={(value) => formatDuration(value)} />
-                <Tooltip formatter={(value) => formatDuration(value as number)} />
-                <Legend />
-                <Line type="monotone" dataKey="Naive" stroke="#8884d8" />
-            </LineChart>
+            <div className={styles.chartContainer}>
+                <h4>Średni czas trwania zbierania w zależności od algorytmu</h4>
+                <BarChart width={600} height={300} data={averageDuration}>
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.5} />
+                    <XAxis dataKey="algorithm" />
+                    <YAxis tickFormatter={(value) => formatDuration(value)} tick={{ fontSize: 12 }} />
+                    <Tooltip formatter={(value) => formatDuration(value as number)} />
+                    <Bar dataKey="averageDurationMs" fill="#dadada" />
+                </BarChart>
+            </div>
+            <div className={styles.chartContainer}>
+                <h4>Średni czas trwania zbierania w zależności od algorytmu i liczby produktów</h4>
+                <LineChart width={600} height={300} data={transformData(averageDurationByOrderSize)}>
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.5} />
+                    <XAxis dataKey="productCount" />
+                    <YAxis tickFormatter={(value) => formatDuration(value)} tick={{ fontSize: 12 }} />
+                    <Tooltip formatter={(value) => formatDuration(value as number)} />
+                    <Legend layout="vertical" align="right" verticalAlign="middle" />
+                    <Line type="monotone" dataKey="Naive" stroke="#8884d8" />
+                </LineChart>
+            </div>
         </div>
     );
 }

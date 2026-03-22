@@ -3,3 +3,9 @@
   flex-direction: row;
   gap: 50px
 }
+
+.chartContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
