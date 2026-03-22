@@ -1,4 +1,4 @@
-namespace Api.RobotService;
+namespace Api.RobotServices;
 
 public static class Extensions
 {

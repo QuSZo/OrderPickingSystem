@@ -1,7 +1,7 @@
 using Api.Orders;
 using Api.RobotOperations;
 
-namespace Api.RobotService;
+namespace Api.RobotServices;
 
 public class RobotState
 {

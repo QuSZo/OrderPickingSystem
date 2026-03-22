@@ -6,15 +6,20 @@ import { TextContainer } from '../../components/TextContainer/TextContainer';
 import WarehouseMap from '../../components/WarehouseMap/WarehouseMap';
 import type { RobotState } from '../../types/Types';
 
-const ROBOT_API_URL = API_URL + "api/robot-hub";
-
+const ROBOT_SIGNALR_API_URL = API_URL + "api/robot-hub";
+const ROBOT_STATE_API_URL = API_URL + "api/robot/state";
 
 export default function RobotStatusPage() {
     const [robotState, setRobotState] = useState<RobotState | null>(null);
 
     useEffect(() => {
+        fetch(ROBOT_STATE_API_URL)
+            .then((response) => response.json())
+            .then((data: RobotState) => setRobotState(data))
+            .catch((error) => console.error("Błąd podczas fetch:", error)); 
+
         const connection = new signalR.HubConnectionBuilder()
-            .withUrl(ROBOT_API_URL)
+            .withUrl(ROBOT_SIGNALR_API_URL)
             .withAutomaticReconnect()
             .build();
 
@@ -44,7 +49,7 @@ export default function RobotStatusPage() {
                     <h3>Status robota</h3>
                     <TextContainer title="Akcja" text={robotState?.event}></TextContainer>
                     <TextContainer title="Wykonany ruch" text={robotState?.command}></TextContainer>
-                    <TextContainer title="Ostatnia synchronizacja" text={robotState ? new Date(robotState.timestamp * 1000).toLocaleString() : undefined}></TextContainer>
+                    <TextContainer title="Ostatnia synchronizacja" text={robotState?.timestamp ? new Date(robotState.timestamp * 1000).toLocaleString() : undefined}></TextContainer>
                 </div>
             </div>
             <div className={styles.rightContainer}>

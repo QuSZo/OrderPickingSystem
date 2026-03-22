@@ -1,7 +1,7 @@
 using Api.Dtos;
 using Api.Logging;
 using Api.Orders;
-using Api.RobotService;
+using Api.RobotServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;

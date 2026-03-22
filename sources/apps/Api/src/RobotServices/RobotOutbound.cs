@@ -6,7 +6,7 @@ using Api.RobotOperations;
 using Api.Utils;
 using Api.WebSockets;
 
-namespace Api.RobotService;
+namespace Api.RobotServices;
 
 public class RobotOutbound : IHostedService
 {

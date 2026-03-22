@@ -6,7 +6,7 @@ using Api.RobotOperations;
 using Api.TravelingSalesmanAlgorithms;
 using Api.Utils;
 
-namespace Api.RobotService;
+namespace Api.RobotServices;
 
 public class RobotInbound
 {

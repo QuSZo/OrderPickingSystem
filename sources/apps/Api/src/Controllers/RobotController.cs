@@ -1,7 +1,6 @@
 using Api.Dtos;
 using Api.Logging;
-using Api.RobotOperations;
-using Api.RobotService;
+using Api.RobotServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -12,11 +11,21 @@ public class RobotController : ControllerBase
 {
     private readonly ILogger _logger;
     private readonly RobotInbound _robotInbound;
+    private readonly RobotState _robotState;
 
-    public RobotController(RobotInbound robotInbound, ILoggerFactory loggerFactory)
+    public RobotController(RobotInbound robotInbound, ILoggerFactory loggerFactory, RobotState robotState)
     {
         _logger = loggerFactory.CreateLoggerApi();
         _robotInbound = robotInbound;
+        _robotState = robotState;
+    }
+
+    [HttpGet("state")]
+    public ActionResult<string> GetRobotState()
+    {
+        _logger.LogDebug("Handle api call to get current robot state");
+
+        return Ok(_robotState);
     }
 
     [HttpPost("command")]
