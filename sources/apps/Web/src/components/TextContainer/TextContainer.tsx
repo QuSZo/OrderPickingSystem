@@ -8,9 +8,9 @@ interface TextContainerProps {
 export function TextContainer({title, text} : TextContainerProps) {
     return (
         <div className={styles.container}>
-            <p>{title}</p>
+            <p className={styles.title}>{title}</p>
             <div className={styles.box}>
-                <p>{text ?? "Brak danych"}</p>
+                <p className={styles.boxText}>{text ?? "Brak danych"}</p>
             </div>
         </div>
 

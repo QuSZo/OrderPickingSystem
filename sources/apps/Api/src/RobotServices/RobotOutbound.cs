@@ -62,19 +62,21 @@ public class RobotOutbound : IHostedService
             newPosition = RobotOperation.CalculatePosition(_robotState.Position, _robotState.Direction, robotStatusDto.Command);
             newDirection = RobotOperation.FindNewDirection(_robotState.Position.X, _robotState.Position.Y, newPosition.X, newPosition.Y);
         }
-
-        _robotState.Update(newPosition, newDirection, robotStatusDto.Command, robotStatusDto.Event, robotStatusDto.Timestamp);
-
-        string robotStateMessage = Serializer.Serialize(_robotState);
-        await _robotStateHubService.SendMessageAsync(robotStateMessage);
-
         if (robotStatusDto.Event == RobotEventEnum.Finished)
         {
             if (_robotState.Order != null)
             {
                 _historicalOrdersRepository.SetFinishPickingTime(_robotState.Order.OrderId);
             }
-            
+        }
+
+        _robotState.Update(newPosition, newDirection, robotStatusDto.Command, robotStatusDto.Event, robotStatusDto.Timestamp);
+
+        string robotStateMessage = Serializer.Serialize(_robotState);
+        await _robotStateHubService.SendMessageAsync(robotStateMessage);
+
+        if (robotStatusDto.Event == RobotEventEnum.Finished || robotStatusDto.Event == RobotEventEnum.Stopped)
+        {   
             _robotState.Reset();
         }
     }
