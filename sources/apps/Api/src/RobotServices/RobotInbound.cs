@@ -40,6 +40,17 @@ public class RobotInbound
 
     public async Task StartPicking(OrderDto orderDto)
     {
+        _logger.LogInformation("Processing message from server with new products to pick");
+
+        List<Position> robotStops = PrepareRobotStops(orderDto.OrderedProducts);
+        List<Position> path = _algorithmProvider.GetAlgorithm(orderDto.TspAlgorithm).FindPath(robotStops);
+
+        DirectionEnum startDirection = _robotState.Direction;
+        List<RobotMoveEnum> moves = GenerateCommands(path, startDirection);
+
+        RobotCommandDto commands = new RobotCommandDto() { Commands = moves };
+        string message = Serializer.Serialize(commands);
+
         Order order = new Order()
         {
             OrderId = Guid.NewGuid(),
@@ -51,17 +62,6 @@ public class RobotInbound
 
         _historicalOrdersRepository.Add(order);
         _robotState.StartPicking(order);
-
-        _logger.LogInformation("Processing message from server with new products to pick");
-
-        List<Position> robotStops = PrepareRobotStops(order);
-        List<Position> path = _algorithmProvider.GetAlgorithm(order.TspAlgorithm).FindPath(robotStops);
-
-        DirectionEnum startDirection = _robotState.Direction;
-        List<RobotMoveEnum> moves = GenerateCommands(path, startDirection);
-
-        RobotCommandDto commands = new RobotCommandDto() { Commands = moves };
-        string message = Serializer.Serialize(commands);
         
         await _mqttProducer.PublishAsync(MqttTopics.RobotCommand, message);
     }
@@ -72,14 +72,14 @@ public class RobotInbound
         await _mqttProducer.PublishAsync(MqttTopics.RobotStop, string.Empty);
     }
 
-    private List<Position> PrepareRobotStops(Order order)
+    private List<Position> PrepareRobotStops(List<OrderedProduct> orderedProducts)
     {
         Position startPosition = _robotState.Position;
         Position finishPosition = startPosition;
 
         List<Position> positionsToSee = new List<Position>();
 
-        List<Position> productPositions = order.OrderedProducts.Select(product => product.Position).ToList();
+        List<Position> productPositions = orderedProducts.Select(product => product.Position).ToList();
         positionsToSee.Add(startPosition);
         positionsToSee.AddRange(productPositions);
         positionsToSee.Add(finishPosition);

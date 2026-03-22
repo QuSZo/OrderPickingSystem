@@ -19,6 +19,8 @@ public class TravelingSalesmanAlgorithmProvider
         {
             case TspAlgorithmsEnum.Naive:
                 return new NaiveAlgorithm(_loggerFactory);
+            case TspAlgorithmsEnum.BruteForce:
+                return new BruteForceAlgorithm(_loggerFactory);
             default:
                 return new NaiveAlgorithm(_loggerFactory);
         }

@@ -56,6 +56,7 @@ export default function StatisticsPage() {
                     <Tooltip formatter={(value) => formatDuration(value as number)} />
                     <Legend layout="vertical" align="right" verticalAlign="middle" />
                     <Line type="monotone" dataKey="Naive" stroke="#8884d8" />
+                    <Line type="monotone" dataKey="BruteForce" stroke="#82ca9d" />
                 </LineChart>
             </div>
         </div>

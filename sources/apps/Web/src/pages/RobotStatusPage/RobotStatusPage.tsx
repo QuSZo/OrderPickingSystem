@@ -74,6 +74,7 @@ export default function RobotStatusPage() {
                     <TextContainer title="Ostatnia synchronizacja" text={robotState?.timestamp ? new Date(robotState.timestamp * 1000).toLocaleString() : undefined}></TextContainer>
                     <TextContainer title="Czas operacji" text={robotState?.order?.startPickingTime ? formatDuration(elapsedTime) : undefined} />
                     <TextContainer title="Przejechana odległość" text={undefined} />
+                    <TextContainer title="Algorytm" text={robotState?.order?.tspAlgorithm} />
                 </div>
             </div>
             <div className={styles.rightContainer}>
