@@ -44,7 +44,7 @@ export default function RobotStatusPage() {
     return (
         <div className={styles.container}>
             <div className={styles.robotControl}>
-                <h2>Manuealne sterowanie robotem</h2>
+                <h2>Manualne sterowanie robotem</h2>
                 <div className={styles.addMovesContainer}>
                     <h3>Wybierz komendy</h3>
                     <div className={styles.buttonsContainer}>
