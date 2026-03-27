@@ -2,6 +2,6 @@ namespace Api.TravelingSalesmanAlgorithms;
 
 public enum TspAlgorithmsEnum
 {
-    Naive,
-    BruteForce
+    Zachłanny,
+    BrutalnaSiła
 }

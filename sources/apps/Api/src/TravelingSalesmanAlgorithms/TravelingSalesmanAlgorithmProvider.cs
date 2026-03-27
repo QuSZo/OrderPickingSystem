@@ -17,9 +17,9 @@ public class TravelingSalesmanAlgorithmProvider
     {
         switch (tspAlgorithm)
         {
-            case TspAlgorithmsEnum.Naive:
+            case TspAlgorithmsEnum.Zachłanny:
                 return new NaiveAlgorithm(_loggerFactory);
-            case TspAlgorithmsEnum.BruteForce:
+            case TspAlgorithmsEnum.BrutalnaSiła:
                 return new BruteForceAlgorithm(_loggerFactory);
             default:
                 return new NaiveAlgorithm(_loggerFactory);

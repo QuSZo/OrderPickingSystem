@@ -10,7 +10,7 @@ const ORDERS_API_URL = API_URL + "api/orders";
 export default function HistoricalOrdersPage() {
     const [historicalOrders, setHistoricalOrders] = useState<Order[]>([]);
     const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-    const [selectedAlgorithm, setSelectedAlgorithm] = useState<TspAlgorithms>("Naive");
+    const [selectedAlgorithm, setSelectedAlgorithm] = useState<TspAlgorithms>("Zachłanny");
 
     const loadOrders = () => {
         fetch(ORDERS_API_URL)

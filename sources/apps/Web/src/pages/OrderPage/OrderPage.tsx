@@ -14,7 +14,7 @@ type RandomMode = "random" | "cluster"
 export default function OrderPage() {
     const [products, setProducts] = useState<Product[]>([])
     const [orderedProducts, setOrderedProducts] = useState<OrderedProduct[]>([]);
-    const [selectedAlgorithm, setSelectedAlgorithm] = useState<TspAlgorithms>("Naive");
+    const [selectedAlgorithm, setSelectedAlgorithm] = useState<TspAlgorithms>("Zachłanny");
     const [productCountToRandomSelect, setProductCountToRandomSelect] = useState<number>(1);
     const [randomMode, setRandomMode] = useState<RandomMode>("random");
     const [clusterCountToRandomSelect, setClusterCountToRandomSelect] = useState<number>(1);

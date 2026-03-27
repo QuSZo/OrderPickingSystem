@@ -46,9 +46,9 @@ export interface OrderedProduct {
     quantity: number;
 }
 
-export type TspAlgorithms = "Naive" | "BruteForce";
+export type TspAlgorithms = "Zachłanny" | "BrutalnaSiła";
 
-export const algorithms: TspAlgorithms[] = ["Naive", "BruteForce"];
+export const algorithms: TspAlgorithms[] = ["Zachłanny", "BrutalnaSiła"];
 
 export interface AverageDuration{
     algorithm: TspAlgorithms;
