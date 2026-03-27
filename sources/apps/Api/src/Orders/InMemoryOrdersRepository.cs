@@ -1,6 +1,6 @@
 namespace Api.Orders;
 
-public class InMemoryOrdersRepository
+public class InMemoryOrdersRepository : IOrdersRepository
 {
     private static readonly List<Order> _historicalOrders = new List<Order>();
 

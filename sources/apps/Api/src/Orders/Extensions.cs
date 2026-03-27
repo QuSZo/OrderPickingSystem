@@ -4,6 +4,6 @@ public static class Extensions
 {
     public static void AddOrders(this IServiceCollection services)
     {
-        services.AddSingleton<InMemoryOrdersRepository>();
+        services.AddSingleton<IOrdersRepository, InMemoryOrdersRepository>();
     }
 }

@@ -6,9 +6,9 @@ namespace Api.Services;
 public class StatisticsService
 {
     private readonly ILogger _logger;
-    private readonly InMemoryOrdersRepository _historicalOrdersRepository;
+    private readonly IOrdersRepository _historicalOrdersRepository;
 
-    public StatisticsService(ILoggerFactory loggerFactory, InMemoryOrdersRepository historicalOrdersRepository)
+    public StatisticsService(ILoggerFactory loggerFactory, IOrdersRepository historicalOrdersRepository)
     {
         _logger = loggerFactory.CreateLoggerApi();
         _historicalOrdersRepository = historicalOrdersRepository;

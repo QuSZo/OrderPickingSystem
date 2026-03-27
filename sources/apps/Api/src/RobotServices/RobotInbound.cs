@@ -14,14 +14,14 @@ public class RobotInbound
     private readonly MqttProducer _mqttProducer;
     private readonly TravelingSalesmanAlgorithmProvider _algorithmProvider;
     private readonly RobotState _robotState;
-    private readonly InMemoryOrdersRepository _historicalOrdersRepository;
+    private readonly IOrdersRepository _historicalOrdersRepository;
 
     public RobotInbound(
         ILoggerFactory loggerFactory, 
         MqttProducer mqttProducer, 
         TravelingSalesmanAlgorithmProvider algorithmProvider,
         RobotState robotState,
-        InMemoryOrdersRepository historicalOrdersRepository)
+        IOrdersRepository historicalOrdersRepository)
     {
         _logger = loggerFactory.CreateLoggerApi();
         _mqttProducer = mqttProducer;

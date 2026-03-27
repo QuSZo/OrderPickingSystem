@@ -14,14 +14,14 @@ public class RobotOutbound : IHostedService
     private readonly MqttConsumer _mqttConsumer;
     private readonly RobotStateHubService _robotStateHubService;
     private readonly RobotState _robotState;
-    private readonly InMemoryOrdersRepository _historicalOrdersRepository;
+    private readonly IOrdersRepository _historicalOrdersRepository;
     
     public RobotOutbound(
         ILoggerFactory loggerFactory, 
         MqttConsumer mqttConsumer, 
         RobotStateHubService robotStateHubService,
         RobotState robotState,
-        InMemoryOrdersRepository historicalOrdersRepository)
+        IOrdersRepository historicalOrdersRepository)
     {
         _logger = loggerFactory.CreateLoggerApi();
         _mqttConsumer = mqttConsumer;
