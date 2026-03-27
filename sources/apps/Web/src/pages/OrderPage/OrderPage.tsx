@@ -3,15 +3,21 @@ import styles from './OrderPage.module.css'
 import { API_URL } from '../../api/const';
 import { ToastContainer, toast } from "react-toastify";
 import { algorithms, type OrderDto, type OrderedProduct, type Product, type TspAlgorithms } from '../../types/Types';
+import { WarehouseMapCols, WarehouseMapRows, WarehouseMapStops } from '../../const/const';
+import { getRandomElements } from '../../utils/ArrayUtils';
 
 const PRODUCTS_API_URL = API_URL + "api/products";
 const ORDERS_API_URL = API_URL + "api/orders";
+
+type RandomMode = "random" | "cluster"
 
 export default function OrderPage() {
     const [products, setProducts] = useState<Product[]>([])
     const [orderedProducts, setOrderedProducts] = useState<OrderedProduct[]>([]);
     const [selectedAlgorithm, setSelectedAlgorithm] = useState<TspAlgorithms>("Naive");
-    const [randomCount, setRandomCount] = useState<number>(1);
+    const [productCountToRandomSelect, setProductCountToRandomSelect] = useState<number>(1);
+    const [randomMode, setRandomMode] = useState<RandomMode>("random");
+    const [clusterCountToRandomSelect, setClusterCountToRandomSelect] = useState<number>(1);
 
     useEffect(() => {
         fetch(PRODUCTS_API_URL)
@@ -50,18 +56,20 @@ export default function OrderPage() {
         setOrderedProducts([]);
     };
 
+    const handleRandom = () => {
+        if (randomMode === "random") {
+            randomlySelectProducts();
+        } else {
+            randomlySelectClusteredProducts();
+        }
+    };
+
     const randomlySelectProducts = () => {
         if (products.length === 0) return;
 
-        const count = Math.min(randomCount, products.length);
+        const productCountToSelect = Math.min(productCountToRandomSelect, products.length);
 
-        const shuffled = [...products];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-
-        const selected = shuffled.slice(0, count);
+        const selected = getRandomElements(products, productCountToSelect)
 
         const randomOrdered: OrderedProduct[] = selected.map(p => ({
             id: p.id,
@@ -72,6 +80,72 @@ export default function OrderPage() {
 
         setOrderedProducts(randomOrdered);
     };
+
+    const randomlySelectClusteredProducts = () => {
+        if (products.length === 0) return;
+
+        const aisles: Product[][] = createAisles();
+        if (aisles.length === 0) return;
+
+        const productCountToSelect = Math.min(productCountToRandomSelect, products.length);
+        const clusterCount = Math.min(clusterCountToRandomSelect, aisles.length);
+
+        const selectedAisles = getRandomElements(aisles, clusterCount)
+
+        const neededProductsPerAisle = Math.floor(productCountToSelect / clusterCount);
+        let remainderProducts = productCountToSelect % clusterCount;
+
+        const result: Product[] = [];
+
+        selectedAisles.forEach(selectedAisle => {
+            let take = neededProductsPerAisle;
+
+            if (remainderProducts > 0) {
+                take += 1;
+                remainderProducts--;
+            }
+
+            const selectedProducts = getRandomElements(selectedAisle, take)
+
+            result.push(...selectedProducts);
+        });
+
+        const randomOrdered: OrderedProduct[] = result.map(p => ({
+            id: p.id,
+            name: p.name,
+            position: p.position,
+            quantity: Math.floor(Math.random() * 5) + 1
+        }));
+
+        setOrderedProducts(randomOrdered);
+    };
+
+    const createAisles = () => {
+        const aisles: Product[][] = [];
+
+        for (let colNumber = 0; colNumber < WarehouseMapCols; colNumber++) {
+            for (let rowNumber = 0; rowNumber < WarehouseMapRows - 1; rowNumber++) {
+                const rowStartAisle = rowNumber * (WarehouseMapStops + 1) + 1;
+                const productsInAisle : Product[] = []
+                for (let i = 0; i < WarehouseMapStops; i++) {
+                    const product = products.find(product => product.position.x === colNumber && product.position.y === rowStartAisle + i)
+                    if (product) {
+                        productsInAisle.push(product);
+                    }
+                    else {
+                        toast.error("Brakuje produktu w alejce. Losowanie nie jest możliwe.", {
+                            position: "top-center",
+                            autoClose: 2000
+                        });
+                        return [];
+                    }
+                }
+                aisles.push(productsInAisle);
+            }
+        }
+
+        return aisles;
+    }
 
     const buy = async () => {
         try {
@@ -183,13 +257,53 @@ export default function OrderPage() {
                             <button onClick={buy} className={styles.buttonAdd} disabled={orderedProducts.length === 0}>Zatwiedź zakupy</button>
                         </div>
                     </div>
-                    <div>
+                    <div className={styles.randomProductsContainer}>
                         <h3>Losowanie produktów</h3>
                         <div>
-                            <label>Liczba produktów do wylosowania: </label>
-                            <input type="number" min={1} max={products.length} value={randomCount} onChange={(e) => setRandomCount(Number(e.target.value))}/>
+                            <label>Tryb losowania: </label>
+                            <select value={randomMode} onChange={(e) => {setRandomMode(e.target.value as RandomMode); setProductCountToRandomSelect(1); setClusterCountToRandomSelect(1);}}>
+                                <option value="random">Losowy</option>
+                                <option value="cluster">Skupiska</option>
+                            </select>
                         </div>
-                        <button onClick={randomlySelectProducts} className={styles.buttonAdd} disabled={orderedProducts.length !== 0}>Wylosuj produkty</button>
+                        <div>
+                            <label>Liczba produktów do wylosowania: </label>
+                            <input type="number" min={1} max={products.length} value={productCountToRandomSelect} onChange={(e) => setProductCountToRandomSelect(Number(e.target.value))}/>
+                            {productCountToRandomSelect > products.length && (
+                                <p className={styles.error}>
+                                    Liczba produktów do wylosowania nie może być większa od wszystkich dostępnych produktów
+                                </p>
+                            )}
+                            {productCountToRandomSelect < 1 && (
+                                <p className={styles.error}>
+                                    Liczba produktów do wylosowania nie może być mniejsza niż 1
+                                </p>
+                            )}
+                        </div>
+                        {randomMode == "cluster" && (
+                            <div>
+                                <label>Liczba klastrów</label>
+                                <input type="number" min={1} max={productCountToRandomSelect} value={clusterCountToRandomSelect} onChange={(e) => setClusterCountToRandomSelect(Number(e.target.value))}/>
+                                {clusterCountToRandomSelect > productCountToRandomSelect && (
+                                    <p className={styles.error}>
+                                        Liczba klastrów nie może być większa niż liczba produktów do wylosowania
+                                    </p>
+                                )}
+                                {clusterCountToRandomSelect < Math.ceil(productCountToRandomSelect / WarehouseMapStops) && (
+                                    <p className={styles.error}>
+                                        Minimalna liczba klastrów dla {productCountToRandomSelect} produktów to {Math.ceil(productCountToRandomSelect / WarehouseMapStops)}
+                                    </p>
+                                )}
+                                {clusterCountToRandomSelect < 1 && (
+                                    <p className={styles.error}>
+                                        Liczba klastrów nie może być mniejsza niż 1
+                                    </p>
+                                )}
+                            </div>
+                        )}
+                        <div>
+                            <button onClick={handleRandom} className={styles.buttonAdd} disabled={orderedProducts.length !== 0 || productCountToRandomSelect > products.length || productCountToRandomSelect < 1 || (randomMode === "cluster" && (clusterCountToRandomSelect > productCountToRandomSelect || clusterCountToRandomSelect < Math.ceil(productCountToRandomSelect / WarehouseMapStops) || clusterCountToRandomSelect < 1))}>Wylosuj produkty</button>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -46,6 +46,18 @@
     gap: 20px
 }
 
+.randomProductsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.error {
+    color: #d32f2f;
+    font-size: 14px;
+    font-weight: 500;
+}
+
 .buttonAdd {
     background-color: #71b176;
 }

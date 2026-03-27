@@ -6,6 +6,7 @@ import { TextContainer } from '../../components/TextContainer/TextContainer';
 import WarehouseMap from '../../components/WarehouseMap/WarehouseMap';
 import type { RobotState } from '../../types/Types';
 import { formatDuration } from '../../utils/TimeUtils';
+import { WarehouseMapCols, WarehouseMapRows, WarehouseMapStops } from '../../const/const';
 
 const ROBOT_SIGNALR_API_URL = API_URL + "api/robot-hub";
 const ROBOT_STATE_API_URL = API_URL + "api/robot/state";
@@ -79,7 +80,7 @@ export default function RobotStatusPage() {
             </div>
             <div className={styles.rightContainer}>
                 <h3>Trasa robota</h3>
-                <WarehouseMap cols={3} rows={3} stops={5} robotState={robotState}></WarehouseMap>
+                <WarehouseMap cols={WarehouseMapCols} rows={WarehouseMapRows} stops={WarehouseMapStops} robotState={robotState}></WarehouseMap>
             </div>
         </div>
     );
