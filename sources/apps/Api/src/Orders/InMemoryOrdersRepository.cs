@@ -1,8 +1,6 @@
-using Api.Dtos;
-
 namespace Api.Orders;
 
-public class HistoricalOrdersRepository
+public class InMemoryOrdersRepository
 {
     private static readonly List<Order> _historicalOrders = new List<Order>();
 

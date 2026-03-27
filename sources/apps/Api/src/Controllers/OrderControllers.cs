@@ -12,12 +12,12 @@ public class OrderControllers : ControllerBase
 {
     private readonly ILogger _logger;
     private readonly RobotInbound _robotInbound;
-    private readonly HistoricalOrdersRepository _historicalOrdersRepository;
+    private readonly InMemoryOrdersRepository _historicalOrdersRepository;
 
     public OrderControllers(
         ILoggerFactory loggerFactory, 
         RobotInbound robotInbound,
-        HistoricalOrdersRepository historicalOrdersRepository)
+        InMemoryOrdersRepository historicalOrdersRepository)
     {
         _logger = loggerFactory.CreateLoggerApi();
         _robotInbound = robotInbound;
