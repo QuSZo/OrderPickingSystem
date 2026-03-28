@@ -22,15 +22,13 @@ public class OrdersRepository : IOrdersRepository
         _dbContext.SaveChanges();
     }
 
-    public void SetFinishPickingTime(Guid? id)
+    public Order SetFinishPickingTime(Guid? id)
     {
-        Order? order = _dbContext.Orders.SingleOrDefault(order => order.OrderId == id);
-
-        if (order != null)
-        {
-            order.FinishPickingTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        }
+        Order order = _dbContext.Orders.Single(order => order.OrderId == id);
+        order.FinishPickingTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
         _dbContext.SaveChanges();
+
+        return order;
     }
 }

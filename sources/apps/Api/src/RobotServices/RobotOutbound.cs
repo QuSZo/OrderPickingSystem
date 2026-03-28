@@ -66,10 +66,11 @@ public class RobotOutbound : IHostedService
         {
             if (_robotState.Order != null)
             {
-                using (var scope = _serviceProvider.CreateScope())
+                using (IServiceScope? scope = _serviceProvider.CreateScope())
                 {
-                    var ordersRepo = scope.ServiceProvider.GetRequiredService<IOrdersRepository>();
-                    ordersRepo.SetFinishPickingTime(_robotState.Order.OrderId);
+                    IOrdersRepository ordersRepository = scope.ServiceProvider.GetRequiredService<IOrdersRepository>();
+                    Order order = ordersRepository.SetFinishPickingTime(_robotState.Order.OrderId);
+                    _robotState.Order = order;
                 }
             }
         }

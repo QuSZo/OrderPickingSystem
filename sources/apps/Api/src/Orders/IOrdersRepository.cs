@@ -4,5 +4,5 @@ public interface IOrdersRepository
 {
     IReadOnlyList<Order> GetAll();
     void Add(Order order);
-    void SetFinishPickingTime(Guid? id);
+    Order SetFinishPickingTime(Guid? id);
 }
