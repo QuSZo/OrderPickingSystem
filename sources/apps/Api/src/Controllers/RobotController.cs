@@ -23,7 +23,7 @@ public class RobotController : ControllerBase
     [HttpGet("state")]
     public ActionResult<string> GetRobotState()
     {
-        _logger.LogDebug("Handle api call to get current robot state");
+        _logger.LogInformation("Handle api call to get current robot state");
 
         return Ok(_robotState);
     }
@@ -31,7 +31,7 @@ public class RobotController : ControllerBase
     [HttpPost("command")]
     public async Task<ActionResult<string>> RobotCommand([FromBody] RobotCommandDto commands)
     {
-        _logger.LogDebug("Handle api call with new robot commands");
+        _logger.LogInformation("Handle api call with new robot commands");
         await _robotInbound.SendCommands(commands);
         
         return Ok();
@@ -40,7 +40,7 @@ public class RobotController : ControllerBase
     [HttpPost("stop")]
     public async Task<ActionResult<string>> RobotStop()
     {
-        _logger.LogDebug("Handle api call to stop the robot");
+        _logger.LogInformation("Handle api call to stop the robot");
         await _robotInbound.SendStop();
 
         return Ok();

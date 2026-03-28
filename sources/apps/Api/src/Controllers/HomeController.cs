@@ -17,7 +17,7 @@ public class HomeController : ControllerBase
     [HttpGet]
     public ActionResult<string> GetMessage()
     {
-        _logger.LogDebug("Handle api call to get hello world message");
+        _logger.LogInformation("Handle api call to get hello world message");
         return Ok("Hello world");
     }
 }

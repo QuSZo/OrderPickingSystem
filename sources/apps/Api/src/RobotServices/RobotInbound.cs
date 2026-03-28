@@ -89,7 +89,7 @@ public class RobotInbound
 
     private List<RobotMoveEnum> GenerateCommands(List<Position> positions, DirectionEnum startDirection)
     {
-        _logger.LogDebug("Generating robot moves from positions");
+        _logger.LogInformation("Generating robot moves from positions");
 
         List<RobotMoveEnum> moves = new List<RobotMoveEnum>();
 
@@ -111,7 +111,7 @@ public class RobotInbound
             oldDirection = newDirection;
         }
 
-        _logger.LogDebug($"Generated moves: { string.Join(" -> ", moves) }");
+        _logger.LogInformation($"Generated moves: { string.Join(" -> ", moves) }");
         return moves;
     }
 }

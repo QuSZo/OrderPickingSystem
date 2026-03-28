@@ -20,7 +20,7 @@ public class StatisticsController : ControllerBase
     [HttpGet("average-duration-by-algorithm")]
     public ActionResult<string> GetAverageDuration()
     {
-        _logger.LogDebug("Handle api call to get statistics about average duration by algorithm");
+        _logger.LogInformation("Handle api call to get statistics about average duration by algorithm");
         
         List<AverageDuration> averageDurations = _statisticsService.GetAverageDuration();
 
@@ -30,7 +30,7 @@ public class StatisticsController : ControllerBase
     [HttpGet("average-duration-by-algorithm-and-order-size")]
     public ActionResult<string> GetAverageDurationByOrderSize()
     {
-        _logger.LogDebug("Handle api call to get statistics about average duration by algorithm and order size");
+        _logger.LogInformation("Handle api call to get statistics about average duration by algorithm and order size");
         
         List<AverageDurationByOrderSize> averageDurations = _statisticsService.GetAverageDurationByOrderSize();
 

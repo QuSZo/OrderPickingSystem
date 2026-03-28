@@ -16,7 +16,7 @@ public class StatisticsService
 
     public List<AverageDuration> GetAverageDuration()
     {
-        _logger.LogDebug("Calculating average duration by algorithm");
+        _logger.LogInformation("Calculating average duration by algorithm");
 
         List<AverageDuration> averageDurations = _historicalOrdersRepository.GetAll()
             .Where(order => order.FinishPickingTime != null)
@@ -38,7 +38,7 @@ public class StatisticsService
 
     public List<AverageDurationByOrderSize> GetAverageDurationByOrderSize()
     {
-        _logger.LogDebug("Calculating average duration by algorithm and order size");
+        _logger.LogInformation("Calculating average duration by algorithm and order size");
 
         List<AverageDurationByOrderSize> averageDurationsByOrderSize = _historicalOrdersRepository.GetAll()
             .Where(o => o.FinishPickingTime != null)

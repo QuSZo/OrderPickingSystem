@@ -26,7 +26,7 @@ public class MqttProducer
                 return;
             }
 
-            _logger.LogDebug($"Publishing message {message} on mqtt topic: {topic}");
+            _logger.LogInformation($"Publishing message {message} on mqtt topic: {topic}");
 
             IMqttClient mqttClient = await _mqttConnection.ConnectAsync();
 

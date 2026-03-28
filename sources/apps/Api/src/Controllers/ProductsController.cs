@@ -22,7 +22,7 @@ public class ProductsController : ControllerBase
     [HttpGet]
     public ActionResult<string> GetProducts()
     {
-        _logger.LogDebug("Handle api call to get all products");
+        _logger.LogInformation("Handle api call to get all products");
         IReadOnlyList<Product> products = _productsService.GetProducts();
 
         return Ok(products);

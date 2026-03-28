@@ -85,7 +85,7 @@ public class MqttConsumer
         {
             var byteMessage = receivedEventArgs.ApplicationMessage.Payload;
             string message = Encoding.UTF8.GetString(byteMessage);
-            _logger.LogDebug($"Consumed message on mqtt topic: {_topic}, message {message}");
+            _logger.LogInformation($"Consumed message on mqtt topic: {_topic}, message {message}");
             ReceivedMessage?.Invoke(message);
         }
         

@@ -27,7 +27,7 @@ public class OrderControllers : ControllerBase
     [HttpGet]
     public ActionResult<string> GetHistoricalOrders()
     {
-        _logger.LogDebug("Handle api call to get all historical orders");
+        _logger.LogInformation("Handle api call to get all historical orders");
         IReadOnlyList<Order> orders = _historicalOrdersRepository.GetAll();
 
         return Ok(orders);
@@ -36,7 +36,7 @@ public class OrderControllers : ControllerBase
     [HttpPost("buy")]
     public async Task<IActionResult> BuyAndCollectProducts([FromBody] OrderDto orderDto)
     {
-        _logger.LogDebug("Handle api call to buy and collect products");
+        _logger.LogInformation("Handle api call to buy and collect products");
 
         await _robotInbound.StartPicking(orderDto);
         
