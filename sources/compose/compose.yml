@@ -5,6 +5,17 @@ services:
       - "1883:1883"
     volumes:
       - ./mosquitto:/mosquitto
+  db:
+    image: postgres:18
+    container_name: postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: orderpickingsystem
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
   api:
     image: api:latest
     profiles: ["api", "full"]
@@ -18,3 +29,6 @@ services:
     profiles: ["web", "full"]
     ports:
       - "3000:80"
+
+volumes:
+  postgres_data:

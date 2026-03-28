@@ -5,7 +5,8 @@ Master's thesis - Autonomous order picking system based on the AlphaBot2 robot
 
 # Manual mapping of domain names to IP addresses
 Open `C:\Windows\System32\drivers\etc\hosts`  
-Add to file `127.0.0.1   mqtt-broker`
+Add to file `127.0.0.1   mqtt-broker`  
+Add to file `127.0.0.1   postgres`
 
 # Docker
 ## Building image
@@ -45,6 +46,23 @@ cd sources/compose
 docker compose --profile {Selected profile} up --abort-on-container-exit; docker compose --profile {Selected profile} down
 ```
 
+Before you will run backend service you have to update database.  
+Instal .NET CLI:
+```
+sudo apt-get update && sudo apt-get install -y dotnet-sdk-10.0
+```
+
+Then you have to install EF Core command-line tools:
+```
+dotnet tool install --global dotnet-ef
+```
+
+Then you can update database.
+```
+cd sources/apps/Api/src
+dotnet ef database update
+```
+
 Example for all services
 ```
 cd sources/compose  
@@ -80,6 +98,24 @@ Then you have to edit `PYTHONPATH` value in the same file.
 You have to set path to local modules/scripts and to packages installed in .venv environment. For example:
 ```
 C:\\{set_project_directory}\\OrderPickingSystem\\sources\\apps\\Api\\src;C:\\{set_project_directory}\\OrderPickingSystem\\sources\\apps\\Api\\.venv\\Lib\\site-packages
+```
+
+Before you will run backend service you have to update database.  
+You have to install EF Core command-line tools:
+```
+dotnet tool install --global dotnet-ef
+```
+
+Then you can update database.
+```
+cd sources/apps/Api/src
+dotnet ef database update
+```
+
+If you would like to add new migration, you have to run:
+```
+cd sources/apps/Api/src
+dotnet ef migrations add <migrationName> --output-dir Database/Migrations
 ```
 
 Finito. You can run backend application locally.

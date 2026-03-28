@@ -1,3 +1,4 @@
+using Api.Database;
 using Api.Mqtt;
 using Api.Orders;
 using Api.Policies;
@@ -24,6 +25,7 @@ builder.Services.AddControllers()
         );
     });
 builder.Services.AddCorsPolicy();
+builder.Services.AddPostgres();
 
 builder.Services.AddRobotService();
 builder.Services.AddProducts();

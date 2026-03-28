@@ -14,20 +14,20 @@ public class RobotOutbound : IHostedService
     private readonly MqttConsumer _mqttConsumer;
     private readonly RobotStateHubService _robotStateHubService;
     private readonly RobotState _robotState;
-    private readonly IOrdersRepository _historicalOrdersRepository;
+    private readonly IServiceProvider _serviceProvider;
     
     public RobotOutbound(
         ILoggerFactory loggerFactory, 
         MqttConsumer mqttConsumer, 
         RobotStateHubService robotStateHubService,
         RobotState robotState,
-        IOrdersRepository historicalOrdersRepository)
+        IServiceProvider serviceProvider)
     {
         _logger = loggerFactory.CreateLoggerApi();
         _mqttConsumer = mqttConsumer;
         _robotStateHubService = robotStateHubService;
         _robotState = robotState;
-        _historicalOrdersRepository = historicalOrdersRepository;
+        _serviceProvider = serviceProvider;
 
         _mqttConsumer.ReceivedMessage += ProcessMessage;
     }
@@ -66,7 +66,11 @@ public class RobotOutbound : IHostedService
         {
             if (_robotState.Order != null)
             {
-                _historicalOrdersRepository.SetFinishPickingTime(_robotState.Order.OrderId);
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    var ordersRepo = scope.ServiceProvider.GetRequiredService<IOrdersRepository>();
+                    ordersRepo.SetFinishPickingTime(_robotState.Order.OrderId);
+                }
             }
         }
 
