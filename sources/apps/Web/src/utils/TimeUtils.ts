@@ -6,14 +6,18 @@ export const formatDuration = (ms: number) => {
     ms %= 60000;
 
     const s = Math.floor(ms / 1000);
-    ms %= 1000;
 
     const parts = [];
 
-    if (h > 0) parts.push(`${h}h`);
-    if (m > 0) parts.push(`${m}m`);
-    if (s > 0) parts.push(`${s}s`);
-    if (ms > 0 || parts.length === 0) parts.push(`${ms}ms`);
+    if (h > 0) {
+        parts.push(`${h} h`, `${m} min`, `${s} s`);
+    } 
+    else if (m > 0) {
+        parts.push(`${m} min`, `${s} s`);
+    }
+    else {
+        parts.push(`${s} s`);
+    }
 
     return parts.join(' ');
 }
