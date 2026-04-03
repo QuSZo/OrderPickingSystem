@@ -63,6 +63,15 @@ export default function HistoricalOrdersPage() {
         return "Oczekiwanie na wynik";
     }
 
+    const calculateAverageSpeed = (startPickingTime: number, finishPickingTime: number | null, distance: number) => {
+        if (finishPickingTime !== null) {
+            const timeInSeconds = (finishPickingTime - startPickingTime) / 1000;
+            const speed = distance / timeInSeconds;
+            return `${speed.toFixed(2)} m/s`;
+        }
+        return "Oczekiwanie na wynik";
+    }
+
     return (
         <>
             <ToastContainer />
@@ -77,6 +86,7 @@ export default function HistoricalOrdersPage() {
                                 <th>Wykorzystany algorytm</th>
                                 <th>Czas trwania zbierania</th>
                                 <th>Przejechana odległość</th>
+                                <th>Średnia prędkość</th>
                                 <th className={styles.actionsTh}>Czy zamówić ponownie?</th>
                             </tr>
                         </thead>
@@ -95,6 +105,7 @@ export default function HistoricalOrdersPage() {
                                     <td>{order.tspAlgorithm}</td>
                                     <td>{calculatePickingTime(order.startPickingTime, order.finishPickingTime)}</td>
                                     <td>{order.distance} cm</td>
+                                    <td>{calculateAverageSpeed(order.startPickingTime, order.finishPickingTime, order.distance)}</td>
                                     <td>
                                         <button className={styles.buttonOrderAgain} onClick={() => orderAgain(order.orderedProducts)}>Zamów ponownie</button>
                                     </td>
