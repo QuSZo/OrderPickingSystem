@@ -16,7 +16,7 @@ def build_graph(columns, rows, stops_in_seperated_alley):
 
     for x in range(1, columns, 1):
         for y in range(0, stops_in_column, stepsToCross):
-            graph.add_edge((x-1,y), (x,y), weight = 3)
+            graph.add_edge((x-1,y), (x,y), weight = 132)
 
     # graph.add_edge((0,0), (0,-1), weight=2)
 
@@ -24,8 +24,8 @@ def build_graph(columns, rows, stops_in_seperated_alley):
 
 def calculate_distance(first_node_id, second_node_id, column, stepsToCross):
     if ((first_node_id - column) % stepsToCross == 0):
-        return 2
+        return 52
     elif((second_node_id - column) % stepsToCross == 0):
-        return 2
+        return 52
     else:
-        return 1
+        return 32
