@@ -76,6 +76,7 @@ export default function RobotStatusPage() {
                     <TextContainer title="Czas operacji" text={robotState?.order?.startPickingTime ? formatDuration(elapsedTime) : undefined} />
                     <TextContainer title="Przejechana odległość" text={undefined} />
                     <TextContainer title="Algorytm" text={robotState?.order?.tspAlgorithm} />
+                    <TextContainer title="Dystans" text={robotState?.order?.distance ? `${robotState?.order?.distance.toString()} cm` : undefined} />
                 </div>
             </div>
             <div className={styles.rightContainer}>

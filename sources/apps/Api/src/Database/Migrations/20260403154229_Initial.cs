@@ -18,6 +18,7 @@ namespace Api.Database.Migrations
                     OrderId = table.Column<Guid>(type: "uuid", nullable: false),
                     TspAlgorithm = table.Column<int>(type: "integer", nullable: false),
                     Timestamp = table.Column<double>(type: "double precision", nullable: false),
+                    Distance = table.Column<double>(type: "double precision", nullable: false),
                     StartPickingTime = table.Column<double>(type: "double precision", nullable: false),
                     FinishPickingTime = table.Column<double>(type: "double precision", nullable: true)
                 },

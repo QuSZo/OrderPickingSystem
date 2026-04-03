@@ -28,6 +28,9 @@ namespace Api.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<double>("Distance")
+                        .HasColumnType("double precision");
+
                     b.Property<double?>("FinishPickingTime")
                         .HasColumnType("double precision");
 

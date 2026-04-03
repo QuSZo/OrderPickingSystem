@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Api.Database.Migrations
 {
     [DbContext(typeof(OrderPickingDbContext))]
-    [Migration("20260328123622_Initial")]
+    [Migration("20260403154229_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -30,6 +30,9 @@ namespace Api.Database.Migrations
                     b.Property<Guid>("OrderId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<double>("Distance")
+                        .HasColumnType("double precision");
 
                     b.Property<double?>("FinishPickingTime")
                         .HasColumnType("double precision");

@@ -35,6 +35,7 @@ export interface Order {
     orderedProducts: OrderedProduct[];
     tspAlgorithm: TspAlgorithms;
     timestamp: number;
+    distance: number;
     startPickingTime: number;
     finishPickingTime: number | null;
 }

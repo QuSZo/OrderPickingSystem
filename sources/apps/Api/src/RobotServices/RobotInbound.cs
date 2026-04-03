@@ -43,10 +43,10 @@ public class RobotInbound
         _logger.LogInformation("Processing message from server with new products to pick");
 
         List<Position> robotStops = PrepareRobotStops(orderDto.OrderedProducts);
-        List<Position> path = _algorithmProvider.GetAlgorithm(orderDto.TspAlgorithm).FindPath(robotStops);
+        TspAlgorithmResult result = _algorithmProvider.GetAlgorithm(orderDto.TspAlgorithm).FindPath(robotStops);
 
         DirectionEnum startDirection = _robotState.Direction;
-        List<RobotMoveEnum> moves = GenerateCommands(path, startDirection);
+        List<RobotMoveEnum> moves = GenerateCommands(result.Path, startDirection);
 
         RobotCommandDto commands = new RobotCommandDto() { Commands = moves };
         string message = Serializer.Serialize(commands);
@@ -57,6 +57,7 @@ public class RobotInbound
             OrderedProducts = orderDto.OrderedProducts,
             TspAlgorithm = orderDto.TspAlgorithm,
             Timestamp = orderDto.Timestamp,
+            Distance = result.TotalWeight,
             StartPickingTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
         };
 

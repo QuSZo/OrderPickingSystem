@@ -12,9 +12,10 @@ public class BruteForceAlgorithm : ITravelingSalesmanAlgorithm
         _logger = loggerFactory.CreateLoggerApi();
     }
 
-    public List<Position> FindPath(List<Position> positions)
+    public TspAlgorithmResult FindPath(List<Position> positions)
     {
         List<Position> path = new List<Position>();
+        double totalWeight;
 
         using (Py.GIL())
         {
@@ -32,7 +33,10 @@ public class BruteForceAlgorithm : ITravelingSalesmanAlgorithm
             dynamic script = Py.Import("TravelingSalesmanAlgorithms.BruteForceAlgorithm.BruteForceAlgorithmScript");
             dynamic result = script.find_path(pythonPositions);
 
-            foreach (PyObject node in result)
+            dynamic pyPath = result[0];
+            totalWeight = result[1];
+
+            foreach (PyObject node in pyPath)
             {
                 int x = node[0].As<int>();
                 int y = node[1].As<int>();
@@ -40,9 +44,9 @@ public class BruteForceAlgorithm : ITravelingSalesmanAlgorithm
                 path.Add(new Position() { X = x, Y = y });
             }
 
-            _logger.LogInformation($"Python script has been executed. Found path: { string.Join(" -> ", path.Select(p => $"({p.X},{p.Y})")) }");
+            _logger.LogInformation($"Python script has been executed. Total distance: {totalWeight}, found path: { string.Join(" -> ", path.Select(p => $"({p.X},{p.Y})")) }");
         }
 
-        return path;
+        return new TspAlgorithmResult() { Path = path, TotalWeight = totalWeight};
     }
 }

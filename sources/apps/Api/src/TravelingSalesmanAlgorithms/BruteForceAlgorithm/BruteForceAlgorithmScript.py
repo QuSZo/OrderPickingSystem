@@ -26,11 +26,13 @@ def find_path(positions):
     full_path = []
 
     for i in range(len(best_order) - 1):
-        path = nx.shortest_path(graph, best_order[i], best_order[i+1])
+        path = nx.shortest_path(graph, best_order[i], best_order[i+1], weight="weight")
 
         if i > 0:
             path = path[1:]
 
         full_path.extend(path)
 
-    return full_path
+    total_weight = sum(graph[u][v]["weight"] for u, v in zip(full_path, full_path[1:]))
+
+    return full_path, total_weight

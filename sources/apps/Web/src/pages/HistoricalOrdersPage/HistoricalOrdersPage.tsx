@@ -94,7 +94,7 @@ export default function HistoricalOrdersPage() {
                                     <td>{new Date(order.timestamp).toLocaleString()}</td>
                                     <td>{order.tspAlgorithm}</td>
                                     <td>{calculatePickingTime(order.startPickingTime, order.finishPickingTime)}</td>
-                                    <td>Brak danych</td>
+                                    <td>{order.distance} cm</td>
                                     <td>
                                         <button className={styles.buttonOrderAgain} onClick={() => orderAgain(order.orderedProducts)}>Zamów ponownie</button>
                                     </td>
