@@ -43,7 +43,10 @@ class RobotController:
                 if self.commands_list:
                     command = self.commands_list.pop(0)
 
-            if command:
+            if command and command["move"] == "stop":
+                self._simulate_movement(command)
+                time.sleep(command["stopDurationMs"]/1000)
+            elif command:
                 self._simulate_movement(command)
                 time.sleep(3)
             else:

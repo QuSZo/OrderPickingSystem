@@ -41,7 +41,7 @@ def publish_finished(mqtt_client):
 	mqtt_client.publish("robot/status", json.dumps(payload))
 
 def run_robot(commands, mqtt_client):
-	instrukcje = list(commands)
+	commands = list(commands)
 	
 	maximum = 60
 	integral = 0
@@ -82,29 +82,42 @@ def run_robot(commands, mqtt_client):
 			position,Sensors = TrSensor.readLine()
 			if(Sensors[0] > 600 and Sensors[1] > 600 and Sensors[2] > 600 and Sensors[3] > 600 and Sensors[4] > 600):
 				print("Skrzyżowanie - wybieram kierunek!")
-				if (len(instrukcje) == 0):
+				if (len(commands) == 0):
 					publish_finished(mqtt_client)
 					AlphaBot.stop()
 					break
 				else:
-					direction = instrukcje.pop(0)
-					publish_status(direction, mqtt_client)
-					if direction == "left":
-						print("Turn: " + direction)
+					command = commands.pop(0)
+
+					if command["move"] == "stop":
+						AlphaBot.stop()
+						print("Picking product for " + command["stopDurationMs"] + " ms")
+						publish_status(command, mqtt_client)
+						time.sleep(command["stopDurationMs"]/1000)
+						if (len(commands) == 0):
+							publish_finished(mqtt_client)
+							AlphaBot.stop()
+							break
+						else:
+							command = commands.pop(0)
+
+					publish_status(command, mqtt_client)
+					if command["move"] == "left":
+						print("Turn: " + command)
 						AlphaBot.left()
 						time.sleep(0.6)
-					elif direction == "right":
-						print("Turn: " + direction)
+					elif command["move"] == "right":
+						print("Turn: " + command)
 						AlphaBot.right()
 						time.sleep(0.6)
-					elif direction == "forward":
-						print("Turn: " + direction)
+					elif command["move"] == "forward":
+						print("Turn: " + command)
 						AlphaBot.setPWMA(maximum)
 						AlphaBot.setPWMB(maximum)
 						AlphaBot.forward()
 						time.sleep(0.2)
-					elif direction == "back":
-						print("Turn: " + direction)
+					elif command["move"] == "back":
+						print("Turn: " + command)
 						AlphaBot.right()
 						time.sleep(1.5)
 					else:

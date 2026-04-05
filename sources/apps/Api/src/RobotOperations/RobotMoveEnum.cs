@@ -5,5 +5,6 @@ public enum RobotMoveEnum
     Forward,
     Left,
     Right,
-    Back
+    Back,
+    Stop
 }

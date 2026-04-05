@@ -1,0 +1,7 @@
+namespace Api.RobotOperations;
+
+public record RobotCommand
+{
+    public RobotMoveEnum Move { get; init; }
+    public int? StopDurationMs { get; init; }
+}

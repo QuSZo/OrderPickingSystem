@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { API_URL } from '../../api/const';
 import styles from './ControlRobotPage.module.css'
-import type { RobotCommand } from '../../types/Types';
+import type { RobotCommand, RobotMove } from '../../types/Types';
 
 const ROBOT_COMMAND_API_URL = API_URL + "api/robot/command";
 const ROBOT_STOP_API_URL = API_URL + "api/robot/stop";
@@ -9,7 +9,8 @@ const ROBOT_STOP_API_URL = API_URL + "api/robot/stop";
 export default function RobotStatusPage() {
     const [commands, setCommands] = useState<RobotCommand[]>([]);
 
-    const addCommand = (command: RobotCommand) => {
+    const addCommand = (move: RobotMove) => {
+        const command: RobotCommand = { move: move, stopDurationMs: undefined}
         setCommands((prev) => [...prev, command]);
     };
 

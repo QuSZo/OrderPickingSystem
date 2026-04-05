@@ -57,9 +57,9 @@ public class RobotOutbound : IHostedService
 
         Position newPosition = _robotState.Position; 
         DirectionEnum newDirection = _robotState.Direction; 
-        if (robotStatusDto.Command != null)
+        if (robotStatusDto.Command != null && robotStatusDto.Command.Move != RobotMoveEnum.Stop)
         {
-            newPosition = RobotOperation.CalculatePosition(_robotState.Position, _robotState.Direction, robotStatusDto.Command);
+            newPosition = RobotOperation.CalculatePosition(_robotState.Position, _robotState.Direction, robotStatusDto.Command.Move);
             newDirection = RobotOperation.FindNewDirection(_robotState.Position.X, _robotState.Position.Y, newPosition.X, newPosition.Y);
         }
         if (robotStatusDto.Event == RobotEventEnum.Finished)

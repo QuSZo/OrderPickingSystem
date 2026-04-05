@@ -12,7 +12,12 @@ export interface Position {
     y: number;
 } 
 
-export type RobotCommand = "forward" | "back" | "left" | "right";
+export interface RobotCommand {
+    move: RobotMove;
+    stopDurationMs: number | undefined
+}
+
+export type RobotMove = "forward" | "back" | "left" | "right" | "stop";
 
 export type Direction = "north" | "east" | "south" | "west";
 

@@ -71,7 +71,7 @@ export default function RobotStatusPage() {
                 <div className={styles.robotStatus}>
                     <h3>Status robota</h3>
                     <TextContainer title="Akcja" text={robotState?.event}></TextContainer>
-                    <TextContainer title="Wykonany ruch" text={robotState?.command}></TextContainer>
+                    <TextContainer title="Wykonany ruch" text={robotState?.command?.move}></TextContainer>
                     <TextContainer title="Ostatnia synchronizacja" text={robotState?.timestamp ? new Date(robotState.timestamp * 1000).toLocaleString() : undefined}></TextContainer>
                     <TextContainer title="Czas operacji" text={robotState?.order?.startPickingTime ? formatDuration(elapsedTime) : undefined} />
                     <TextContainer title="Przejechana odległość" text={undefined} />

@@ -4,5 +4,5 @@ namespace Api.Dtos;
 
 public record RobotCommandDto
 {
-    public required List<RobotMoveEnum> Commands { get; init; }
+    public required List<RobotCommand> Commands { get; init; }
 }
