@@ -99,6 +99,7 @@ public class RobotInbound
         _logger.LogInformation("Generating robot moves from positions");
 
         List<RobotCommand> moves = new List<RobotCommand>();
+        List<OrderedProduct> productsToPick = new List<OrderedProduct>(orderedProducts);
 
         DirectionEnum oldDirection = startDirection;
 
@@ -110,11 +111,12 @@ public class RobotInbound
             int x_next = positions[i+1].X;
             int y_next = positions[i+1].Y;
 
-            OrderedProduct? orderedProductOnPosition = orderedProducts.SingleOrDefault(orderedProduct => orderedProduct.Position == positions[i]);
+            OrderedProduct? orderedProductOnPosition = productsToPick.SingleOrDefault(orderedProduct => orderedProduct.Position == positions[i]);
             if (orderedProductOnPosition != null)
             {
                 RobotCommand stopCommand = new RobotCommand() { Move = RobotMoveEnum.Stop, StopDurationMs = orderedProductOnPosition.Quantity * StopDurationMsForOne, OrderedProduct = orderedProductOnPosition };
                 moves.Add(stopCommand);
+                productsToPick.Remove(orderedProductOnPosition);
             }
 
             DirectionEnum newDirection = RobotOperation.FindNewDirection(x_prev, y_prev, x_next, y_next);
