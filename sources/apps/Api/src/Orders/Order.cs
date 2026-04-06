@@ -6,6 +6,7 @@ public record Order
 {
     public required Guid OrderId { get; init; }
     public required List<OrderedProduct> OrderedProducts { get; init; }
+    public required List<OrderedProduct> PickedProducts { get; init; }
     public required TspAlgorithmsEnum TspAlgorithm { get; init; }
     public required double Timestamp { get; init; } 
     public required double Distance { get; init; }

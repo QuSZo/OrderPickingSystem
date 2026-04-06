@@ -5,6 +5,7 @@ export interface RobotState {
     timestamp: number;
     command?: RobotCommand;
     order?: Order;
+    productBeingPicked?: OrderedProduct
 }
 
 export interface Position {
@@ -15,6 +16,7 @@ export interface Position {
 export interface RobotCommand {
     move: RobotMove;
     stopDurationMs: number | undefined
+    orderedProduct: OrderedProduct | undefined
 }
 
 export type RobotMove = "forward" | "back" | "left" | "right" | "stop";
@@ -38,6 +40,7 @@ export interface OrderDto {
 export interface Order {
     orderId: string;
     orderedProducts: OrderedProduct[];
+    pickedProducts: OrderedProduct[];
     tspAlgorithm: TspAlgorithms;
     timestamp: number;
     distance: number;

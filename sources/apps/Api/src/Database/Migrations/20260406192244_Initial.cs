@@ -28,7 +28,7 @@ namespace Api.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OrderedProduct",
+                name: "Orders_OrderedProducts",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -40,9 +40,31 @@ namespace Api.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrderedProduct", x => new { x.OrderId, x.Id });
+                    table.PrimaryKey("PK_Orders_OrderedProducts", x => new { x.OrderId, x.Id });
                     table.ForeignKey(
-                        name: "FK_OrderedProduct_Orders_OrderId",
+                        name: "FK_Orders_OrderedProducts_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "OrderId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Orders_PickedProducts",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    OrderId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Position_X = table.Column<int>(type: "integer", nullable: false),
+                    Position_Y = table.Column<int>(type: "integer", nullable: false),
+                    Quantity = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders_PickedProducts", x => new { x.OrderId, x.Id });
+                    table.ForeignKey(
+                        name: "FK_Orders_PickedProducts_Orders_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Orders",
                         principalColumn: "OrderId",
@@ -54,7 +76,10 @@ namespace Api.Database.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "OrderedProduct");
+                name: "Orders_OrderedProducts");
+
+            migrationBuilder.DropTable(
+                name: "Orders_PickedProducts");
 
             migrationBuilder.DropTable(
                 name: "Orders");

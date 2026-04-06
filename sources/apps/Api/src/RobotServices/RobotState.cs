@@ -11,6 +11,7 @@ public class RobotState
     public RobotEventEnum? Event { get; set; }
     public double? Timestamp { get; set; }
     public Order? Order { get; set; }
+    public OrderedProduct? ProductBeingPicked { get; set; }
 
     public void StartPicking(Order order)
     {
@@ -34,5 +35,6 @@ public class RobotState
         Event = null;
         Timestamp = null;
         Order = null;
+        ProductBeingPicked = null;
     }
 }

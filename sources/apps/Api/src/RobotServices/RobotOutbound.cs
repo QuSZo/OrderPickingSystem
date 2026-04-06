@@ -57,12 +57,35 @@ public class RobotOutbound : IHostedService
 
         Position newPosition = _robotState.Position; 
         DirectionEnum newDirection = _robotState.Direction; 
-        if (robotStatusDto.Command != null && robotStatusDto.Command.Move != RobotMoveEnum.Stop)
+
+        if (robotStatusDto.Event == RobotEventEnum.Movement && robotStatusDto.Command != null)
         {
-            newPosition = RobotOperation.CalculatePosition(_robotState.Position, _robotState.Direction, robotStatusDto.Command.Move);
-            newDirection = RobotOperation.FindNewDirection(_robotState.Position.X, _robotState.Position.Y, newPosition.X, newPosition.Y);
+            if (robotStatusDto.Command.Move == RobotMoveEnum.Stop)
+            {
+                if (_robotState.Order != null)
+                {
+                    _robotState.ProductBeingPicked = robotStatusDto.Command.OrderedProduct;
+                }
+            }
+            else
+            {
+                newPosition = RobotOperation.CalculatePosition(_robotState.Position, _robotState.Direction, robotStatusDto.Command.Move);
+                newDirection = RobotOperation.FindNewDirection(_robotState.Position.X, _robotState.Position.Y, newPosition.X, newPosition.Y);
+
+                if (_robotState.Order != null && _robotState.ProductBeingPicked != null)
+                {
+                    using (IServiceScope? scope = _serviceProvider.CreateScope())
+                    {
+                        IOrdersRepository ordersRepository = scope.ServiceProvider.GetRequiredService<IOrdersRepository>();
+                        Order order = ordersRepository.AddPickedProduct(_robotState.Order.OrderId, _robotState.ProductBeingPicked);
+                        _robotState.Order = order;
+                    }
+                    _robotState.ProductBeingPicked = null;
+                }
+            }
         }
-        if (robotStatusDto.Event == RobotEventEnum.Finished)
+
+        else if (robotStatusDto.Event == RobotEventEnum.Finished)
         {
             if (_robotState.Order != null)
             {

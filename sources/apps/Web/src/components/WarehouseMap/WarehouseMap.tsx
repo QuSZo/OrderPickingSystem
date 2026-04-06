@@ -92,6 +92,12 @@ export default function WarehouseMap({ rows, cols, stops, robotState }: Warehous
         </g>
       ))}
 
+      {robotState?.order?.pickedProducts.map((pickedProduct) => (
+        <g>
+          <circle cx={pickedProduct.position.x*CELL_SIZE_X} cy={pickedProduct.position.y*CELL_SIZE_Y/6} r={10} fill="green" />
+        </g>
+      ))}
+
       <circle cx={robotX} cy={robotY} r={18} fill="red" />
 
       {(() => {

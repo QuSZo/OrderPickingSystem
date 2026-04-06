@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Api.Database.Migrations
 {
     [DbContext(typeof(OrderPickingDbContext))]
-    [Migration("20260403154229_Initial")]
+    [Migration("20260406192244_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -71,7 +71,7 @@ namespace Api.Database.Migrations
 
                             b1.HasKey("OrderId", "Id");
 
-                            b1.ToTable("OrderedProduct");
+                            b1.ToTable("Orders_OrderedProducts");
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderId");
@@ -92,7 +92,56 @@ namespace Api.Database.Migrations
 
                                     b2.HasKey("OrderedProductOrderId", "OrderedProductId");
 
-                                    b2.ToTable("OrderedProduct");
+                                    b2.ToTable("Orders_OrderedProducts");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("OrderedProductOrderId", "OrderedProductId");
+                                });
+
+                            b1.Navigation("Position")
+                                .IsRequired();
+                        });
+
+                    b.OwnsMany("Api.Orders.OrderedProduct", "PickedProducts", b1 =>
+                        {
+                            b1.Property<Guid>("OrderId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<Guid>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Name")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<int>("Quantity")
+                                .HasColumnType("integer");
+
+                            b1.HasKey("OrderId", "Id");
+
+                            b1.ToTable("Orders_PickedProducts");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+
+                            b1.OwnsOne("Api.RobotOperations.Position", "Position", b2 =>
+                                {
+                                    b2.Property<Guid>("OrderedProductOrderId")
+                                        .HasColumnType("uuid");
+
+                                    b2.Property<Guid>("OrderedProductId")
+                                        .HasColumnType("uuid");
+
+                                    b2.Property<int>("X")
+                                        .HasColumnType("integer");
+
+                                    b2.Property<int>("Y")
+                                        .HasColumnType("integer");
+
+                                    b2.HasKey("OrderedProductOrderId", "OrderedProductId");
+
+                                    b2.ToTable("Orders_PickedProducts");
 
                                     b2.WithOwner()
                                         .HasForeignKey("OrderedProductOrderId", "OrderedProductId");
@@ -103,6 +152,8 @@ namespace Api.Database.Migrations
                         });
 
                     b.Navigation("OrderedProducts");
+
+                    b.Navigation("PickedProducts");
                 });
 #pragma warning restore 612, 618
         }

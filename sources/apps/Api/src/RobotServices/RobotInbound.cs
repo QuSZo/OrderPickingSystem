@@ -54,6 +54,7 @@ public class RobotInbound
         {
             OrderId = Guid.NewGuid(),
             OrderedProducts = orderDto.OrderedProducts,
+            PickedProducts = new List<OrderedProduct>(),
             TspAlgorithm = orderDto.TspAlgorithm,
             Timestamp = orderDto.Timestamp,
             Distance = result.TotalWeight,
@@ -112,7 +113,7 @@ public class RobotInbound
             OrderedProduct? orderedProductOnPosition = orderedProducts.SingleOrDefault(orderedProduct => orderedProduct.Position == positions[i]);
             if (orderedProductOnPosition != null)
             {
-                RobotCommand stopCommand = new RobotCommand() { Move = RobotMoveEnum.Stop, StopDurationMs = orderedProductOnPosition.Quantity * StopDurationMsForOne};
+                RobotCommand stopCommand = new RobotCommand() { Move = RobotMoveEnum.Stop, StopDurationMs = orderedProductOnPosition.Quantity * StopDurationMsForOne, OrderedProduct = orderedProductOnPosition };
                 moves.Add(stopCommand);
             }
 

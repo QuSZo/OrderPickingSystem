@@ -14,10 +14,18 @@ public class InMemoryOrdersRepository : IOrdersRepository
         _historicalOrders.Add(order);
     }
 
-    public Order SetFinishPickingTime(Guid? id)
+    public Order SetFinishPickingTime(Guid id)
     {
         Order order = _historicalOrders.Single(order => order.OrderId == id);
         order.FinishPickingTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+        return order;
+    }
+
+    public Order AddPickedProduct(Guid id, OrderedProduct orderedProduct)
+    {
+        Order order = _historicalOrders.Single(order => order.OrderId == id);
+        order.PickedProducts.Add(orderedProduct);
 
         return order;
     }
