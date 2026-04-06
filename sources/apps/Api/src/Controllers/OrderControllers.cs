@@ -38,7 +38,14 @@ public class OrderControllers : ControllerBase
     {
         _logger.LogInformation("Handle api call to buy and collect products");
 
-        await _robotInbound.StartPicking(orderDto);
+        try
+        {
+            await _robotInbound.StartPicking(orderDto);
+        }
+        catch (Exception excepion)
+        {
+            return BadRequest(excepion.Message);
+        }
         
         return Ok();
     }

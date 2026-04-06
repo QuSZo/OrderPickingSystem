@@ -42,6 +42,12 @@ public class RobotInbound
     {
         _logger.LogInformation("Processing message from server with new products to pick");
 
+        if (_robotState.Event != null)
+        {
+            _logger.LogError("You cannot send commands if the robot is already processing some");
+            throw new InvalidOperationException("You cannot send commands if the robot is already processing some");
+        }
+
         List<Position> robotStops = PrepareRobotStops(orderDto.OrderedProducts);
         TspAlgorithmResult result = _algorithmProvider.GetAlgorithm(orderDto.TspAlgorithm).FindPath(robotStops);
 
@@ -75,6 +81,12 @@ public class RobotInbound
 
     private async Task SendCommands(RobotCommandDto commands)
     {
+        if (_robotState.Event != null)
+        {
+            _logger.LogError("You cannot send commands if the robot is already processing some");
+            throw new InvalidOperationException("You cannot send commands if the robot is already processing some");
+        }
+
         string message = Serializer.Serialize(commands);
         await _mqttProducer.PublishAsync(MqttTopics.RobotCommand, message);
     }

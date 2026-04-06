@@ -32,7 +32,15 @@ public class RobotController : ControllerBase
     public async Task<ActionResult<string>> RobotCommand([FromBody] RobotCommandDto commands)
     {
         _logger.LogInformation("Handle api call with new robot commands");
-        await _robotInbound.SendRawCommands(commands);
+        
+        try
+        {
+            await _robotInbound.SendRawCommands(commands);
+        }
+        catch (Exception excepion)
+        {
+            return BadRequest(excepion.Message);
+        }
         
         return Ok();
     }
