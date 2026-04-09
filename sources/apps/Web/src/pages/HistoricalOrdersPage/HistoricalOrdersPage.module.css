@@ -1,26 +1,7 @@
 .container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     gap: 50px;
-}
-
-.leftContainer {
-    display: flex;
-    flex-direction: column;
-    width: 85%;
-}
-
-.rightContainer {
-    display: flex;
-    flex-direction: column;
-    width: 15%;
-    gap: 20px;
-}
-
-.buttonOrderAgain {
-    background-color: #71b176;
-    font-size: 13px;
-    padding: 0.3em 0.6em;
 }
 
 .arrow {
@@ -70,4 +51,13 @@ tr:nth-child(even) {
 
 tr:hover {
     background-color: #d8d8d8;
+}
+
+.select {
+    background-color: #71b176;
+    font-weight: 500;
+}
+
+.select option {
+    background-color: white;
 }

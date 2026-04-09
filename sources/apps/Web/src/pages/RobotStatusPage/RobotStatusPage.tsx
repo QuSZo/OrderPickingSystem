@@ -15,6 +15,16 @@ export default function RobotStatusPage() {
     const [robotState, setRobotState] = useState<RobotState | null>(null);
     const [elapsedTime, setElapsedTime] = useState<number>(0);
 
+    const robotProperties = [
+        ["Algorytm", robotState?.order?.tspAlgorithm],
+        ["Dystans", robotState?.order?.distance ? `${robotState?.order?.distance.toString()} cm` : undefined],
+        ["Akcja", robotState?.event],
+        ["Wykonany ruch", robotState?.command?.move],
+        ["Ostatnia synchronizacja", robotState?.timestamp ? new Date(robotState.timestamp * 1000).toLocaleString() : undefined],
+        ["Czas operacji", robotState?.order?.startPickingTime ? formatDuration(elapsedTime) : undefined],
+        ["Poziom zrealizowania zamówienia (%)", undefined]
+    ]
+
     useEffect(() => {
         fetch(ROBOT_STATE_API_URL)
             .then((response) => response.json())
@@ -70,13 +80,26 @@ export default function RobotStatusPage() {
             <div className={styles.leftContainer}>
                 <div className={styles.robotStatus}>
                     <h3>Status robota</h3>
-                    <TextContainer title="Akcja" text={robotState?.event}></TextContainer>
-                    <TextContainer title="Wykonany ruch" text={robotState?.command?.move}></TextContainer>
-                    <TextContainer title="Ostatnia synchronizacja" text={robotState?.timestamp ? new Date(robotState.timestamp * 1000).toLocaleString() : undefined}></TextContainer>
-                    <TextContainer title="Czas operacji" text={robotState?.order?.startPickingTime ? formatDuration(elapsedTime) : undefined} />
-                    <TextContainer title="Przejechana odległość" text={undefined} />
-                    <TextContainer title="Algorytm" text={robotState?.order?.tspAlgorithm} />
-                    <TextContainer title="Dystans" text={robotState?.order?.distance ? `${robotState?.order?.distance.toString()} cm` : undefined} />
+                    <table className={styles.table}>
+                        <thead>
+                            <tr>
+                                <th>Właściwość</th>
+                                <th>Wartość</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {robotProperties.map((robotProperty) => {
+                                const [label, value] = robotProperty;
+
+                                return (
+                                    <tr>
+                                        <td>{label}</td>
+                                        <td><TextContainer text={value}></TextContainer></td>
+                                    </tr>
+                                )
+                            })}
+                        </tbody>
+                    </table>
                 </div>
             </div>
             <div className={styles.rightContainer}>

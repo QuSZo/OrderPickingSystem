@@ -184,12 +184,13 @@ export default function OrderPage() {
             <ToastContainer />
             <div className={styles.container}>
                 <div className={styles.leftContainer}>
+                    <h3>Lista produktów</h3>
                     <table className={styles.table}>
                         <thead>
                             <tr>
                                 <th>Produkt</th>
                                 <th>Pozycja</th>
-                                <th>Czy pobrać?</th>
+                                <th className={styles.columnTh}></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -198,7 +199,7 @@ export default function OrderPage() {
                                 <td>{product.name}</td>
                                 <td>x:{product.position.x} y:{product.position.y}</td>
                                 <td>
-                                    <button onClick={() => selectProduct(product)} className={styles.buttonAddProduct}>Dodaj</button>
+                                    <button onClick={() => selectProduct(product)} className={styles.buttonAddProduct}>+</button>
                                 </td>
                             </tr>
                         ))}
@@ -237,12 +238,12 @@ export default function OrderPage() {
                         )}
                     </div>
                     <div className={styles.orderSummaryContainer}>
-                        <h2>Podsumowanie</h2>
+                        <h3>Podsumowanie</h3>
                         <div className={styles.summary}>
-                            <h4>Łącznie produktów: {orderedProducts.length}</h4>
-                            <h4>Łączna ilość: {orderedProducts.reduce((sum, product) => sum + product.quantity, 0)}</h4>
+                            <p>Łącznie produktów: {orderedProducts.length}</p>
+                            <p>Łączna ilość: {orderedProducts.reduce((sum, product) => sum + product.quantity, 0)}</p>
                             <div className={styles.algorithmContainer}>
-                                <h4>Algorytm</h4>
+                                <p>Algorytm</p>
                                 <select value={selectedAlgorithm} onChange={(e) => setSelectedAlgorithm(e.target.value as TspAlgorithms)}>
                                     {algorithms.map((alg) => (
                                         <option key={alg} value={alg}>
@@ -282,21 +283,21 @@ export default function OrderPage() {
                         </div>
                         {randomMode == "cluster" && (
                             <div>
-                                <label>Liczba klastrów</label>
+                                <label>Liczba alejek: </label>
                                 <input type="number" min={1} max={productCountToRandomSelect} value={clusterCountToRandomSelect} onChange={(e) => setClusterCountToRandomSelect(Number(e.target.value))}/>
                                 {clusterCountToRandomSelect > productCountToRandomSelect && (
                                     <p className={styles.error}>
-                                        Liczba klastrów nie może być większa niż liczba produktów do wylosowania
+                                        Liczba alejek nie może być większa niż liczba produktów do wylosowania
                                     </p>
                                 )}
                                 {clusterCountToRandomSelect < Math.ceil(productCountToRandomSelect / WarehouseMapStops) && (
                                     <p className={styles.error}>
-                                        Minimalna liczba klastrów dla {productCountToRandomSelect} produktów to {Math.ceil(productCountToRandomSelect / WarehouseMapStops)}
+                                        Minimalna liczba alejek dla {productCountToRandomSelect} produktów to {Math.ceil(productCountToRandomSelect / WarehouseMapStops)}
                                     </p>
                                 )}
                                 {clusterCountToRandomSelect < 1 && (
                                     <p className={styles.error}>
-                                        Liczba klastrów nie może być mniejsza niż 1
+                                        Liczba alejek nie może być mniejsza niż 1
                                     </p>
                                 )}
                             </div>
