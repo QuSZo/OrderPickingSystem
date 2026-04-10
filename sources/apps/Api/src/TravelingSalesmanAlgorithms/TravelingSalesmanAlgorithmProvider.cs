@@ -4,6 +4,7 @@ using Api.TravelingSalesmanAlgorithms.AStarGreedyAlgorithms;
 using Api.TravelingSalesmanAlgorithms.NaiveAlgorithms;
 using Api.TravelingSalesmanAlgorithms.DijkstraGreedyAlgorithms;
 using Api.TravelingSalesmanAlgorithms.NetworkxAlgorithms;
+using Api.TravelingSalesmanAlgorithms.HeldKarpAlgorithms;
 
 namespace Api.TravelingSalesmanAlgorithms;
 
@@ -26,6 +27,8 @@ public class TravelingSalesmanAlgorithmProvider
                 return new DijkstraGreedyAlgorithm(_loggerFactory);
             case TspAlgorithmsEnum.AStarZachłanny:
                 return new AStarGreedyAlgorithm(_loggerFactory);
+            case TspAlgorithmsEnum.HeldKarp:
+                return new HeldKarpAlgorithm(_loggerFactory);
             case TspAlgorithmsEnum.Networkx:
                 return new NetworkxAlgorithm(_loggerFactory);
             case TspAlgorithmsEnum.Naiwny:
