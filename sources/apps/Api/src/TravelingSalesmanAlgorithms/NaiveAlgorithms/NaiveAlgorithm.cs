@@ -1,13 +1,14 @@
 using Api.Logging;
 using Api.RobotOperations;
-using Api.TravelingSalesmanAlgorithms;
 using Python.Runtime;
 
-public class BruteForceAlgorithm : ITravelingSalesmanAlgorithm
+namespace Api.TravelingSalesmanAlgorithms.NaiveAlgorithms; 
+
+public class NaiveAlgorithm : ITravelingSalesmanAlgorithm
 {
     private readonly ILogger _logger;
 
-    public BruteForceAlgorithm(ILoggerFactory loggerFactory)
+    public NaiveAlgorithm(ILoggerFactory loggerFactory)
     {
         _logger = loggerFactory.CreateLoggerApi();
     }
@@ -30,7 +31,7 @@ public class BruteForceAlgorithm : ITravelingSalesmanAlgorithm
                 }));
             }
 
-            dynamic script = Py.Import("TravelingSalesmanAlgorithms.BruteForceAlgorithm.BruteForceAlgorithmScript");
+            dynamic script = Py.Import("TravelingSalesmanAlgorithms.NaiveAlgorithms.NaiveAlgorithmScript");
             dynamic result = script.find_path(pythonPositions);
 
             dynamic pyPath = result[0];

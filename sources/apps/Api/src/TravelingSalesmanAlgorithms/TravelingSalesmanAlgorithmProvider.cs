@@ -1,4 +1,9 @@
 using Api.Logging;
+using Api.TravelingSalesmanAlgorithms.BruteForceAlgorithms;
+using Api.TravelingSalesmanAlgorithms.AStarGreedyAlgorithms;
+using Api.TravelingSalesmanAlgorithms.NaiveAlgorithms;
+using Api.TravelingSalesmanAlgorithms.DijkstraGreedyAlgorithms;
+using Api.TravelingSalesmanAlgorithms.NetworkxAlgorithms;
 
 namespace Api.TravelingSalesmanAlgorithms;
 
@@ -17,12 +22,18 @@ public class TravelingSalesmanAlgorithmProvider
     {
         switch (tspAlgorithm)
         {
-            case TspAlgorithmsEnum.Zachłanny:
+            case TspAlgorithmsEnum.DijkstraZachłanny:
+                return new DijkstraGreedyAlgorithm(_loggerFactory);
+            case TspAlgorithmsEnum.AStarZachłanny:
+                return new AStarGreedyAlgorithm(_loggerFactory);
+            case TspAlgorithmsEnum.Networkx:
+                return new NetworkxAlgorithm(_loggerFactory);
+            case TspAlgorithmsEnum.Naiwny:
                 return new NaiveAlgorithm(_loggerFactory);
             case TspAlgorithmsEnum.BrutalnaSiła:
                 return new BruteForceAlgorithm(_loggerFactory);
             default:
-                return new NaiveAlgorithm(_loggerFactory);
+                return new AStarGreedyAlgorithm(_loggerFactory);
         }
     }
 }

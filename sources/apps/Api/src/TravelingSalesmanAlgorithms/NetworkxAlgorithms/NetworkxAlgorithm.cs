@@ -1,13 +1,14 @@
 using Api.Logging;
 using Api.RobotOperations;
-using Api.TravelingSalesmanAlgorithms;
 using Python.Runtime;
 
-public class NaiveAlgorithm : ITravelingSalesmanAlgorithm
+namespace Api.TravelingSalesmanAlgorithms.NetworkxAlgorithms; 
+
+public class NetworkxAlgorithm : ITravelingSalesmanAlgorithm
 {
     private readonly ILogger _logger;
 
-    public NaiveAlgorithm(ILoggerFactory loggerFactory)
+    public NetworkxAlgorithm(ILoggerFactory loggerFactory)
     {
         _logger = loggerFactory.CreateLoggerApi();
     }
@@ -30,7 +31,7 @@ public class NaiveAlgorithm : ITravelingSalesmanAlgorithm
                 }));
             }
 
-            dynamic script = Py.Import("TravelingSalesmanAlgorithms.NaiveAlgorithm.NaiveAlgorithmScript");
+            dynamic script = Py.Import("TravelingSalesmanAlgorithms.NetworkxAlgorithms.NetworkxAlgorithmScript");
             dynamic result = script.find_path(pythonPositions);
 
             dynamic pyPath = result[0];

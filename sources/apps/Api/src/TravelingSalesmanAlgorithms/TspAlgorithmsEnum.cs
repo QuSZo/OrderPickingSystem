@@ -2,6 +2,9 @@ namespace Api.TravelingSalesmanAlgorithms;
 
 public enum TspAlgorithmsEnum
 {
-    Zachłanny,
+    DijkstraZachłanny,
+    AStarZachłanny,
+    Networkx,
+    Naiwny,
     BrutalnaSiła
 }

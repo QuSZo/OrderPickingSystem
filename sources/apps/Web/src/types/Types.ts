@@ -55,9 +55,9 @@ export interface OrderedProduct {
     quantity: number;
 }
 
-export type TspAlgorithms = "Zachłanny" | "BrutalnaSiła";
+export type TspAlgorithms = "DijkstraZachłanny" | "AStarZachłanny" | "Networkx" | "Naiwny" | "BrutalnaSiła";
 
-export const algorithms: TspAlgorithms[] = ["Zachłanny", "BrutalnaSiła"];
+export const algorithms: TspAlgorithms[] = ["DijkstraZachłanny", "AStarZachłanny", "Networkx", "Naiwny", "BrutalnaSiła"];
 
 export interface AverageDuration{
     algorithm: TspAlgorithms;
