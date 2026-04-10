@@ -27,9 +27,14 @@ def find_path(positions):
         
         full_path.extend(path[1:])
 
+    distances = []
+    for i in range(len(full_path)-1):
+        cost = nx.path_weight(graph, [full_path[i], full_path[i+1]], weight="weight")
+        distances.append(cost)
+
     total_weight = nx.path_weight(graph, full_path, weight="weight")
 
-    return full_path, total_weight
+    return full_path, total_weight, distances
 
 def held_karp(dist):
     n = len(dist)

@@ -48,7 +48,7 @@ class RobotController:
                 time.sleep(command["stopDurationMs"]/1000)
             elif command:
                 self._simulate_movement(command)
-                time.sleep(1)
+                time.sleep(command["distance"]/30)
             else:
                 self._is_running = False
                 self._publish_finished()

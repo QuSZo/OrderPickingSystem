@@ -17,6 +17,7 @@ public class DijkstraGreedyAlgorithm : ITravelingSalesmanAlgorithm
     {
         List<Position> path = new List<Position>();
         double totalWeight;
+        List<double> distances = new List<double>();
 
         using (Py.GIL())
         {
@@ -36,6 +37,7 @@ public class DijkstraGreedyAlgorithm : ITravelingSalesmanAlgorithm
 
             dynamic pyPath = result[0];
             totalWeight = result[1];
+            dynamic pyDistances = result[2];
 
             foreach (PyObject node in pyPath)
             {
@@ -45,9 +47,14 @@ public class DijkstraGreedyAlgorithm : ITravelingSalesmanAlgorithm
                 path.Add(new Position() { X = x, Y = y });
             }
 
+            foreach (PyObject cost in pyDistances)
+            {
+                distances.Add(cost.As<double>());
+            }
+
             _logger.LogInformation($"Python script has been executed. Total distance: {totalWeight}, found path: { string.Join(" -> ", path.Select(p => $"({p.X},{p.Y})")) }");
         }
 
-        return new TspAlgorithmResult() { Path = path, TotalWeight = totalWeight};
+        return new TspAlgorithmResult() { Path = path, TotalWeight = totalWeight, Distances = distances};
     }
 }

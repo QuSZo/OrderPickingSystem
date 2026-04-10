@@ -33,6 +33,11 @@ def find_path(positions):
 
         full_path.extend(path)
 
+    distances = []
+    for i in range(len(full_path)-1):
+        cost = nx.path_weight(graph, [full_path[i], full_path[i+1]], weight="weight")
+        distances.append(cost)
+
     total_weight = sum(graph[u][v]["weight"] for u, v in zip(full_path, full_path[1:]))
 
-    return full_path, total_weight
+    return full_path, total_weight, distances

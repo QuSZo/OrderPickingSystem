@@ -52,7 +52,7 @@ public class RobotInbound
         TspAlgorithmResult result = _algorithmProvider.GetAlgorithm(orderDto.TspAlgorithm).FindPath(robotStops);
 
         DirectionEnum startDirection = _robotState.Direction;
-        List<RobotCommand> moves = GenerateCommands(result.Path, startDirection, orderDto.OrderedProducts);
+        List<RobotCommand> moves = GenerateCommands(result.Path, startDirection, orderDto.OrderedProducts, result.Distances);
 
         RobotCommandDto commands = new RobotCommandDto() { Commands = moves };
 
@@ -106,7 +106,7 @@ public class RobotInbound
         return positionsToSee;
     }
 
-    private List<RobotCommand> GenerateCommands(List<Position> positions, DirectionEnum startDirection, List<OrderedProduct> orderedProducts)
+    private List<RobotCommand> GenerateCommands(List<Position> positions, DirectionEnum startDirection, List<OrderedProduct> orderedProducts, List<double> distances)
     {
         _logger.LogInformation("Generating robot moves from positions");
 
@@ -134,7 +134,7 @@ public class RobotInbound
             DirectionEnum newDirection = RobotOperation.FindNewDirection(x_prev, y_prev, x_next, y_next);
             RobotMoveEnum newMove = RobotOperation.GenerateMove(oldDirection, newDirection);
 
-            RobotCommand command = new RobotCommand() { Move = newMove};
+            RobotCommand command = new RobotCommand() { Move = newMove, Distance = distances[i]};
             moves.Add(command);
 
             oldDirection = newDirection;

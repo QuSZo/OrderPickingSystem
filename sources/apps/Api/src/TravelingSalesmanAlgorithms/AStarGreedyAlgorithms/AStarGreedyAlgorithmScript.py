@@ -38,6 +38,11 @@ def find_path(positions):
     path_to_start = nx.astar_path(graph, source=current_source, target=end, heuristic=lambda a, b: (abs(a[0]-b[0]) + abs(a[1]-b[1]))*min_weight, weight="weight")
     full_path.extend(path_to_start[1:])
 
+    distances = []
+    for i in range(len(full_path)-1):
+        cost = nx.path_weight(graph, [full_path[i], full_path[i+1]], weight="weight")
+        distances.append(cost)
+
     total_weight = nx.path_weight(graph, full_path, weight="weight")
 
-    return full_path, total_weight
+    return full_path, total_weight, distances
