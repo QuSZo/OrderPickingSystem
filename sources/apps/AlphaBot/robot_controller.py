@@ -36,6 +36,7 @@ class RobotController:
         self._publish_stopped()
 
     def _process_commands(self):
+        time.sleep(3)
         while self._is_running:
             command = None
 

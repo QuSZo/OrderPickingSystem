@@ -55,9 +55,6 @@ public class RobotOutbound : IHostedService
             return;
         }
 
-        Position newPosition = _robotState.Position; 
-        DirectionEnum newDirection = _robotState.Direction; 
-
         if (robotStatusDto.Event == RobotEventEnum.Movement && robotStatusDto.Command != null)
         {
             if (robotStatusDto.Command.Move == RobotMoveEnum.Stop)
@@ -65,12 +62,22 @@ public class RobotOutbound : IHostedService
                 if (_robotState.Order != null)
                 {
                     _robotState.ProductBeingPicked = robotStatusDto.Command.OrderedProduct;
+                    _robotState.CurrentPosition = new Position() { X = _robotState.NextPosition.X, Y = _robotState.NextPosition.Y };
                 }
             }
             else
             {
-                newPosition = RobotOperation.CalculatePosition(_robotState.Position, _robotState.Direction, robotStatusDto.Command.Move);
-                newDirection = RobotOperation.FindNewDirection(_robotState.Position.X, _robotState.Position.Y, newPosition.X, newPosition.Y);
+                if (_robotState.NextPosition != null)
+                {
+                    _robotState.CurrentPosition = new Position() { X = _robotState.NextPosition.X, Y = _robotState.NextPosition.Y };
+                }
+
+                _robotState.NextPosition = RobotOperation.CalculatePosition(_robotState.CurrentPosition, _robotState.Direction, robotStatusDto.Command.Move);
+                _robotState.Direction = RobotOperation.FindNewDirection(
+                    _robotState.CurrentPosition.X, 
+                    _robotState.CurrentPosition.Y, 
+                    _robotState.NextPosition.X, 
+                    _robotState.NextPosition.Y);
 
                 if (_robotState.Order != null && _robotState.ProductBeingPicked != null)
                 {
@@ -87,6 +94,8 @@ public class RobotOutbound : IHostedService
 
         else if (robotStatusDto.Event == RobotEventEnum.Finished)
         {
+            _robotState.CurrentPosition = new Position() { X = _robotState.NextPosition.X, Y = _robotState.NextPosition.Y };
+
             if (_robotState.Order != null)
             {
                 using (IServiceScope? scope = _serviceProvider.CreateScope())
@@ -98,7 +107,9 @@ public class RobotOutbound : IHostedService
             }
         }
 
-        _robotState.Update(newPosition, newDirection, robotStatusDto.Command, robotStatusDto.Event, robotStatusDto.Timestamp);
+        _robotState.Command = robotStatusDto.Command;
+        _robotState.Event = robotStatusDto.Event;
+        _robotState.Timestamp = robotStatusDto.Timestamp;
 
         string robotStateMessage = Serializer.Serialize(_robotState);
         await _robotStateHubService.SendMessageAsync(robotStateMessage);

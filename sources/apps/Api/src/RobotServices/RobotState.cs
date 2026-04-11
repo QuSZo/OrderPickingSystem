@@ -5,7 +5,8 @@ namespace Api.RobotServices;
 
 public class RobotState
 {
-    public Position Position { get; set; } = new Position() { X = 0, Y = 0 };
+    public Position CurrentPosition { get; set; } = new Position() { X = 0, Y = 0 };
+    public Position? NextPosition { get; set; }
     public DirectionEnum Direction { get; set; } = DirectionEnum.South;
     public RobotCommand? Command { get; set; }
     public RobotEventEnum? Event { get; set; }
@@ -18,18 +19,10 @@ public class RobotState
         Order = order;
     }
 
-    public void Update(Position position, DirectionEnum direction, RobotCommand? command, RobotEventEnum currEvent, double timestamp)
-    {
-        Position = position;
-        Direction = direction;
-        Command = command;
-        Event = currEvent;
-        Timestamp = timestamp;
-    }
-
     public void Reset()
     {
-        Position = new Position() { X = 0, Y = 0 };
+        CurrentPosition = new Position() { X = 0, Y = 0 };
+        NextPosition = null;
         Direction = DirectionEnum.South;
         Command = null;
         Event = null;

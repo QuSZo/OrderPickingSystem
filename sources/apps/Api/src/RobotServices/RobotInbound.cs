@@ -93,7 +93,7 @@ public class RobotInbound
 
     private List<Position> PrepareRobotStops(List<OrderedProduct> orderedProducts)
     {
-        Position startPosition = _robotState.Position;
+        Position startPosition = _robotState.CurrentPosition;
         Position finishPosition = startPosition;
 
         List<Position> positionsToSee = new List<Position>();

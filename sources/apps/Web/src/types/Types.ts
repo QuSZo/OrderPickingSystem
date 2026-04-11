@@ -1,5 +1,6 @@
 export interface RobotState {
-    position: Position;
+    currentPosition: Position;
+    nextPosition?: Position; 
     direction: Direction;
     event: Event;
     timestamp: number;

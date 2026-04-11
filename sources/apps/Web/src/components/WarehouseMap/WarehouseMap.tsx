@@ -29,12 +29,13 @@ const getDirectionOffset = (direction: Direction) => {
 export default function WarehouseMap({ rows, cols, stops, robotState }: WarehouseMapProps) {
   const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
   const [direction, setDirection] = useState<Direction>("south");
+  const [visitedPositions, setVisitedPositions] = useState<Position[]>([]);
 
   useEffect(() => {
-    if (!robotState || robotState.event !== "movement") return;
-    if (!robotState.command) return;
+    if (!robotState) return;
 
-    setPosition(robotState.position);
+    setPosition(robotState.currentPosition);
+    setVisitedPositions(prev => [...prev, robotState.currentPosition]);
     setDirection(robotState.direction);
 
   }, [robotState]);
@@ -91,6 +92,19 @@ export default function WarehouseMap({ rows, cols, stops, robotState }: Warehous
           <text fontWeight="bold" x={orderedProduct.position.x*CELL_SIZE_X + 20} y={orderedProduct.position.y*CELL_SIZE_Y/6 + 5}>{orderedProduct.name}</text>
         </g>
       ))}
+
+      {visitedPositions.slice(1).map((position, i) => {
+        const prevPosition = visitedPositions[i];
+        return (
+        <line
+          key={`path-${i}`}
+          x1={prevPosition.x * CELL_SIZE_X}
+          y1={prevPosition.y * CELL_SIZE_Y / 6}
+          x2={position.x * CELL_SIZE_X}
+          y2={position.y * CELL_SIZE_Y / 6}
+          stroke="green"
+        />
+      )})}
 
       {robotState?.order?.pickedProducts.map((pickedProduct) => (
         <g>
