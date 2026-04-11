@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { Direction, Position, RobotState } from "../../types/Types";
 
 interface WarehouseMapProps {
@@ -27,24 +27,70 @@ const getDirectionOffset = (direction: Direction) => {
 };
 
 export default function WarehouseMap({ rows, cols, stops, robotState }: WarehouseMapProps) {
-  const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
-  const [direction, setDirection] = useState<Direction>("south");
   const [visitedPositions, setVisitedPositions] = useState<Position[]>([]);
+
+  const robotRef = useRef<SVGCircleElement | null>(null);
+  const directionRef = useRef<SVGCircleElement | null>(null);
 
   useEffect(() => {
     if (!robotState) return;
 
-    setPosition(robotState.currentPosition);
-    setVisitedPositions(prev => [...prev, robotState.currentPosition]);
-    setDirection(robotState.direction);
+    setVisitedPositions(prev => {
+      const last = prev[prev.length - 1];
+      if (!last || last.x !== robotState.currentPosition.x || last.y !== robotState.currentPosition.y) {
+        return [...prev, robotState.currentPosition];
+      }
+      return prev;
+    });
+
+    const start = robotState.currentPosition;
+    const end = robotState.nextPosition ?? robotState.currentPosition;
+
+    const duration = 5000;
+    let startTime: number | null = null;
+    let animationFrameId: number;
+
+    const animate = (time: number) => {
+      if (!startTime) {
+        startTime = time;
+      }
+
+      const linear = (time - startTime) / duration;
+      const progress = Math.min(1, 1 - Math.pow(1 - linear, 3));
+
+      const newPosition = {
+        x: start.x + (end.x - start.x) * progress,
+        y: start.y + (end.y - start.y) * progress,
+      };
+
+      const robotX = newPosition.x * CELL_SIZE_X;
+      const robotY = newPosition.y * CELL_SIZE_Y / 6;
+
+      if (robotRef.current) {
+        robotRef.current.setAttribute("cx", String(robotX));
+        robotRef.current.setAttribute("cy", String(robotY));
+      }
+
+      const { dx, dy } = getDirectionOffset(robotState.direction);
+
+      if (directionRef.current) {
+        directionRef.current.setAttribute("cx", String(robotX + dx));
+        directionRef.current.setAttribute("cy", String(robotY + dy));
+      }
+
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(animate);
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(animate);
+
+    return () => cancelAnimationFrame(animationFrameId);
 
   }, [robotState]);
 
   const width = (cols - 1) * CELL_SIZE_X;
   const height = (rows - 1) * CELL_SIZE_Y;
-
-  const robotX = position.x * CELL_SIZE_X;
-  const robotY = position.y * CELL_SIZE_Y/6;
 
   const stopCount = (rows - 1) * stops + rows;
   
@@ -112,14 +158,8 @@ export default function WarehouseMap({ rows, cols, stops, robotState }: Warehous
         </g>
       ))}
 
-      <circle cx={robotX} cy={robotY} r={18} fill="red" />
-
-      {(() => {
-        const { dx, dy } = getDirectionOffset(direction);
-        return (
-        <circle cx={robotX + dx} cy={robotY + dy} r={6} fill="black"/>
-        );
-      })()}
+      <circle ref={robotRef} cx={0} cy={0} r={18} fill="red" />
+      <circle ref={directionRef} cx={0} cy={0} r={6} fill="black" />
     </svg>
   );
 }
