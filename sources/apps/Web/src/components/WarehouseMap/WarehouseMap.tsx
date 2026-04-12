@@ -149,6 +149,7 @@ export default function WarehouseMap({ rows, cols, stops, robotState }: Warehous
           x2={position.x * CELL_SIZE_X}
           y2={position.y * CELL_SIZE_Y / 6}
           stroke="green"
+          strokeWidth={4}
         />
       )})}
 
