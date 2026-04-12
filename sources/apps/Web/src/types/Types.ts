@@ -18,6 +18,7 @@ export interface RobotCommand {
     move: RobotMove;
     stopDurationMs: number | undefined
     orderedProduct: OrderedProduct | undefined
+    distance: number | undefined
 }
 
 export type RobotMove = "forward" | "back" | "left" | "right" | "stop";

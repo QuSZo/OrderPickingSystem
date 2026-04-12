@@ -10,7 +10,7 @@ export default function RobotStatusPage() {
     const [commands, setCommands] = useState<RobotCommand[]>([]);
 
     const addCommand = (move: RobotMove) => {
-        const command: RobotCommand = { move: move, stopDurationMs: undefined}
+        const command: RobotCommand = { move: move, stopDurationMs: undefined, orderedProduct: undefined, distance: 50}
         setCommands((prev) => [...prev, command]);
     };
 
