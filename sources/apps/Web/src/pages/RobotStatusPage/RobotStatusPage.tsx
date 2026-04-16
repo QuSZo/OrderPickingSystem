@@ -1,12 +1,13 @@
 import styles from './RobotStatusPage.module.css'
 import * as signalR from "@microsoft/signalr";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { API_URL } from '../../api/const';
 import { TextContainer } from '../../components/TextContainer/TextContainer';
 import WarehouseMap from '../../components/WarehouseMap/WarehouseMap';
 import type { RobotState } from '../../types/Types';
 import { formatDuration } from '../../utils/TimeUtils';
 import { WarehouseMapCols, WarehouseMapRows, WarehouseMapStops } from '../../const/const';
+import { toPng } from 'html-to-image';
 
 const ROBOT_SIGNALR_API_URL = API_URL + "api/robot-hub";
 const ROBOT_STATE_API_URL = API_URL + "api/robot/state";
@@ -14,6 +15,8 @@ const ROBOT_STATE_API_URL = API_URL + "api/robot/state";
 export default function RobotStatusPage() {
     const [robotState, setRobotState] = useState<RobotState | null>(null);
     const [elapsedTime, setElapsedTime] = useState<number>(0);
+
+    const warehouseMapRef = useRef<HTMLDivElement | null>(null);
 
     const robotProperties = [
         ["Algorytm", robotState?.order?.tspAlgorithm],
@@ -75,6 +78,16 @@ export default function RobotStatusPage() {
         return () => clearInterval(interval);
     }, [robotState]);
 
+    const screenshot = async () => {
+        if (!warehouseMapRef.current) return;
+
+        const dataUrl = await toPng(warehouseMapRef.current, {backgroundColor:"white"});
+        const link = document.createElement("a");
+        link.download = `order-robot-state_${new Date().toISOString().replace(/[:.]/g, "-")}.png`;
+        link.href = dataUrl;
+        link.click();
+    };
+
     return (
         <div className={styles.container}>
             <div className={styles.leftContainer}>
@@ -104,7 +117,12 @@ export default function RobotStatusPage() {
             </div>
             <div className={styles.rightContainer}>
                 <h3>Trasa robota</h3>
-                <WarehouseMap cols={WarehouseMapCols} rows={WarehouseMapRows} stops={WarehouseMapStops} robotState={robotState}></WarehouseMap>
+                <div ref={warehouseMapRef} className={styles.warehouseMapContainer}>
+                    <WarehouseMap cols={WarehouseMapCols} rows={WarehouseMapRows} stops={WarehouseMapStops} robotState={robotState}></WarehouseMap>
+                </div>
+                <div>
+                    <button className={styles.screenshot} onClick={() => screenshot()}>Pobierz stan mapy</button>
+                </div>
             </div>
         </div>
     );

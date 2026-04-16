@@ -23,3 +23,12 @@
   flex-direction: column;
   gap: 20px;
 }
+
+.warehouseMapContainer {
+  padding: 20px 40px;
+  width: fit-content;
+}
+
+.screenshot {
+  background-color: rgb(218, 218, 218);;
+}
