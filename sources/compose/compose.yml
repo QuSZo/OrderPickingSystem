@@ -16,7 +16,28 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql
+  migrate:
+    build:
+      context: ../../
+      dockerfile: sources/apps/Api/Dockerfile
+      target: ef
+    image: migrate:latest
+    profiles: ["migrate", "full"]
+    depends_on:
+      - db
+    command: >
+      bash -c "
+        until pg_isready -h db -U admin; do sleep 1; done;
+        cd /Api/src;
+        dotnet ef database update
+      "
   api:
+    build:
+      context: ../../
+      dockerfile: sources/apps/Api/Dockerfile
+      target: release
+      args:
+        PYTHONNET_PYDLL: ${PYTHONNET_PYDLL:-/usr/lib/x86_64-linux-gnu/libpython3.12.so}
     image: api:latest
     profiles: ["api", "full"]
     ports:
@@ -25,6 +46,12 @@ services:
       ASPNETCORE_URLS: http://+:8080
       PYTHONPATH: /app
   web:
+    build:
+      context: ../../
+      dockerfile: sources/apps/Web/Dockerfile
+      target: release
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8080/}
     image: web:latest
     profiles: ["web", "full"]
     ports:

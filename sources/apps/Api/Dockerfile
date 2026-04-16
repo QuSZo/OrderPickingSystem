@@ -2,6 +2,21 @@ ARG DOTNET_VERSION=10.0
 ARG LOCAL_APP_DIR=sources/apps/Api
 ARG APP_NAME=Api
 
+FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_VERSION} AS ef
+ARG DOTNET_VERSION
+ARG LOCAL_APP_DIR
+ARG APP_NAME
+
+RUN apt-get update && apt-get install -y postgresql-client
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+COPY ./${LOCAL_APP_DIR} /${APP_NAME}
+WORKDIR /${APP_NAME}/src
+
+RUN dotnet restore
+RUN dotnet build
+
 FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_VERSION} AS build
 ARG DOTNET_VERSION
 ARG LOCAL_APP_DIR
@@ -14,7 +29,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:${DOTNET_VERSION} AS release
 ARG DOTNET_VERSION
 ARG LOCAL_APP_DIR
 ARG APP_NAME
-ARG PYTHONNET_PYDLL
+ARG PYTHONNET_PYDLL=/usr/lib/x86_64-linux-gnu/libpython3.12.so
 
 RUN apt-get update && apt-get install -y python3 python3-dev python3-pip python3-venv && rm -rf /var/lib/apt/lists/*
 
