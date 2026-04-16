@@ -7,6 +7,7 @@ public class RobotState
 {
     public Position CurrentPosition { get; set; } = new Position() { X = 0, Y = 0 };
     public Position? NextPosition { get; set; }
+    public List<Position> VisitedPositions { get; set; } = new List<Position>();
     public DirectionEnum Direction { get; set; } = DirectionEnum.South;
     public RobotCommand? Command { get; set; }
     public RobotEventEnum? Event { get; set; }
@@ -23,6 +24,7 @@ public class RobotState
     {
         CurrentPosition = new Position() { X = 0, Y = 0 };
         NextPosition = null;
+        VisitedPositions = new List<Position>();
         Direction = DirectionEnum.South;
         Command = null;
         Event = null;

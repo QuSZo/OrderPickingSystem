@@ -35,13 +35,7 @@ export default function WarehouseMap({ rows, cols, stops, robotState }: Warehous
   useEffect(() => {
     if (!robotState) return;
 
-    setVisitedPositions(prev => {
-      const last = prev[prev.length - 1];
-      if (!last || last.x !== robotState.currentPosition.x || last.y !== robotState.currentPosition.y) {
-        return [...prev, robotState.currentPosition];
-      }
-      return prev;
-    });
+    setVisitedPositions(robotState.visitedPositions)
 
     const start = robotState.currentPosition;
     const end = robotState.nextPosition ?? robotState.currentPosition;

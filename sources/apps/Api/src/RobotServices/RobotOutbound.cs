@@ -107,6 +107,11 @@ public class RobotOutbound : IHostedService
             }
         }
 
+        if (_robotState.CurrentPosition != _robotState.VisitedPositions.LastOrDefault())
+        {
+            _robotState.VisitedPositions.Add(new Position() { X = _robotState.CurrentPosition.X, Y = _robotState.CurrentPosition.Y });
+        }
+        
         _robotState.Command = robotStatusDto.Command;
         _robotState.Event = robotStatusDto.Event;
         _robotState.Timestamp = robotStatusDto.Timestamp;
