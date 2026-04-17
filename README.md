@@ -3,19 +3,43 @@ Master's thesis - Autonomous order picking system based on the AlphaBot2 robot
 
 ![AlphaBot2 image](./assets/alphabot2.jpg)
 
-# Manual mapping of domain names to IP addresses
-Open `C:\Windows\System32\drivers\etc\hosts`  
-Add to file `127.0.0.1   mqtt-broker`  
-Add to file `127.0.0.1   postgres`
-
 # Docker
-## Building image
-You have to build image from main directory (it would work the same with github actions)  
+There are two ways to run the project in Docker - using scripts or manually
+
+## Scripts
+Use scripts from:
+```
+cd sources/scripts/local
+```
+or
+```
+cd sources/scripts/production
+```
+
+In Linux you need to add execute permission for each script:
+```
+chmod +x script_name.sh
+```
+
+Script descriptions:  
+`./run-and-build-containers.sh` - script builds and then runs all containers  
+`./run-containers.sh` - script runs all containers only  
+`./stop-containers.sh` - script stops and removes all containers  
+
+Remember that you have to run AlphaBot app from `Local run` step below.
+In case of any issue, try manually steps.
+
+## Manually
+
+### Building image
+You have to build image from main directory.
 ```
 docker build . -f sources/apps/{Selected Application}/Dockerfile --target release -t {Selected Application}:latest
 ```
 
-### Backend
+#### Backend
+Default python dll path for x86_64 architecture (64 bit) is `/usr/lib/x86_64-linux-gnu/libpython3.12.so`.  
+If you need to run project in another system you have to check this path.  
 Check python dll path: 
 ```
 docker run -it --rm mcr.microsoft.com/dotnet/aspnet:10.0 bash
@@ -35,43 +59,70 @@ Raspberry Pi OS
 docker build . -f sources/apps/Api/Dockerfile --target release --build-arg PYTHONNET_PYDLL=/usr/lib/arm-linux-gnueabihf/libpython3.12.so -t api:latest
 ```
 
-### Frontend
+#### Frontend
+Set correct API_URL.  
+If you want to run the project locally you can use localhost url.  
+If you want to deploy project on the server then set server url. 
+
+Examples:  
+Local WSL
+```
+docker build . -f sources/apps/Web/Dockerfile --target release --build-arg VITE_API_URL="http://localhost:8080/" -t web:latest
+```
+
+Server
 ```
 docker build . -f sources/apps/Web/Dockerfile --target release --build-arg VITE_API_URL="http://172.30.0.199:8080/" -t web:latest
 ```
 
-## Running containers
+### Running containers
 ```
 cd sources/compose  
-docker compose --profile {Selected profile} up --abort-on-container-exit; docker compose --profile {Selected profile} down
-```
-
-Before you will run backend service you have to update database.  
-Instal .NET CLI:
-```
-sudo apt-get update && sudo apt-get install -y dotnet-sdk-10.0
-```
-
-Then you have to install EF Core command-line tools:
-```
-dotnet tool install --global dotnet-ef
-```
-
-Then you can update database.
-```
-cd sources/apps/Api/src
-dotnet ef database update
+docker compose --profile {Selected profile} up; docker compose --profile {Selected profile} down
 ```
 
 Example for all services
 ```
 cd sources/compose  
-docker compose --profile full up --abort-on-container-exit; docker compose --profile full down
+docker compose --profile full up; docker compose --profile full down
 ```
 
+Example for separately run:
+```
+cd sources/compose 
+docker compose --profile api up; docker compose --profile api down
+docker compose --profile web up --abort-on-container-exit; docker compose --profile web down
+```
+
+Remember that you have to run AlphaBot app from `Local run` step below.
+
 # Local run
+
+## Manual mapping of domain names to IP addresses
+Open on Windows `C:\Windows\System32\drivers\etc\hosts`  
+Or on Linux `/etc/hosts`  
+Add to file `127.0.0.1   mqtt-broker`  
+Add to file `127.0.0.1   postgres`
+
+### Database and mqtt broker
+Remember that you need to use database and mqtt-broker to run backend service.  
+The easiest way to do it locally is to use docker (on Windows install docker on WSL)  
+Then run script:
+```
+cd sources/scripts/local/single_runs
+./run-stop-service-containers.sh
+```
+
+Or do it manually and run:
+```
+cd sources/compose
+docker compose up --abort-on-container-exit; docker compose down
+```
+
 ## Backend
+Install .NET  
 SDK: `.NET 10`  
+You can follow official Microsoft documentation: `https://learn.microsoft.com/en-us/dotnet/core/install/`  
 
 ### Local prerequisites
 .NET application uses `Python.NET` package. It means that you have to have installed `python` (Python 3.11).  
@@ -100,6 +151,7 @@ You have to set path to local modules/scripts and to packages installed in .venv
 C:\\{set_project_directory}\\OrderPickingSystem\\sources\\apps\\Api\\src;C:\\{set_project_directory}\\OrderPickingSystem\\sources\\apps\\Api\\.venv\\Lib\\site-packages
 ```
 
+#### Update database
 Before you will run backend service you have to update database.  
 You have to install EF Core command-line tools:
 ```
@@ -118,9 +170,10 @@ cd sources/apps/Api/src
 dotnet ef migrations add <migrationName> --output-dir Database/Migrations
 ```
 
-Finito. You can run backend application locally.
+Now you can run backend application locally using VS Code IDE from `Run and Debug` tab.
 
 ## Frontend
+Install node  
 Node version: `nodeJs v24.13.1`  
 
 ### first run
@@ -136,7 +189,6 @@ python -m venv .venv
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-python main.py
 ```
 
 RaspberryPi  
@@ -152,6 +204,14 @@ If you want to run it locally:
 If you want to run it on external device (raspberry pi):  
 `python main.py --simulate false --mqttBrokerUrl 172.30.0.199`  
 `python main.py --simulate false --mqttBrokerUrl 192.168.0.150`  
+
+If you want to run simulation in production
+`python main.py --simulate true --mqttBrokerUrl 172.30.0.199`  
+or run script
+```
+cd sources/scripts/production
+./run-robot-simulation.sh
+```
 
 In case of host key issues (after SD card change) remember to clean old ones:  
 `ssh-keygen -R 192.168.0.151`
