@@ -5,6 +5,11 @@ services:
       - "1883:1883"
     volumes:
       - ./mosquitto:/mosquitto
+    healthcheck:
+      test: ["CMD", "mosquitto_pub", "-h", "localhost", "-t", "healthcheck", "-m", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   db:
     image: postgres:18
     container_name: postgres
@@ -66,6 +71,16 @@ services:
     profiles: ["web", "full"]
     ports:
       - "3000:80"
+  alphabot-simulator:
+    build:
+      context: ../../
+      dockerfile: sources/apps/AlphaBot/Dockerfile
+      target: release
+    image: alphabot-simulator:latest
+    profiles: ["simulator"]
+    depends_on:
+      mqtt-broker:
+        condition: service_healthy
 
 volumes:
   postgres_data:
