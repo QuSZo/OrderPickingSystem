@@ -7,7 +7,6 @@ ARG DOTNET_VERSION
 ARG LOCAL_APP_DIR
 ARG APP_NAME
 
-RUN apt-get update && apt-get install -y postgresql-client
 RUN dotnet tool install --global dotnet-ef
 ENV PATH="$PATH:/root/.dotnet/tools"
 

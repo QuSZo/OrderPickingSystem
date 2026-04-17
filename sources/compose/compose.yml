@@ -16,18 +16,23 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d orderpickingsystem"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   migrate:
     build:
       context: ../../
       dockerfile: sources/apps/Api/Dockerfile
       target: ef
     image: migrate:latest
-    profiles: ["migrate", "full"]
+    profiles: ["migrate", "api", "full"]
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     command: >
       bash -c "
-        until pg_isready -h db -U admin; do sleep 1; done;
         cd /Api/src;
         dotnet ef database update
       "
@@ -40,6 +45,11 @@ services:
         PYTHONNET_PYDLL: ${PYTHONNET_PYDLL:-/usr/lib/x86_64-linux-gnu/libpython3.12.so}
     image: api:latest
     profiles: ["api", "full"]
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     ports:
       - "8080:8080"
     environment:
