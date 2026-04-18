@@ -7,15 +7,22 @@ Master's thesis - Autonomous order picking system based on the AlphaBot2 robot
 There are two ways to run the project in Docker - using scripts or manually
 
 ## Scripts
-Use scripts from:
-```
-cd sources/scripts/local
-```
-or
-```
-cd sources/scripts/production
-```
+### With robot
+If you would like to run project using physical robot:  
+`cd sources/scripts/local` - local run  
+or  
+`cd sources/scripts/production` - production run  
 
+Please note that you must run the AlphaBot application on your robot by following the steps in the:  
+`Local run -> AlphaBot app -> RaspberryPi (AlphaBot)` section below.
+
+### Without robot
+If you would like to run project with AlphaBot simulator:  
+`cd sources/scripts/local/run-simulator` - local run  
+or  
+`cd sources/scripts/production/run-simulator` - production run  
+
+### Descriptions
 In Linux you need to add execute permission for each script:
 ```
 chmod +x script_name.sh
@@ -26,13 +33,12 @@ Script descriptions:
 `./run-containers.sh` - script runs all containers only  
 `./stop-containers.sh` - script stops and removes all containers  
 
-Remember that you have to run AlphaBot app from `Local run` step below.
 In case of any issue, try manually steps.
 
 ## Manually
 
 ### Building image
-You have to build image from main directory.
+You have to build image from main directory (OrderPickingSystem).
 ```
 docker build . -f sources/apps/{Selected Application}/Dockerfile --target release -t {Selected Application}:latest
 ```
@@ -48,7 +54,7 @@ apt install -y python3 python3-dev
 find /usr -name "libpython3*.so"
 ```
 
-Examples:  
+Example backend builds:  
 WSL2 Debian / serwer
 ```
 docker build . -f sources/apps/Api/Dockerfile --target release --build-arg PYTHONNET_PYDLL=/usr/lib/x86_64-linux-gnu/libpython3.12.so -t api:latest
@@ -64,7 +70,7 @@ Set correct API_URL.
 If you want to run the project locally you can use localhost url.  
 If you want to deploy project on the server then set server url. 
 
-Examples:  
+Example frontend builds:  
 Local WSL
 ```
 docker build . -f sources/apps/Web/Dockerfile --target release --build-arg VITE_API_URL="http://localhost:8080/" -t web:latest
@@ -81,12 +87,24 @@ cd sources/compose
 docker compose --profile {Selected profile} up; docker compose --profile {Selected profile} down
 ```
 
-Example for all services
+#### With robot
+Example run for all services using physical robot:
 ```
 cd sources/compose  
 docker compose --profile full up; docker compose --profile full down
 ```
 
+Please note that you must run the AlphaBot application on your robot by following the steps in the:  
+`Local run -> AlphaBot app -> RaspberryPi (AlphaBot)` section below.
+
+#### Without robot
+Example run for all services with AlphaBot simulator:
+```
+cd sources/compose  
+docker compose --profile full --profile simulator up; docker compose --profile full --profile simulator down
+```
+
+#### Separately
 Example for separately run:
 ```
 cd sources/compose 
@@ -94,9 +112,7 @@ docker compose --profile api up; docker compose --profile api down
 docker compose --profile web up --abort-on-container-exit; docker compose --profile web down
 ```
 
-Remember that you have to run AlphaBot app from `Local run` step below.
-
-# Local run
+# Local run (helpful for local development)
 
 ## Manual mapping of domain names to IP addresses
 Open on Windows `C:\Windows\System32\drivers\etc\hosts`  
@@ -104,7 +120,7 @@ Or on Linux `/etc/hosts`
 Add to file `127.0.0.1   mqtt-broker`  
 Add to file `127.0.0.1   postgres`
 
-### Database and mqtt broker
+## Database and mqtt broker
 Remember that you need to use database and mqtt-broker to run backend service.  
 The easiest way to do it locally is to use docker (on Windows install docker on WSL)  
 Then run script:
@@ -176,43 +192,39 @@ Now you can run backend application locally using VS Code IDE from `Run and Debu
 Install node  
 Node version: `nodeJs v24.13.1`  
 
-### first run
+### First run
 `npm install`  
-`npm run dev`
+`npm run dev`  
+
+After the first run you can just use `npm run dev` command
 
 ## AlphaBot app
 Python version: 3.11.4
 
-Local (Windows psh)  
+### Local (Windows psh)  
 ```
+cd sources/apps/AlphaBot
 python -m venv .venv
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
+If you want to run it locally remember to set `--simulate true`, then set `--mqttBrokerUrl`:  
+`python main.py --simulate true --mqttBrokerUrl localhost`
 
-RaspberryPi  
+### RaspberryPi (AlphaBot)
+Firstly, remember to clone the repo
 ```
+cd sources/apps/AlphaBot
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
-
-If you want to run it locally:  
-`python main.py --simulate true --mqttBrokerUrl localhost`
-
-If you want to run it on external device (raspberry pi):  
+If you want to run it on external device (raspberry pi) remember to set `false`, then set `--mqttBrokerUrl`:  
 `python main.py --simulate false --mqttBrokerUrl 172.30.0.199`  
-`python main.py --simulate false --mqttBrokerUrl 192.168.0.150`  
+`python main.py --simulate false --mqttBrokerUrl 192.168.0.150` 
 
-If you want to run simulation in production
-`python main.py --simulate true --mqttBrokerUrl 172.30.0.199`  
-or run script
-```
-cd sources/scripts/production
-./run-robot-simulation.sh
-```
-
+### Aditionals
 In case of host key issues (after SD card change) remember to clean old ones:  
 `ssh-keygen -R 192.168.0.151`
 
