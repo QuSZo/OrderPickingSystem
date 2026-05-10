@@ -43,7 +43,7 @@ def publish_finished(mqtt_client):
 def run_robot(commands, mqtt_client):
 	commands = list(commands)
 	
-	maximum = 60
+	maximum = 25
 	integral = 0
 	last_proportional = 0
 
@@ -57,16 +57,15 @@ def run_robot(commands, mqtt_client):
 	print("Line follow starting")
 	time.sleep(0.5)
 
-	# czy ten obrót jest konieczny?
-	for i in range(-4,80):
-		if(i<20 or i>= 60):
-			AlphaBot.right()	
-			AlphaBot.setPWMA(40)
-			AlphaBot.setPWMB(40)
+	for i in range(0,60):
+		if(i<15 or i>= 45):
+			AlphaBot.setPWMA(maximum)
+			AlphaBot.setPWMB(maximum)
+			AlphaBot.right()
 		else:
+			AlphaBot.setPWMA(maximum)
+			AlphaBot.setPWMB(maximum)
 			AlphaBot.left()
-			AlphaBot.setPWMA(40)
-			AlphaBot.setPWMB(40)
 		TrSensor.calibrate()
 
 	AlphaBot.stop()
@@ -75,6 +74,8 @@ def run_robot(commands, mqtt_client):
 
 	countdown()
 
+	AlphaBot.setPWMA(maximum)
+	AlphaBot.setPWMB(maximum)
 	AlphaBot.forward()
 
 	while True:
@@ -91,7 +92,7 @@ def run_robot(commands, mqtt_client):
 
 					if command["move"] == "stop":
 						AlphaBot.stop()
-						print("Picking product for " + command["stopDurationMs"] + " ms")
+						print("Picking product for " + str(command["stopDurationMs"]) + " ms")
 						publish_status(command, mqtt_client)
 						time.sleep(command["stopDurationMs"]/1000)
 						if (len(commands) == 0):
@@ -103,27 +104,33 @@ def run_robot(commands, mqtt_client):
 
 					publish_status(command, mqtt_client)
 					if command["move"] == "left":
-						print("Turn: " + command)
+						print("Turn: " + command["move"])
+						AlphaBot.setPWMA(maximum/2)
+						AlphaBot.setPWMB(maximum)
 						AlphaBot.left()
-						time.sleep(0.6)
+						time.sleep(0.2)
 					elif command["move"] == "right":
-						print("Turn: " + command)
+						print("Turn: " + command["move"])
+						AlphaBot.setPWMA(maximum)
+						AlphaBot.setPWMB(maximum/2)
 						AlphaBot.right()
-						time.sleep(0.6)
+						time.sleep(0.2)
 					elif command["move"] == "forward":
-						print("Turn: " + command)
+						print("Turn: " + command["move"])
 						AlphaBot.setPWMA(maximum)
 						AlphaBot.setPWMB(maximum)
 						AlphaBot.forward()
-						time.sleep(0.2)
+						time.sleep(0.1)
 					elif command["move"] == "back":
-						print("Turn: " + command)
+						print("Turn: " + command["move"])
+						AlphaBot.setPWMA(maximum)
+						AlphaBot.setPWMB(maximum)
 						AlphaBot.right()
-						time.sleep(1.5)
+						time.sleep(0.45)
 					else:
 						break
 					AlphaBot.forward()
-					time.sleep(0.2)
+					time.sleep(0.15)
 			else:
 				proportional = position - 2000
 				
