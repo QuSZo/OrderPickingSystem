@@ -228,6 +228,30 @@ If you want to run it on external device (raspberry pi) remember to set `false`,
 In case of host key issues (after SD card change) remember to clean old ones:  
 `ssh-keygen -R 192.168.0.151`
 
+# Production with WSL
+If you use Linux on the production server everything will work fine. But if you use Windows with WSL then you have to do two additional steps: add port proxy and add firewall rule.  
+
+Port proxy for Mosquitto Broker:
+```
+netsh interface portproxy add v4tov4 listenport=1883 listenaddress=0.0.0.0 connectport=1883 connectaddress=<WslIpAddress>
+```
+If you want to check WslIpAddress you can run on WSL:
+```
+ip a
+```
+and check IP for eth0 interface.
+
+If you want to check all port proxy you can run:
+```
+netsh interface portproxy show all
+```
+
+Now you can add firewall rule:
+```
+New-NetFirewallRule -DisplayName "MosquittoMQTT" -Direction Inbound -Protocol TCP -LocalPort 1883 -Action Allow
+```
+And now you can connect to broker from your local area network. More information here: https://learn.microsoft.com/en-us/windows/wsl/networking
+
 # Letting you know
 ## Backend 'api' project creation procedure:
 ```
