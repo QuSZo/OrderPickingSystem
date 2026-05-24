@@ -64,7 +64,6 @@ public class RobotInbound
             TspAlgorithm = orderDto.TspAlgorithm,
             Timestamp = orderDto.Timestamp,
             Distance = result.TotalWeight,
-            StartPickingTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
         };
 
         _historicalOrdersRepository.Add(order);

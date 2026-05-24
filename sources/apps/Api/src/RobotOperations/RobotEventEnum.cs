@@ -5,4 +5,5 @@ public enum RobotEventEnum
     Movement,
     Finished,
     Stopped,
+    Started,
 }

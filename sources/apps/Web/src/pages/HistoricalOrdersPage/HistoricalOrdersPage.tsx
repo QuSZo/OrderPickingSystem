@@ -55,15 +55,15 @@ export default function HistoricalOrdersPage() {
         loadOrders();
     };
 
-    const calculatePickingTime = (startPickingTime: number, finishPickingTime: number | null) => {
-        if (finishPickingTime !== null) {
+    const calculatePickingTime = (startPickingTime: number | null, finishPickingTime: number | null) => {
+        if (startPickingTime !== null && finishPickingTime !== null) {
             return formatDuration(finishPickingTime - startPickingTime);
         }
         return "Oczekiwanie na wynik";
     }
 
-    const calculateAverageSpeed = (startPickingTime: number, finishPickingTime: number | null, distance: number) => {
-        if (finishPickingTime !== null) {
+    const calculateAverageSpeed = (startPickingTime: number | null, finishPickingTime: number | null, distance: number) => {
+        if (startPickingTime !== null && finishPickingTime !== null) {
             const timeInSeconds = (finishPickingTime - startPickingTime) / 1000;
             const speed = distance / timeInSeconds;
             return `${speed.toFixed(2)} m/s`;

@@ -47,7 +47,7 @@ export interface Order {
     tspAlgorithm: TspAlgorithms;
     timestamp: number;
     distance: number;
-    startPickingTime: number;
+    startPickingTime: number | null;
     finishPickingTime: number | null;
 }
 

@@ -10,6 +10,6 @@ public record Order
     public required TspAlgorithmsEnum TspAlgorithm { get; init; }
     public required double Timestamp { get; init; } 
     public required double Distance { get; init; }
-    public required double StartPickingTime { get; init; }
+    public double? StartPickingTime { get; set; }
     public double? FinishPickingTime { get; set; }
 }

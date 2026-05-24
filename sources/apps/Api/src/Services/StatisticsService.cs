@@ -19,11 +19,11 @@ public class StatisticsService
         _logger.LogInformation("Calculating average duration by algorithm");
 
         List<AverageDuration> averageDurations = _historicalOrdersRepository.GetAll()
-            .Where(order => order.FinishPickingTime != null)
+            .Where(order => order.FinishPickingTime != null && order.StartPickingTime != null)
             .Select(order => new
             {
                 order.TspAlgorithm,
-                Duration = order.FinishPickingTime!.Value - order.StartPickingTime
+                Duration = order.FinishPickingTime!.Value - order.StartPickingTime!.Value
             })
             .GroupBy(order => order.TspAlgorithm)
             .Select(group => new AverageDuration
@@ -41,12 +41,12 @@ public class StatisticsService
         _logger.LogInformation("Calculating average duration by algorithm and order size");
 
         List<AverageDurationByOrderSize> averageDurationsByOrderSize = _historicalOrdersRepository.GetAll()
-            .Where(o => o.FinishPickingTime != null)
+            .Where(o => o.FinishPickingTime != null && o.StartPickingTime != null)
             .Select(o => new
             {
                 o.TspAlgorithm,
                 ProductCount = o.OrderedProducts.Count,
-                Duration = o.FinishPickingTime!.Value - o.StartPickingTime
+                Duration = o.FinishPickingTime!.Value - o.StartPickingTime!.Value
             })
             .GroupBy(o => new { o.TspAlgorithm, o.ProductCount })
             .Select(g => new AverageDurationByOrderSize

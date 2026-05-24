@@ -107,6 +107,19 @@ public class RobotOutbound : IHostedService
             }
         }
 
+        else if (robotStatusDto.Event == RobotEventEnum.Started)
+        {
+            if (_robotState.Order != null)
+            {
+                using (IServiceScope? scope = _serviceProvider.CreateScope())
+                {
+                    IOrdersRepository ordersRepository = scope.ServiceProvider.GetRequiredService<IOrdersRepository>();
+                    Order order = ordersRepository.SetStartPickingTime(_robotState.Order.OrderId);
+                    _robotState.Order = order;
+                }
+            }
+        }
+
         if (_robotState.CurrentPosition != _robotState.VisitedPositions.LastOrDefault())
         {
             _robotState.VisitedPositions.Add(new Position() { X = _robotState.CurrentPosition.X, Y = _robotState.CurrentPosition.Y });

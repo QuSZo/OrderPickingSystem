@@ -37,6 +37,9 @@ class RobotController:
 
     def _process_commands(self):
         time.sleep(3)
+        self._publish_started()
+        time.sleep(1)
+
         while self._is_running:
             command = None
 
@@ -66,6 +69,14 @@ class RobotController:
 
         self.client.publish("robot/status", json.dumps(payload))
 
+    def _publish_started(self):
+        payload = {
+            "event": "started",
+            "timestamp": time.time(),
+        }
+
+        self.client.publish("robot/status", json.dumps(payload))
+
     def _publish_finished(self):
         print("Wszystkie komendy wykonane")
 
@@ -83,3 +94,4 @@ class RobotController:
         }
 
         self.client.publish("robot/status", json.dumps(payload))
+        

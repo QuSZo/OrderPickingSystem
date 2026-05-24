@@ -40,6 +40,14 @@ def publish_finished(mqtt_client):
 
 	mqtt_client.publish("robot/status", json.dumps(payload))
 
+def publish_started(mqtt_client):
+	payload = {
+		"event": "started",
+		"timestamp": time.time(),
+	}
+
+	mqtt_client.publish("robot/status", json.dumps(payload))
+
 def run_robot(commands, mqtt_client):
 	commands = list(commands)
 	
@@ -73,6 +81,8 @@ def run_robot(commands, mqtt_client):
 	print(TrSensor.calibratedMax)
 
 	countdown()
+
+	publish_started(mqtt_client)
 
 	AlphaBot.setPWMA(maximum)
 	AlphaBot.setPWMB(maximum)
