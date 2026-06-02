@@ -12,4 +12,8 @@ public record Order
     public required double Distance { get; init; }
     public double? StartPickingTime { get; set; }
     public double? FinishPickingTime { get; set; }
+    public List<double>? ProportionalHistory { get; set; }
+    public List<double>? DerivativeHistory { get; set; }
+    public List<double>? IntegralHistory { get; set; }
+    public List<double>? PowerDifferenceHistory { get; set; } 
 }

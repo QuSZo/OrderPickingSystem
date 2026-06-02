@@ -32,10 +32,16 @@ def publish_status(command, mqtt_client):
 
 	mqtt_client.publish("robot/status", json.dumps(payload))
 
-def publish_finished(mqtt_client):
+def publish_finished(mqtt_client, proportional_history, derivative_history, integral_history, power_difference_history):
 	payload = {
 		"event": "finished",
 		"timestamp": time.time(),
+		"robotPIDSummary": {
+			"proportionalHistory": proportional_history,
+			"derivativeHistory": derivative_history,
+			"integralHistory": integral_history,
+			"powerDifferenceHistory": power_difference_history
+		},
 	}
 
 	mqtt_client.publish("robot/status", json.dumps(payload))
@@ -54,6 +60,11 @@ def run_robot(commands, mqtt_client):
 	maximum = 25
 	integral = 0
 	last_proportional = 0
+
+	proportional_history = []
+	derivative_history = []
+	integral_history = []
+	power_difference_history = []
 
 	GPIO.setmode(GPIO.BCM)
 	GPIO.setwarnings(False)
@@ -94,7 +105,7 @@ def run_robot(commands, mqtt_client):
 			if(Sensors[0] > 600 and Sensors[1] > 600 and Sensors[2] > 600 and Sensors[3] > 600 and Sensors[4] > 600):
 				print("Skrzyżowanie - wybieram kierunek!")
 				if (len(commands) == 0):
-					publish_finished(mqtt_client)
+					publish_finished(mqtt_client, proportional_history, derivative_history, integral_history, power_difference_history)
 					AlphaBot.stop()
 					break
 				else:
@@ -143,13 +154,16 @@ def run_robot(commands, mqtt_client):
 					time.sleep(0.15)
 			else:
 				proportional = position - 2000
-				
 				derivative = proportional - last_proportional
 				integral += proportional
-				
 				last_proportional = proportional
 
-				power_difference = proportional/30  + integral/10000 + derivative*2;  
+				power_difference = proportional/30  + integral/10000 + derivative*2
+
+				proportional_history.append(proportional)
+				derivative_history.append(derivative)
+				integral_history.append(integral)
+				power_difference_history.append(power_difference)
 
 				if (power_difference > maximum):
 					power_difference = maximum

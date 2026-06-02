@@ -102,6 +102,10 @@ public class RobotOutbound : IHostedService
                 {
                     IOrdersRepository ordersRepository = scope.ServiceProvider.GetRequiredService<IOrdersRepository>();
                     Order order = ordersRepository.SetFinishPickingTime(_robotState.Order.OrderId);
+                    if(robotStatusDto.RobotPIDSummary != null)
+                    {
+                        order = ordersRepository.UpdateSummary(_robotState.Order.OrderId, robotStatusDto.RobotPIDSummary);
+                    }
                     _robotState.Order = order;
                 }
             }

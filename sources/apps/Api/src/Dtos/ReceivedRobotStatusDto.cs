@@ -7,4 +7,5 @@ public record ReceivedRobotStatusDto
     public required RobotEventEnum Event { get; init; }
     public required double Timestamp { get; init; }
     public RobotCommand? Command { get; init; }
+    public RobotPIDSummary? RobotPIDSummary { get; init; }
 }

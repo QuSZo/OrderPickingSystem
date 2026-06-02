@@ -1,4 +1,5 @@
 using Api.Database;
+using Api.RobotOperations;
 
 namespace Api.Orders;
 
@@ -49,6 +50,19 @@ public class OrdersRepository : IOrdersRepository
 
         _dbContext.SaveChanges();
 
+        return order;
+    }
+
+    public Order UpdateSummary(Guid id, RobotPIDSummary robotPIDSummary)
+    {
+        Order order = _dbContext.Orders.Single(order => order.OrderId == id);
+        order.ProportionalHistory = robotPIDSummary.ProportionalHistory;
+        order.DerivativeHistory = robotPIDSummary.DerivativeHistory;
+        order.IntegralHistory = robotPIDSummary.IntegralHistory;
+        order.PowerDifferenceHistory = robotPIDSummary.PowerDifferenceHistory;
+
+        _dbContext.SaveChanges();
+        
         return order;
     }
 }

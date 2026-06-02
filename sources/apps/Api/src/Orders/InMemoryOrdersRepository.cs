@@ -1,3 +1,5 @@
+using Api.RobotOperations;
+
 namespace Api.Orders;
 
 public class InMemoryOrdersRepository : IOrdersRepository
@@ -34,6 +36,17 @@ public class InMemoryOrdersRepository : IOrdersRepository
     {
         Order order = _historicalOrders.Single(order => order.OrderId == id);
         order.PickedProducts.Add(orderedProduct);
+
+        return order;
+    }
+
+    public Order UpdateSummary(Guid id, RobotPIDSummary robotPIDSummary)
+    {
+        Order order = _historicalOrders.Single(order => order.OrderId == id);
+        order.ProportionalHistory = robotPIDSummary.ProportionalHistory;
+        order.DerivativeHistory = robotPIDSummary.DerivativeHistory;
+        order.IntegralHistory = robotPIDSummary.IntegralHistory;
+        order.PowerDifferenceHistory = robotPIDSummary.PowerDifferenceHistory;
 
         return order;
     }
