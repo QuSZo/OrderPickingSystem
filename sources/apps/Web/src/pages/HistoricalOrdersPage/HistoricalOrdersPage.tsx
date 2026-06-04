@@ -24,7 +24,12 @@ export default function HistoricalOrdersPage() {
 
     const orderAgain = async (orderedProducts: OrderedProduct[], algorithm: TspAlgorithms) => {
         try {
-            const order: OrderDto = {orderedProducts: orderedProducts, tspAlgorithm: algorithm, timestamp: Date.now()}
+            // TODO: remove line below, only for testing purposes
+            const orderWithSingleQuantity = orderedProducts.map(orderedProduct =>     
+            ({
+                ...orderedProduct, quantity: 1
+            }))
+            const order: OrderDto = {orderedProducts: orderWithSingleQuantity, tspAlgorithm: algorithm, timestamp: Date.now()}
 
             const response = await fetch(`${ORDERS_API_URL}/buy`, {
                 method: "POST",
@@ -81,6 +86,13 @@ export default function HistoricalOrdersPage() {
                             <th className={styles.arrowTh}></th>
                             <th>Produkty</th>
                             <th>Data zamówienia</th>
+                            {/* TODO: remove 6 lines below, only for testing purposes */}
+                            <th>Data rozpoczenia</th>
+                            <th>Data zakończenia</th>
+                            <th>PropAbsMean</th>
+                            <th>DerAbsMean</th>
+                            <th>IntegAbsMean</th>
+                            <th>PowerDiffAbsMean</th>
                             <th>Wykorzystany algorytm</th>
                             <th>Czas trwania zbierania</th>
                             <th>Przejechana odległość</th>
@@ -100,6 +112,13 @@ export default function HistoricalOrdersPage() {
                                     {order.orderedProducts.map(orderedProducts => orderedProducts.name).join(", ")}
                                 </td>
                                 <td>{new Date(order.timestamp).toLocaleString()}</td>
+                                {/* TODO: remove 6 lines below, only for testing purposes */}
+                                <td>{order.startPickingTime}</td>
+                                <td>{order.finishPickingTime}</td>
+                                <td>{order.proportionalAbsoluteMean}</td>
+                                <td>{order.derivativeAbsoluteMean}</td>
+                                <td>{order.integralAbsoluteMean}</td>
+                                <td>{order.powerDifferenceAbsoluteMean}</td>
                                 <td>{order.tspAlgorithm}</td>
                                 <td>{calculatePickingTime(order.startPickingTime, order.finishPickingTime)}</td>
                                 <td>{order.distance} cm</td>

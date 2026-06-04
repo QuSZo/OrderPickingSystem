@@ -8,6 +8,6 @@ public interface IOrdersRepository
     void Add(Order order);
     Order SetStartPickingTime(Guid id);
     Order SetFinishPickingTime(Guid id);
-    Order UpdateSummary(Guid id, RobotPIDSummary robotPIDSummary);
+    Order UpdateSummary(Guid id, RobotPIDSummary robotPIDSummary, double proportionalAbsoluteMean, double derivativeAbsoluteMean, double integralAbsoluteMean, double powerDifferenceAbsoluteMean);
     Order AddPickedProduct(Guid id, OrderedProduct orderedProduct);
 }

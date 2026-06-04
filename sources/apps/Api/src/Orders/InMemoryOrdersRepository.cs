@@ -40,13 +40,17 @@ public class InMemoryOrdersRepository : IOrdersRepository
         return order;
     }
 
-    public Order UpdateSummary(Guid id, RobotPIDSummary robotPIDSummary)
+    public Order UpdateSummary(Guid id, RobotPIDSummary robotPIDSummary, double proportionalAbsoluteMean, double derivativeAbsoluteMean, double integralAbsoluteMean, double powerDifferenceAbsoluteMean)
     {
         Order order = _historicalOrders.Single(order => order.OrderId == id);
         order.ProportionalHistory = robotPIDSummary.ProportionalHistory;
         order.DerivativeHistory = robotPIDSummary.DerivativeHistory;
         order.IntegralHistory = robotPIDSummary.IntegralHistory;
         order.PowerDifferenceHistory = robotPIDSummary.PowerDifferenceHistory;
+        order.ProportionalAbsoluteMean = proportionalAbsoluteMean;
+        order.DerivativeAbsoluteMean = derivativeAbsoluteMean;
+        order.IntegralAbsoluteMean = integralAbsoluteMean;
+        order.PowerDifferenceAbsoluteMean = powerDifferenceAbsoluteMean;
 
         return order;
     }

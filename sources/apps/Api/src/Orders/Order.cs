@@ -15,5 +15,9 @@ public record Order
     public List<double>? ProportionalHistory { get; set; }
     public List<double>? DerivativeHistory { get; set; }
     public List<double>? IntegralHistory { get; set; }
-    public List<double>? PowerDifferenceHistory { get; set; } 
+    public List<double>? PowerDifferenceHistory { get; set; }
+    public double? ProportionalAbsoluteMean { get; set; }
+    public double? DerivativeAbsoluteMean { get; set; }
+    public double? IntegralAbsoluteMean { get; set; }
+    public double? PowerDifferenceAbsoluteMean { get; set; }
 }

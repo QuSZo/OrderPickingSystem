@@ -49,6 +49,10 @@ export interface Order {
     distance: number;
     startPickingTime: number | null;
     finishPickingTime: number | null;
+    proportionalAbsoluteMean: number | null;
+    derivativeAbsoluteMean: number | null;
+    integralAbsoluteMean: number | null;
+    powerDifferenceAbsoluteMean: number | null;
 }
 
 export interface OrderedProduct {

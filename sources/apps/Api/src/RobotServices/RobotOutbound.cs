@@ -102,9 +102,14 @@ public class RobotOutbound : IHostedService
                 {
                     IOrdersRepository ordersRepository = scope.ServiceProvider.GetRequiredService<IOrdersRepository>();
                     Order order = ordersRepository.SetFinishPickingTime(_robotState.Order.OrderId);
-                    if(robotStatusDto.RobotPIDSummary != null)
+                    if (robotStatusDto.RobotPIDSummary != null)
                     {
-                        order = ordersRepository.UpdateSummary(_robotState.Order.OrderId, robotStatusDto.RobotPIDSummary);
+                        double ProportionalAbsoluteMean = robotStatusDto.RobotPIDSummary.ProportionalHistory.Average(x => Math.Abs(x));
+                        double DerivativeAbsoluteMean = robotStatusDto.RobotPIDSummary.DerivativeHistory.Average(x => Math.Abs(x));
+                        double IntegralAbsoluteMean = robotStatusDto.RobotPIDSummary.IntegralHistory.Average(x => Math.Abs(x));
+                        double PowerDifferenceAbsoluteMean = robotStatusDto.RobotPIDSummary.PowerDifferenceHistory.Average(x => Math.Abs(x));
+
+                        order = ordersRepository.UpdateSummary(_robotState.Order.OrderId, robotStatusDto.RobotPIDSummary, ProportionalAbsoluteMean, DerivativeAbsoluteMean, IntegralAbsoluteMean, PowerDifferenceAbsoluteMean);
                     }
                     _robotState.Order = order;
                 }
