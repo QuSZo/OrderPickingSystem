@@ -147,7 +147,7 @@ def run_robot(commands, mqtt_client):
 						AlphaBot.setPWMA(maximum)
 						AlphaBot.setPWMB(maximum)
 						AlphaBot.right()
-						time.sleep(0.4)
+						time.sleep(0.45)
 					else:
 						break
 					AlphaBot.forward()
