@@ -10,8 +10,8 @@ public record Order
     public required TspAlgorithmsEnum TspAlgorithm { get; init; }
     public required double Timestamp { get; init; } 
     public required double Distance { get; init; }
-    public double? StartPickingTime { get; set; }
-    public double? FinishPickingTime { get; set; }
+    public long? StartPickingTime { get; set; }
+    public long? FinishPickingTime { get; set; }
     public List<double>? ProportionalHistory { get; set; }
     public List<double>? DerivativeHistory { get; set; }
     public List<double>? IntegralHistory { get; set; }

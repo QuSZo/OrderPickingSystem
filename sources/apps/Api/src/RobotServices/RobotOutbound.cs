@@ -101,7 +101,7 @@ public class RobotOutbound : IHostedService
                 using (IServiceScope? scope = _serviceProvider.CreateScope())
                 {
                     IOrdersRepository ordersRepository = scope.ServiceProvider.GetRequiredService<IOrdersRepository>();
-                    Order order = ordersRepository.SetFinishPickingTime(_robotState.Order.OrderId);
+                    Order order = ordersRepository.SetFinishPickingTime(_robotState.Order.OrderId, robotStatusDto.Timestamp);
                     if (robotStatusDto.RobotPIDSummary != null)
                     {
                         double ProportionalAbsoluteMean = robotStatusDto.RobotPIDSummary.ProportionalHistory.Average(x => Math.Abs(x));
@@ -123,7 +123,7 @@ public class RobotOutbound : IHostedService
                 using (IServiceScope? scope = _serviceProvider.CreateScope())
                 {
                     IOrdersRepository ordersRepository = scope.ServiceProvider.GetRequiredService<IOrdersRepository>();
-                    Order order = ordersRepository.SetStartPickingTime(_robotState.Order.OrderId);
+                    Order order = ordersRepository.SetStartPickingTime(_robotState.Order.OrderId, robotStatusDto.Timestamp);
                     _robotState.Order = order;
                 }
             }

@@ -23,20 +23,20 @@ public class OrdersRepository : IOrdersRepository
         _dbContext.SaveChanges();
     }
 
-    public Order SetStartPickingTime(Guid id)
+    public Order SetStartPickingTime(Guid id, long timestamp)
     {
         Order order = _dbContext.Orders.Single(order => order.OrderId == id);
-        order.StartPickingTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        order.StartPickingTime = timestamp;
 
         _dbContext.SaveChanges();
 
         return order;
     }
 
-    public Order SetFinishPickingTime(Guid id)
+    public Order SetFinishPickingTime(Guid id, long timestamp)
     {
         Order order = _dbContext.Orders.Single(order => order.OrderId == id);
-        order.FinishPickingTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        order.FinishPickingTime = timestamp;
 
         _dbContext.SaveChanges();
 

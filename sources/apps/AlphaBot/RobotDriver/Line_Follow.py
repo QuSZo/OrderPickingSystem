@@ -27,7 +27,7 @@ def publish_status(command, mqtt_client):
 	payload = {
 		"event": "movement",
 		"command": command,
-		"timestamp": time.time(),
+		"timestamp": int(time.time() * 1000),
 	}
 	print("Sending movement status")
 	mqtt_client.publish("robot/status", json.dumps(payload))
@@ -36,7 +36,7 @@ def publish_status(command, mqtt_client):
 def publish_finished(mqtt_client, proportional_history, derivative_history, integral_history, power_difference_history):
 	payload = {
 		"event": "finished",
-		"timestamp": time.time(),
+		"timestamp": int(time.time() * 1000),
 		"robotPIDSummary": {
 			"proportionalHistory": proportional_history,
 			"derivativeHistory": derivative_history,
@@ -52,7 +52,7 @@ def publish_finished(mqtt_client, proportional_history, derivative_history, inte
 def publish_started(mqtt_client):
 	payload = {
 		"event": "started",
-		"timestamp": time.time(),
+		"timestamp": int(time.time() * 1000),
 	}
 
 	print("Sending sterted status")
