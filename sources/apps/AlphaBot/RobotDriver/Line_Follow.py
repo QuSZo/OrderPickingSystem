@@ -24,19 +24,23 @@ def countdown():
 		time.sleep(0.5)
 
 def publish_status(command, mqtt_client):
+	timestamp = int(time.time() * 1000)
+
 	payload = {
 		"event": "movement",
 		"command": command,
-		"timestamp": int(time.time() * 1000),
+		"timestamp": timestamp,
 	}
 	print("Sending movement status")
 	mqtt_client.publish("robot/status", json.dumps(payload))
 	print("Movement status sent")
 
 def publish_finished(mqtt_client, proportional_history, derivative_history, integral_history, power_difference_history):
+	timestamp = int(time.time() * 1000)
+
 	payload = {
 		"event": "finished",
-		"timestamp": int(time.time() * 1000),
+		"timestamp": timestamp,
 		"robotPIDSummary": {
 			"proportionalHistory": proportional_history,
 			"derivativeHistory": derivative_history,
@@ -50,9 +54,11 @@ def publish_finished(mqtt_client, proportional_history, derivative_history, inte
 	print("Finished status sent")
 
 def publish_started(mqtt_client):
+	timestamp = int(time.time() * 1000)
+
 	payload = {
 		"event": "started",
-		"timestamp": int(time.time() * 1000),
+		"timestamp": timestamp,
 	}
 
 	print("Sending sterted status")
