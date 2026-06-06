@@ -59,7 +59,7 @@ public class RobotOutbound : IHostedService
         {
             if (robotStatusDto.Command.Move == RobotMoveEnum.Stop)
             {
-                if (_robotState.Order != null)
+                if (_robotState.OrderDto != null)
                 {
                     _robotState.ProductBeingPicked = robotStatusDto.Command.OrderedProduct;
                     _robotState.CurrentPosition = new Position() { X = _robotState.NextPosition.X, Y = _robotState.NextPosition.Y };
@@ -79,14 +79,19 @@ public class RobotOutbound : IHostedService
                     _robotState.NextPosition.X, 
                     _robotState.NextPosition.Y);
 
-                if (_robotState.Order != null && _robotState.ProductBeingPicked != null)
+                if (_robotState.OrderDto != null && _robotState.ProductBeingPicked != null)
                 {
                     using (IServiceScope? scope = _serviceProvider.CreateScope())
                     {
                         IOrdersRepository ordersRepository = scope.ServiceProvider.GetRequiredService<IOrdersRepository>();
-                        Order order = ordersRepository.AddPickedProduct(_robotState.Order.OrderId, _robotState.ProductBeingPicked);
-                        _robotState.Order = order;
+
+                        Order order = await ordersRepository.GetByIdAsync(_robotState.OrderDto.OrderId);
+                        order.PickedProducts.Add(_robotState.ProductBeingPicked);
+                        await ordersRepository.Update(order);
+
+                        _robotState.OrderDto = order.ToDto();
                     }
+
                     _robotState.ProductBeingPicked = null;
                 }
             }
@@ -96,35 +101,52 @@ public class RobotOutbound : IHostedService
         {
             _robotState.CurrentPosition = new Position() { X = _robotState.NextPosition.X, Y = _robotState.NextPosition.Y };
 
-            if (_robotState.Order != null)
+            if (_robotState.OrderDto != null)
             {
                 using (IServiceScope? scope = _serviceProvider.CreateScope())
                 {
                     IOrdersRepository ordersRepository = scope.ServiceProvider.GetRequiredService<IOrdersRepository>();
-                    Order order = ordersRepository.SetFinishPickingTime(_robotState.Order.OrderId, robotStatusDto.Timestamp);
+
+                    Order order = await ordersRepository.GetByIdAsync(_robotState.OrderDto.OrderId);
+                    order.FinishPickingTime = robotStatusDto.Timestamp;
+
                     if (robotStatusDto.RobotPIDSummary != null)
                     {
-                        double ProportionalAbsoluteMean = robotStatusDto.RobotPIDSummary.ProportionalHistory.Average(x => Math.Abs(x));
-                        double DerivativeAbsoluteMean = robotStatusDto.RobotPIDSummary.DerivativeHistory.Average(x => Math.Abs(x));
-                        double IntegralAbsoluteMean = robotStatusDto.RobotPIDSummary.IntegralHistory.Average(x => Math.Abs(x));
-                        double PowerDifferenceAbsoluteMean = robotStatusDto.RobotPIDSummary.PowerDifferenceHistory.Average(x => Math.Abs(x));
+                        double proportionalAbsoluteMean = robotStatusDto.RobotPIDSummary.ProportionalHistory.Average(x => Math.Abs(x));
+                        double derivativeAbsoluteMean = robotStatusDto.RobotPIDSummary.DerivativeHistory.Average(x => Math.Abs(x));
+                        double integralAbsoluteMean = robotStatusDto.RobotPIDSummary.IntegralHistory.Average(x => Math.Abs(x));
+                        double powerDifferenceAbsoluteMean = robotStatusDto.RobotPIDSummary.PowerDifferenceHistory.Average(x => Math.Abs(x));
 
-                        order = ordersRepository.UpdateSummary(_robotState.Order.OrderId, robotStatusDto.RobotPIDSummary, ProportionalAbsoluteMean, DerivativeAbsoluteMean, IntegralAbsoluteMean, PowerDifferenceAbsoluteMean);
+                        order.ProportionalHistory = robotStatusDto.RobotPIDSummary.ProportionalHistory;
+                        order.DerivativeHistory = robotStatusDto.RobotPIDSummary.DerivativeHistory;
+                        order.IntegralHistory = robotStatusDto.RobotPIDSummary.IntegralHistory;
+                        order.PowerDifferenceHistory = robotStatusDto.RobotPIDSummary.PowerDifferenceHistory;
+                        order.ProportionalAbsoluteMean = proportionalAbsoluteMean;
+                        order.DerivativeAbsoluteMean = derivativeAbsoluteMean;
+                        order.IntegralAbsoluteMean = integralAbsoluteMean;
+                        order.PowerDifferenceAbsoluteMean = powerDifferenceAbsoluteMean;
                     }
-                    _robotState.Order = order;
+
+                    await ordersRepository.Update(order);
+
+                    _robotState.OrderDto = order.ToDto();
                 }
             }
         }
 
         else if (robotStatusDto.Event == RobotEventEnum.Started)
         {
-            if (_robotState.Order != null)
+            if (_robotState.OrderDto != null)
             {
                 using (IServiceScope? scope = _serviceProvider.CreateScope())
                 {
                     IOrdersRepository ordersRepository = scope.ServiceProvider.GetRequiredService<IOrdersRepository>();
-                    Order order = ordersRepository.SetStartPickingTime(_robotState.Order.OrderId, robotStatusDto.Timestamp);
-                    _robotState.Order = order;
+
+                    Order order = await ordersRepository.GetByIdAsync(_robotState.OrderDto.OrderId);
+                    order.StartPickingTime = robotStatusDto.Timestamp;
+                    await ordersRepository.Update(order);
+
+                    _robotState.OrderDto = order.ToDto();
                 }
             }
         }

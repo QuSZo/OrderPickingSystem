@@ -18,21 +18,21 @@ public class StatisticsController : ControllerBase
     }
 
     [HttpGet("average-duration-by-algorithm")]
-    public ActionResult<string> GetAverageDuration()
+    public async Task<ActionResult<string>> GetAverageDurationAsync()
     {
         _logger.LogInformation("Handle api call to get statistics about average duration by algorithm");
         
-        List<AverageDuration> averageDurations = _statisticsService.GetAverageDuration();
+        List<AverageDuration> averageDurations = await _statisticsService.GetAverageDuration();
 
         return Ok(averageDurations);
     }
 
     [HttpGet("average-duration-by-algorithm-and-order-size")]
-    public ActionResult<string> GetAverageDurationByOrderSize()
+    public async Task<ActionResult<string>> GetAverageDurationByOrderSizeAsync()
     {
         _logger.LogInformation("Handle api call to get statistics about average duration by algorithm and order size");
         
-        List<AverageDurationByOrderSize> averageDurations = _statisticsService.GetAverageDurationByOrderSize();
+        List<AverageDurationByOrderSize> averageDurations = await _statisticsService.GetAverageDurationByOrderSizeAsync();
 
         return Ok(averageDurations);
     }

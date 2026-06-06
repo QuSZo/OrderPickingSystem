@@ -1,3 +1,4 @@
+using Api.Commands;
 using Api.Dtos;
 using Api.Logging;
 using Api.Orders;
@@ -12,35 +13,35 @@ public class OrderControllers : ControllerBase
 {
     private readonly ILogger _logger;
     private readonly RobotInbound _robotInbound;
-    private readonly IOrdersRepository _historicalOrdersRepository;
+    private readonly IOrdersRepository _ordersRepository;
 
     public OrderControllers(
         ILoggerFactory loggerFactory, 
         RobotInbound robotInbound,
-        IOrdersRepository historicalOrdersRepository)
+        IOrdersRepository ordersRepository)
     {
         _logger = loggerFactory.CreateLoggerApi();
         _robotInbound = robotInbound;
-        _historicalOrdersRepository = historicalOrdersRepository;
+        _ordersRepository = ordersRepository;
     }
 
     [HttpGet]
-    public ActionResult<string> GetHistoricalOrders()
+    public async Task<ActionResult<string>> GetOrders()
     {
         _logger.LogInformation("Handle api call to get all historical orders");
-        IReadOnlyList<Order> orders = _historicalOrdersRepository.GetAll();
+        IReadOnlyList<OrderDto> orders = await _ordersRepository.GetAllDtosAsync();
 
         return Ok(orders);
     }
 
     [HttpPost("buy")]
-    public async Task<IActionResult> BuyAndCollectProducts([FromBody] OrderDto orderDto)
+    public async Task<IActionResult> BuyAndCollectProducts([FromBody] CreateOrderCommand createOrderCommand)
     {
         _logger.LogInformation("Handle api call to buy and collect products");
 
         try
         {
-            await _robotInbound.StartPicking(orderDto);
+            await _robotInbound.StartPicking(createOrderCommand);
         }
         catch (Exception excepion)
         {

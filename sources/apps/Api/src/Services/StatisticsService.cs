@@ -1,3 +1,4 @@
+using Api.Dtos;
 using Api.Logging;
 using Api.Orders;
 
@@ -6,19 +7,21 @@ namespace Api.Services;
 public class StatisticsService
 {
     private readonly ILogger _logger;
-    private readonly IOrdersRepository _historicalOrdersRepository;
+    private readonly IOrdersRepository _ordersRepository;
 
-    public StatisticsService(ILoggerFactory loggerFactory, IOrdersRepository historicalOrdersRepository)
+    public StatisticsService(ILoggerFactory loggerFactory, IOrdersRepository ordersRepository)
     {
         _logger = loggerFactory.CreateLoggerApi();
-        _historicalOrdersRepository = historicalOrdersRepository;
+        _ordersRepository = ordersRepository;
     }
 
-    public List<AverageDuration> GetAverageDuration()
+    public async Task<List<AverageDuration>> GetAverageDuration()
     {
         _logger.LogInformation("Calculating average duration by algorithm");
 
-        List<AverageDuration> averageDurations = _historicalOrdersRepository.GetAll()
+        IReadOnlyList<OrderDto> orderDtos = await _ordersRepository.GetAllDtosAsync();
+
+        List<AverageDuration> averageDurations = orderDtos
             .Where(order => order.FinishPickingTime != null && order.StartPickingTime != null)
             .Select(order => new
             {
@@ -36,11 +39,13 @@ public class StatisticsService
         return averageDurations;
     }
 
-    public List<AverageDurationByOrderSize> GetAverageDurationByOrderSize()
+    public async Task<List<AverageDurationByOrderSize>> GetAverageDurationByOrderSizeAsync()
     {
         _logger.LogInformation("Calculating average duration by algorithm and order size");
 
-        List<AverageDurationByOrderSize> averageDurationsByOrderSize = _historicalOrdersRepository.GetAll()
+        IReadOnlyList<OrderDto> orderDtos = await _ordersRepository.GetAllDtosAsync();
+        
+        List<AverageDurationByOrderSize> averageDurationsByOrderSize = orderDtos
             .Where(o => o.FinishPickingTime != null && o.StartPickingTime != null)
             .Select(o => new
             {

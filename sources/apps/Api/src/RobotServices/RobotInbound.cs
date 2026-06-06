@@ -1,3 +1,4 @@
+using Api.Commands;
 using Api.Dtos;
 using Api.Logging;
 using Api.Mqtt;
@@ -15,20 +16,20 @@ public class RobotInbound
     private readonly MqttProducer _mqttProducer;
     private readonly TravelingSalesmanAlgorithmProvider _algorithmProvider;
     private readonly RobotState _robotState;
-    private readonly IOrdersRepository _historicalOrdersRepository;
+    private readonly IOrdersRepository _ordersRepository;
 
     public RobotInbound(
         ILoggerFactory loggerFactory, 
         MqttProducer mqttProducer, 
         TravelingSalesmanAlgorithmProvider algorithmProvider,
         RobotState robotState,
-        IOrdersRepository historicalOrdersRepository)
+        IOrdersRepository ordersRepository)
     {
         _logger = loggerFactory.CreateLoggerApi();
         _mqttProducer = mqttProducer;
         _algorithmProvider = algorithmProvider;
         _robotState = robotState;
-        _historicalOrdersRepository = historicalOrdersRepository;
+        _ordersRepository = ordersRepository;
     }
 
     public async Task SendRawCommands(RobotCommandDto commands)
@@ -38,7 +39,7 @@ public class RobotInbound
         await SendCommands(commands);
     }
 
-    public async Task StartPicking(OrderDto orderDto)
+    public async Task StartPicking(CreateOrderCommand createOrderCommand)
     {
         _logger.LogInformation("Processing message from server with new products to pick");
 
@@ -48,26 +49,26 @@ public class RobotInbound
             throw new InvalidOperationException("You cannot send commands if the robot is already processing some");
         }
 
-        List<Position> robotStops = PrepareRobotStops(orderDto.OrderedProducts);
-        TspAlgorithmResult result = _algorithmProvider.GetAlgorithm(orderDto.TspAlgorithm).FindPath(robotStops);
+        List<Position> robotStops = PrepareRobotStops(createOrderCommand.OrderedProducts);
+        TspAlgorithmResult result = _algorithmProvider.GetAlgorithm(createOrderCommand.TspAlgorithm).FindPath(robotStops);
 
         DirectionEnum startDirection = _robotState.Direction;
-        List<RobotCommand> moves = GenerateCommands(result.Path, startDirection, orderDto.OrderedProducts, result.Distances);
+        List<RobotCommand> moves = GenerateCommands(result.Path, startDirection, createOrderCommand.OrderedProducts, result.Distances);
 
         RobotCommandDto commands = new RobotCommandDto() { Commands = moves };
 
         Order order = new Order()
         {
             OrderId = Guid.NewGuid(),
-            OrderedProducts = orderDto.OrderedProducts,
+            OrderedProducts = createOrderCommand.OrderedProducts,
             PickedProducts = new List<OrderedProduct>(),
-            TspAlgorithm = orderDto.TspAlgorithm,
-            Timestamp = orderDto.Timestamp,
+            TspAlgorithm = createOrderCommand.TspAlgorithm,
+            Timestamp = createOrderCommand.Timestamp,
             Distance = result.TotalWeight,
         };
 
-        _historicalOrdersRepository.Add(order);
-        _robotState.StartPicking(order);
+        await _ordersRepository.AddAsync(order);
+        _robotState.StartPicking(order.ToDto());
         
         await SendCommands(commands);
     }

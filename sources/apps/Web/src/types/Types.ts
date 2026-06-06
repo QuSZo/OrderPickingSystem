@@ -6,7 +6,7 @@ export interface RobotState {
     event: Event;
     timestamp: number;
     command?: RobotCommand;
-    order?: Order;
+    orderDto?: OrderDto;
     productBeingPicked?: OrderedProduct
 }
 
@@ -34,13 +34,13 @@ export interface Product {
     position: Position;
 };
 
-export interface OrderDto {
+export interface CreateOrderCommand {
     orderedProducts: OrderedProduct[];
     tspAlgorithm: TspAlgorithms;
     timestamp: number;
 }
 
-export interface Order {
+export interface OrderDto {
     orderId: string;
     orderedProducts: OrderedProduct[];
     pickedProducts: OrderedProduct[];

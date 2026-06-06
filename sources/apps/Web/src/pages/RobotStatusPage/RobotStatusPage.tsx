@@ -19,12 +19,12 @@ export default function RobotStatusPage() {
     const warehouseMapRef = useRef<HTMLDivElement | null>(null);
 
     const robotProperties = [
-        ["Algorytm", robotState?.order?.tspAlgorithm],
-        ["Dystans", robotState?.order?.distance ? `${robotState?.order?.distance.toString()} cm` : undefined],
+        ["Algorytm", robotState?.orderDto?.tspAlgorithm],
+        ["Dystans", robotState?.orderDto?.distance ? `${robotState?.orderDto?.distance.toString()} cm` : undefined],
         ["Akcja", robotState?.event],
         ["Wykonany ruch", robotState?.command?.move],
         ["Ostatnia synchronizacja", robotState?.timestamp ? new Date(robotState.timestamp * 1000).toLocaleString() : undefined],
-        ["Czas operacji", robotState?.order?.startPickingTime ? formatDuration(elapsedTime) : undefined],
+        ["Czas operacji", robotState?.orderDto?.startPickingTime ? formatDuration(elapsedTime) : undefined],
         ["Poziom zrealizowania zamówienia (%)", undefined]
     ]
 
@@ -59,15 +59,15 @@ export default function RobotStatusPage() {
     }, []);
 
     useEffect(() => {
-        if (!robotState?.order?.startPickingTime) return;
+        if (!robotState?.orderDto?.startPickingTime) return;
 
-        const start = robotState.order.startPickingTime;
+        const start = robotState.orderDto.startPickingTime;
 
         const interval = setInterval(() => {
             const now = Date.now();
 
-            if (robotState.order?.finishPickingTime) {
-                const end = robotState.order.finishPickingTime;
+            if (robotState.orderDto?.finishPickingTime) {
+                const end = robotState.orderDto.finishPickingTime;
                 setElapsedTime(end - start);
                 clearInterval(interval);
             } else {

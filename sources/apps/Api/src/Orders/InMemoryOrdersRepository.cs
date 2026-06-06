@@ -1,4 +1,4 @@
-using Api.RobotOperations;
+using Api.Dtos;
 
 namespace Api.Orders;
 
@@ -6,52 +6,59 @@ public class InMemoryOrdersRepository : IOrdersRepository
 {
     private static readonly List<Order> _historicalOrders = new List<Order>();
 
-    public IReadOnlyList<Order> GetAll()
+    public Task<IReadOnlyList<OrderDto>> GetAllDtosAsync()
     {
-        return _historicalOrders.OrderByDescending(order => order.Timestamp).ToList();
+        IReadOnlyList<OrderDto> result = _historicalOrders
+            .Select(o => new OrderDto
+            {
+                OrderId = o.OrderId,
+                OrderedProducts = o.OrderedProducts,
+                PickedProducts = o.PickedProducts,
+                TspAlgorithm = o.TspAlgorithm,
+                Timestamp = o.Timestamp,
+                Distance = o.Distance,
+                StartPickingTime = o.StartPickingTime,
+                FinishPickingTime = o.FinishPickingTime,
+                ProportionalAbsoluteMean = o.ProportionalAbsoluteMean,
+                DerivativeAbsoluteMean = o.DerivativeAbsoluteMean,
+                IntegralAbsoluteMean = o.IntegralAbsoluteMean,
+                PowerDifferenceAbsoluteMean = o.PowerDifferenceAbsoluteMean,
+            })
+            .OrderByDescending(order => order.Timestamp)
+            .ToList();
+
+        return Task.FromResult(result);
     }
 
-    public void Add(Order order)
+    public Task<Order> GetByIdAsync(Guid id)
+    {
+        Order order = _historicalOrders
+            .Single(o => o.OrderId == id);
+
+        return Task.FromResult(order);
+    }
+
+    public Task AddAsync(Order order)
     {
         _historicalOrders.Add(order);
+        return Task.CompletedTask;
     }
 
-    public Order SetStartPickingTime(Guid id, long timestamp)
+    public Task Update(Order order)
     {
-        Order order = _historicalOrders.Single(order => order.OrderId == id);
-        order.StartPickingTime = timestamp;
+        var index = _historicalOrders.FindIndex(o => o.OrderId == order.OrderId);
 
-        return order;
+        if (index != -1)
+        {
+            _historicalOrders[index] = order;
+        }
+
+        return Task.CompletedTask;
     }
 
-    public Order SetFinishPickingTime(Guid id, long timestamp)
+    public Task Remove(Order order)
     {
-        Order order = _historicalOrders.Single(order => order.OrderId == id);
-        order.FinishPickingTime = timestamp;
-
-        return order;
-    }
-
-    public Order AddPickedProduct(Guid id, OrderedProduct orderedProduct)
-    {
-        Order order = _historicalOrders.Single(order => order.OrderId == id);
-        order.PickedProducts.Add(orderedProduct);
-
-        return order;
-    }
-
-    public Order UpdateSummary(Guid id, RobotPIDSummary robotPIDSummary, double proportionalAbsoluteMean, double derivativeAbsoluteMean, double integralAbsoluteMean, double powerDifferenceAbsoluteMean)
-    {
-        Order order = _historicalOrders.Single(order => order.OrderId == id);
-        order.ProportionalHistory = robotPIDSummary.ProportionalHistory;
-        order.DerivativeHistory = robotPIDSummary.DerivativeHistory;
-        order.IntegralHistory = robotPIDSummary.IntegralHistory;
-        order.PowerDifferenceHistory = robotPIDSummary.PowerDifferenceHistory;
-        order.ProportionalAbsoluteMean = proportionalAbsoluteMean;
-        order.DerivativeAbsoluteMean = derivativeAbsoluteMean;
-        order.IntegralAbsoluteMean = integralAbsoluteMean;
-        order.PowerDifferenceAbsoluteMean = powerDifferenceAbsoluteMean;
-
-        return order;
+        _historicalOrders.Remove(order);
+        return Task.CompletedTask;
     }
 }

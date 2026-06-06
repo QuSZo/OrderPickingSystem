@@ -1,5 +1,7 @@
 using Api.Database;
-using Api.RobotOperations;
+using Api.Dtos;
+using Api.TravelingSalesmanAlgorithms;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Orders;
 
@@ -12,61 +14,54 @@ public class OrdersRepository : IOrdersRepository
         _dbContext = dbContext;        
     }
 
-    public IReadOnlyList<Order> GetAll()
+    public async Task<IReadOnlyList<OrderDto>> GetAllDtosAsync()
     {
-        return _dbContext.Orders.OrderByDescending(order => order.Timestamp).ToList();
+        return await _dbContext.Orders
+            .AsNoTracking()
+            .Select(o => new OrderDto
+            {
+                OrderId = o.OrderId,
+                OrderedProducts = o.OrderedProducts,
+                PickedProducts = o.PickedProducts,
+                TspAlgorithm = o.TspAlgorithm,
+                Timestamp = o.Timestamp,
+                Distance = o.Distance,
+                StartPickingTime = o.StartPickingTime,
+                FinishPickingTime = o.FinishPickingTime,
+                ProportionalAbsoluteMean = o.ProportionalAbsoluteMean,
+                DerivativeAbsoluteMean = o.DerivativeAbsoluteMean,
+                IntegralAbsoluteMean = o.IntegralAbsoluteMean,
+                PowerDifferenceAbsoluteMean = o.PowerDifferenceAbsoluteMean,
+            })
+            .OrderByDescending(order => order.Timestamp)
+            .ToListAsync();
     }
 
-    public void Add(Order order)
+    public async Task<Order> GetByIdAsync(Guid id)
     {
-        _dbContext.Orders.Add(order);
-        _dbContext.SaveChanges();
+        return await _dbContext.Orders
+            .Include(order => order.OrderedProducts)
+            .Include(order => order.PickedProducts)
+            .Include(order => order.TspAlgorithmResults)
+                .ThenInclude(tspAlgorithmResult => tspAlgorithmResult.Path.OrderBy(p => p.OrderNumber))
+            .SingleAsync(o => o.OrderId == id);
     }
 
-    public Order SetStartPickingTime(Guid id, long timestamp)
+    public async Task AddAsync(Order order)
     {
-        Order order = _dbContext.Orders.Single(order => order.OrderId == id);
-        order.StartPickingTime = timestamp;
-
-        _dbContext.SaveChanges();
-
-        return order;
+        await _dbContext.Orders.AddAsync(order);
+        await _dbContext.SaveChangesAsync();
     }
 
-    public Order SetFinishPickingTime(Guid id, long timestamp)
+    public async Task Update(Order order)
     {
-        Order order = _dbContext.Orders.Single(order => order.OrderId == id);
-        order.FinishPickingTime = timestamp;
-
-        _dbContext.SaveChanges();
-
-        return order;
+        _dbContext.Orders.Update(order);
+        await _dbContext.SaveChangesAsync();
     }
 
-    public Order AddPickedProduct(Guid id, OrderedProduct orderedProduct)
+    public async Task Remove(Order order)
     {
-        Order order = _dbContext.Orders.Single(order => order.OrderId == id);
-        order.PickedProducts.Add(orderedProduct);
-
-        _dbContext.SaveChanges();
-
-        return order;
-    }
-
-    public Order UpdateSummary(Guid id, RobotPIDSummary robotPIDSummary, double proportionalAbsoluteMean, double derivativeAbsoluteMean, double integralAbsoluteMean, double powerDifferenceAbsoluteMean)
-    {
-        Order order = _dbContext.Orders.Single(order => order.OrderId == id);
-        order.ProportionalHistory = robotPIDSummary.ProportionalHistory;
-        order.DerivativeHistory = robotPIDSummary.DerivativeHistory;
-        order.IntegralHistory = robotPIDSummary.IntegralHistory;
-        order.PowerDifferenceHistory = robotPIDSummary.PowerDifferenceHistory;
-        order.ProportionalAbsoluteMean = proportionalAbsoluteMean;
-        order.DerivativeAbsoluteMean = derivativeAbsoluteMean;
-        order.IntegralAbsoluteMean = integralAbsoluteMean;
-        order.PowerDifferenceAbsoluteMean = powerDifferenceAbsoluteMean;
-
-        _dbContext.SaveChanges();
-        
-        return order;
+        _dbContext.Orders.Remove(order);
+        await _dbContext.SaveChangesAsync();
     }
 }

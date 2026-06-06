@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import styles from './OrderPage.module.css'
 import { API_URL } from '../../api/const';
 import { ToastContainer, toast } from "react-toastify";
-import { algorithms, type OrderDto, type OrderedProduct, type Product, type TspAlgorithms } from '../../types/Types';
+import { algorithms, type CreateOrderCommand, type OrderedProduct, type Product, type TspAlgorithms } from '../../types/Types';
 import { WarehouseMapCols, WarehouseMapRows, WarehouseMapStops } from '../../const/const';
 import { getRandomElements } from '../../utils/ArrayUtils';
 
@@ -149,7 +149,7 @@ export default function OrderPage() {
 
     const buy = async () => {
         try {
-            const order: OrderDto = {orderedProducts: orderedProducts, tspAlgorithm: selectedAlgorithm, timestamp: Date.now()}
+            const order: CreateOrderCommand = {orderedProducts: orderedProducts, tspAlgorithm: selectedAlgorithm, timestamp: Date.now()}
  
             const response = await fetch(`${ORDERS_API_URL}/buy`, {
                 method: "POST",

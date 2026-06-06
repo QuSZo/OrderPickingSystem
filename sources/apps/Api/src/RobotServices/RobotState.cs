@@ -1,3 +1,4 @@
+using Api.Dtos;
 using Api.Orders;
 using Api.RobotOperations;
 
@@ -12,12 +13,12 @@ public class RobotState
     public RobotCommand? Command { get; set; }
     public RobotEventEnum? Event { get; set; }
     public double? Timestamp { get; set; }
-    public Order? Order { get; set; }
+    public OrderDto? OrderDto { get; set; }
     public OrderedProduct? ProductBeingPicked { get; set; }
 
-    public void StartPicking(Order order)
+    public void StartPicking(OrderDto orderDto)
     {
-        Order = order;
+        OrderDto = orderDto;
     }
 
     public void Reset()
@@ -29,7 +30,7 @@ public class RobotState
         Command = null;
         Event = null;
         Timestamp = null;
-        Order = null;
+        OrderDto = null;
         ProductBeingPicked = null;
     }
 }

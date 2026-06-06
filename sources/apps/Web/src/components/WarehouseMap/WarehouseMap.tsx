@@ -126,7 +126,7 @@ export default function WarehouseMap({ rows, cols, stops, robotState }: Warehous
         ))
       ))}
 
-      {robotState?.order?.orderedProducts.map((orderedProduct) => (
+      {robotState?.orderDto?.orderedProducts.map((orderedProduct) => (
         <g>
           <circle cx={orderedProduct.position.x*CELL_SIZE_X} cy={orderedProduct.position.y*CELL_SIZE_Y/6} r={10} fill="orange" />
           <text fontWeight="bold" x={orderedProduct.position.x*CELL_SIZE_X + 20} y={orderedProduct.position.y*CELL_SIZE_Y/6 + 5}>{orderedProduct.name}</text>
@@ -147,7 +147,7 @@ export default function WarehouseMap({ rows, cols, stops, robotState }: Warehous
         />
       )})}
 
-      {robotState?.order?.pickedProducts.map((pickedProduct) => (
+      {robotState?.orderDto?.pickedProducts.map((pickedProduct) => (
         <g>
           <circle cx={pickedProduct.position.x*CELL_SIZE_X} cy={pickedProduct.position.y*CELL_SIZE_Y/6} r={10} fill="green" />
         </g>

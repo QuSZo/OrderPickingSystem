@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { algorithms, type Order, type OrderDto, type OrderedProduct, type TspAlgorithms } from '../../types/Types';
+import { algorithms, type OrderDto, type CreateOrderCommand, type OrderedProduct, type TspAlgorithms } from '../../types/Types';
 import styles from './HistoricalOrdersPage.module.css'
 import { API_URL } from '../../api/const';
 import { toast, ToastContainer } from 'react-toastify';
@@ -8,13 +8,13 @@ import { formatDuration } from '../../utils/TimeUtils';
 const ORDERS_API_URL = API_URL + "api/orders";
 
 export default function HistoricalOrdersPage() {
-    const [historicalOrders, setHistoricalOrders] = useState<Order[]>([]);
+    const [historicalOrders, setHistoricalOrders] = useState<OrderDto[]>([]);
     const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
     const loadOrders = () => {
         fetch(ORDERS_API_URL)
             .then((response) => response.json())
-            .then((data: Order[]) => setHistoricalOrders(data))
+            .then((data: OrderDto[]) => setHistoricalOrders(data))
             .catch((error) => console.error("Błąd podczas fetch:", error));
     }
 
@@ -29,7 +29,7 @@ export default function HistoricalOrdersPage() {
             ({
                 ...orderedProduct, quantity: 1
             }))
-            const order: OrderDto = {orderedProducts: orderWithSingleQuantity, tspAlgorithm: algorithm, timestamp: Date.now()}
+            const order: CreateOrderCommand = {orderedProducts: orderWithSingleQuantity, tspAlgorithm: algorithm, timestamp: Date.now()}
 
             const response = await fetch(`${ORDERS_API_URL}/buy`, {
                 method: "POST",
