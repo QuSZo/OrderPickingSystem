@@ -50,4 +50,21 @@ public class OrderControllers : ControllerBase
         
         return Ok();
     }
+
+    [HttpPost("order-again")]
+    public async Task<IActionResult> OrderAgain([FromBody] OrderAgainCommand orderAgainCommand)
+    {
+        _logger.LogInformation("Handle api call to order again");
+
+        try
+        {
+            await _robotInbound.OrderAgain(orderAgainCommand);
+        }
+        catch (Exception excepion)
+        {
+            return BadRequest(excepion.Message);
+        }
+        
+        return Ok();
+    }
 }

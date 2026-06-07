@@ -20,4 +20,5 @@ public record Order
     public double? DerivativeAbsoluteMean { get; set; }
     public double? IntegralAbsoluteMean { get; set; }
     public double? PowerDifferenceAbsoluteMean { get; set; }
+    public TspAlgorithmResult? TspAlgorithmResults { get; set; }
 }

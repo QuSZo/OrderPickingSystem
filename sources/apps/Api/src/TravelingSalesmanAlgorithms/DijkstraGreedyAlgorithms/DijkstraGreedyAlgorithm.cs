@@ -1,4 +1,5 @@
 using Api.Logging;
+using Api.Orders;
 using Api.RobotOperations;
 using Python.Runtime;
 
@@ -15,7 +16,7 @@ public class DijkstraGreedyAlgorithm : ITravelingSalesmanAlgorithm
 
     public TspAlgorithmResult FindPath(List<Position> positions)
     {
-        List<Position> path = new List<Position>();
+        List<TspPosition> path = new List<TspPosition>();
         double totalWeight;
         List<double> distances = new List<double>();
 
@@ -39,12 +40,16 @@ public class DijkstraGreedyAlgorithm : ITravelingSalesmanAlgorithm
             totalWeight = result[1];
             dynamic pyDistances = result[2];
 
+            int orderNumber = 0;
+
             foreach (PyObject node in pyPath)
             {
                 int x = node[0].As<int>();
                 int y = node[1].As<int>();
 
-                path.Add(new Position() { X = x, Y = y });
+                path.Add(new TspPosition() { Id = Guid.NewGuid(), X = x, Y = y, OrderNumber = orderNumber });
+
+                orderNumber++;
             }
 
             foreach (PyObject cost in pyDistances)
@@ -55,6 +60,6 @@ public class DijkstraGreedyAlgorithm : ITravelingSalesmanAlgorithm
             _logger.LogInformation($"Python script has been executed. Total distance: {totalWeight}, found path: { string.Join(" -> ", path.Select(p => $"({p.X},{p.Y})")) }");
         }
 
-        return new TspAlgorithmResult() { Path = path, TotalWeight = totalWeight, Distances = distances};
+        return new TspAlgorithmResult() { Id = Guid.NewGuid(), Path = path, TotalWeight = totalWeight, Distances = distances};
     }
 }

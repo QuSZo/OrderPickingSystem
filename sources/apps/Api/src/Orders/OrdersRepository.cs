@@ -44,6 +44,7 @@ public class OrdersRepository : IOrdersRepository
             .Include(order => order.PickedProducts)
             .Include(order => order.TspAlgorithmResults)
                 .ThenInclude(tspAlgorithmResult => tspAlgorithmResult.Path.OrderBy(p => p.OrderNumber))
+            .AsSplitQuery()
             .SingleAsync(o => o.OrderId == id);
     }
 

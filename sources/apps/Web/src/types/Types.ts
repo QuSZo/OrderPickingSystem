@@ -40,6 +40,12 @@ export interface CreateOrderCommand {
     timestamp: number;
 }
 
+export interface OrderAgainCommand {
+    orderId: string
+    tspAlgorithm: TspAlgorithms;
+    timestamp: number
+}
+
 export interface OrderDto {
     orderId: string;
     orderedProducts: OrderedProduct[];

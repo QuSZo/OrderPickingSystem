@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { algorithms, type OrderDto, type CreateOrderCommand, type OrderedProduct, type TspAlgorithms } from '../../types/Types';
+import { algorithms, type OrderDto, type OrderAgainCommand, type TspAlgorithms } from '../../types/Types';
 import styles from './HistoricalOrdersPage.module.css'
 import { API_URL } from '../../api/const';
 import { toast, ToastContainer } from 'react-toastify';
@@ -22,21 +22,24 @@ export default function HistoricalOrdersPage() {
         loadOrders();
     }, []);
 
-    const orderAgain = async (orderedProducts: OrderedProduct[], algorithm: TspAlgorithms) => {
+    // const orderAgain = async (orderedProducts: OrderedProduct[], algorithm: TspAlgorithms) => {
+    const orderAgain = async (id: string, algorithm: TspAlgorithms) => {
         try {
             // TODO: remove line below, only for testing purposes
-            const orderWithSingleQuantity = orderedProducts.map(orderedProduct =>     
-            ({
-                ...orderedProduct, quantity: 1
-            }))
-            const order: CreateOrderCommand = {orderedProducts: orderWithSingleQuantity, tspAlgorithm: algorithm, timestamp: Date.now()}
+            // const orderWithSingleQuantity = orderedProducts.map(orderedProduct =>     
+            // ({
+            //     ...orderedProduct, quantity: 1
+            // }))
+            // const order: CreateOrderCommand = {orderedProducts: orderWithSingleQuantity, tspAlgorithm: algorithm, timestamp: Date.now()}
 
-            const response = await fetch(`${ORDERS_API_URL}/buy`, {
+            const orderAgainCommand: OrderAgainCommand = {orderId: id, tspAlgorithm: algorithm, timestamp: Date.now()}
+
+            const response = await fetch(`${ORDERS_API_URL}/order-again`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(order)
+                body: JSON.stringify(orderAgainCommand)
             });
 
             if (!response.ok) {
@@ -124,7 +127,7 @@ export default function HistoricalOrdersPage() {
                                 <td>{order.distance} cm</td>
                                 <td>{calculateAverageSpeed(order.startPickingTime, order.finishPickingTime, order.distance)}</td>
                                 <td>
-                                    <select className={styles.select} defaultValue="" onChange={(e) => {orderAgain(order.orderedProducts, e.target.value as TspAlgorithms); e.target.value=""}}>
+                                    <select className={styles.select} defaultValue="" onChange={(e) => {orderAgain(order.orderId, e.target.value as TspAlgorithms); e.target.value=""}}>
                                         <option value="" disabled>Zamów ponownie</option>
                                         {algorithms.map((alg) => (
                                             <option key={alg} value={alg}>{alg}</option>

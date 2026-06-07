@@ -65,6 +65,81 @@ public class RobotInbound
             TspAlgorithm = createOrderCommand.TspAlgorithm,
             Timestamp = createOrderCommand.Timestamp,
             Distance = result.TotalWeight,
+            TspAlgorithmResults = result,
+        };
+
+        await _ordersRepository.AddAsync(order);
+        _robotState.StartPicking(order.ToDto());
+        
+        await SendCommands(commands);
+    }
+
+    public async Task OrderAgain(OrderAgainCommand orderAgainCommand)
+    {
+        _logger.LogInformation("Processing message from server with new products to pick");
+
+        if (_robotState.Event != null)
+        {
+            _logger.LogError("You cannot send commands if the robot is already processing some");
+            throw new InvalidOperationException("You cannot send commands if the robot is already processing some");
+        }
+
+        Order prevOrder = await _ordersRepository.GetByIdAsync(orderAgainCommand.OrderId);
+        //TODO: to remove
+        _logger.LogError("Started copying ordered producta");
+        List<OrderedProduct> orderedProducts = prevOrder.OrderedProducts
+            .Select(p => new OrderedProduct
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Quantity = 1,
+                Position = new Position 
+                { 
+                    X = p.Position.X, 
+                    Y = p.Position.Y 
+                }
+            })
+            .ToList();
+
+        _logger.LogError("Started prepering robot stops");
+        List<Position> robotStops = PrepareRobotStops(orderedProducts);
+        TspAlgorithmResult result;
+        if (prevOrder.TspAlgorithmResults == null || prevOrder.TspAlgorithm != orderAgainCommand.TspAlgorithm)
+        {
+            _logger.LogInformation($"Have to calculate path again. TspAlgorithmResults is {prevOrder.TspAlgorithmResults} and {prevOrder.TspAlgorithm} != {orderAgainCommand.TspAlgorithm}");
+            result = _algorithmProvider.GetAlgorithm(orderAgainCommand.TspAlgorithm).FindPath(robotStops);
+        }
+        else
+        {
+            result = prevOrder.TspAlgorithmResults with 
+            {
+                Id = Guid.NewGuid(),
+                Path = prevOrder.TspAlgorithmResults.Path.Select(p => new TspPosition
+                {
+                    Id = Guid.NewGuid(),
+                    X = p.X,
+                    Y = p.Y,
+                    OrderNumber = p.OrderNumber
+                }).ToList()
+            };
+            _logger.LogInformation($"Using prev path: { string.Join(" -> ", result.Path.Select(p => $"({p.X},{p.Y})")) }");
+        }
+
+        DirectionEnum startDirection = _robotState.Direction;
+        List<RobotCommand> moves = GenerateCommands(result.Path, startDirection, orderedProducts, result.Distances);
+
+        RobotCommandDto commands = new RobotCommandDto() { Commands = moves };
+
+        _logger.LogInformation($"Saving result: { string.Join(" -> ", result.Path.Select(p => $"({p.X},{p.Y})")) }");
+        Order order = new Order()
+        {
+            OrderId = Guid.NewGuid(),
+            OrderedProducts = orderedProducts,
+            PickedProducts = new List<OrderedProduct>(),
+            TspAlgorithm = orderAgainCommand.TspAlgorithm,
+            Timestamp = orderAgainCommand.Timestamp,
+            Distance = result.TotalWeight,
+            TspAlgorithmResults = result,
         };
 
         await _ordersRepository.AddAsync(order);
@@ -106,7 +181,7 @@ public class RobotInbound
         return positionsToSee;
     }
 
-    private List<RobotCommand> GenerateCommands(List<Position> positions, DirectionEnum startDirection, List<OrderedProduct> orderedProducts, List<double> distances)
+    private List<RobotCommand> GenerateCommands(List<TspPosition> positions, DirectionEnum startDirection, List<OrderedProduct> orderedProducts, List<double> distances)
     {
         _logger.LogInformation("Generating robot moves from positions");
 
@@ -123,7 +198,7 @@ public class RobotInbound
             int x_next = positions[i+1].X;
             int y_next = positions[i+1].Y;
 
-            OrderedProduct? orderedProductOnPosition = productsToPick.SingleOrDefault(orderedProduct => orderedProduct.Position == positions[i]);
+            OrderedProduct? orderedProductOnPosition = productsToPick.SingleOrDefault(orderedProduct => orderedProduct.Position.X == positions[i].X && orderedProduct.Position.Y == positions[i].Y);
             if (orderedProductOnPosition != null)
             {
                 RobotCommand stopCommand = new RobotCommand() { Move = RobotMoveEnum.Stop, StopDurationMs = orderedProductOnPosition.Quantity * StopDurationMsForOne, OrderedProduct = orderedProductOnPosition };
