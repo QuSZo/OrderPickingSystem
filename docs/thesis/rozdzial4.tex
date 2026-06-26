@@ -1,41 +1,117 @@
 % !TEX root = praca.tex
 
-\chapter{Hardware}
+\chapter{Warstwa sprzętowa}
 \label{cha:hardware}
 
-Opisać problem jaki występował w kontekście dotarcia do poszczególnych produktów. Coś tam o śledzeniu linii. Potem, że został wybrany robot o nazwie AlphaBot2.
+Głównym problemem autonomicznej kompletacji zamówień jest wybór odpowiedniego środka transportu wewnętrznego. Robot przemieszczający się po odpowiedniej planszy odwzorowującej magazyn lub sklep w odpowiedniej skali, powinien być wyposażony w odpowiednią aparaturę, która umożliwi dynamiczne rozpoznanie w przestrzeni oraz wykonanie powierzonych zadań. Wybór odpowiedniego pojazdu jest kluczowy, ponieważ definiuje sposób implementacji całego systemu.
+
+Po przeprowadzeniu analizy problemu rozważanego w pracy zdecydowano, że robot ma opierać się na mikrokomputerze z systemem operacyjnym, co zapewni dużą elastyczność podczas wdrażania rozwiązania, bez konieczności dostosowania się do konkretnego sprzętu. Przyjęto, że robot ma być wyposażony w czujniki odbiciowe, umożliwiające śledzenie kontrastowych linii, co umożliwi poruszanie się po wyznaczonej trasie.
 
 %---------------------------------------------------------------------------
 
 \section{AlphaBot2}
 \label{sec:alphaBot2}
 
-Opisać ogólnie co ten robot posiada i jak działa.
+Po przeprowadzeniu przeglądu dostępnych rozwiązań zdecydowano się na wybór robota o nazwie AlphaBot2. Wariant z dopiskiem ``Pi'' jest kompatybilny z mikrokomputerem Raspberry Pi za pośrednictwem odpowiedniej płytki rozszerzeń o nazwie AlphaBot2-Pi. Posiada odpowiedni interfejs, który służy do bezpośredniego podłączenia wszystkich wyprowadzeń GPIO mikrokomputera. AlphaBot2 jest wyposażony w dwa koła napędowe oraz dwa koła wielokierunkowe służące jako koła podporowe. Robot posiada pięć czujników odbiciowych, które umożliwiły efektywne śledzenie linii.
+
+Do głównych zalet robota należy jego wyposażenie, kompatybilność z Raspberry Pi i łatwość budowy, dzięki czemu po złożeniu jest on od razu gotowy do pracy i nie wymaga zmian konstrukcyjnych. Jego głównym ograniczeniem są wykorzystane akumulatory, charakteryzujące się szybkim spadkiem pojemności.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/alphabot2-pi_waveshare.jpg}
+    \caption{Robot AlphaBot2 (źródło: \cite{AlphaBot2Pi_ProductPage})}
+    \label{fig:alphabot}
+\end{figure}
 
 %---------------------------------------------------------------------------
 
-\subsection{Sensory}
+\subsection{Czujniki odbiciowe}
 \label{sec:sensory}
 
-Robot bazuje na sensorach wykrywających linie. Napisać coś o czujnikach i w jaki sposób robot może bazować na wynikach jakie te czujniki generują.
+Jednym z kluczowych elementów wyposażenia robota jest zestaw pięciu czujników odbiciowych ITR20001/T, umożliwiających śledzenie linii. Każdy z nich jest zbudowany z diody emitującej promieniowanie podczerwone oraz fototranzystora pełniącego funkcję odbiornika. 
+
+Dioda emituje światło podczerwone, które po odbiciu się od dowolnego obiektu trafia do fototranzystora. Jego przewodnictwo zależy od natężenia odebranego światła podczerwonego - powierzchnie jasne odbijają więcej promieniowania niż powierzchnie czarne. Na podstawie wartości generowanych przez czujniki w czasie rzeczywistym jest obliczana pozycja robota względem linii, a przy użyciu odpowiedniego algorytmu jego pozycja jest dynamicznie korygowana.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/ITR-20001_T_everlight.jpg}
+    \caption{Czujnik odbiciowy ITR20001/T (źródło: \cite{ITR20001_ProductPage})}
+    \label{fig:czujnik}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/pradPromieniowanie.jpg}
+    \caption{Zależność prądu kolektora od natężenia promieniowania (źródło: \cite{ITR20001T_Datasheet})}
+    \label{fig:pradPromieniowanie}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/czuloscDlugoscFali.jpg}
+    \caption{Zależność czułości od długości fali (źródło: \cite{ITR20001T_Datasheet})}
+    \label{fig:czuloscDlugoscFali}
+\end{figure}
+
 
 %---------------------------------------------------------------------------
 
 \subsection{Silniki}
 \label{sec:silniki}
 
-Napisać jakie silniki zostały użyte, w jaki sposób robot skręca.
+Kolejnym elementem wyposażenia robota są dwa koła napędzane mikrosilnikami prądu stałego N20 z przekładnią 1:30. Przekładnie zmniejszają prędkość obrotową koła z 18000 RPM (obrotów na minutę) do 600 RPM. Ten mechanizm ułatwia poruszanie robota, kosztem mniejszej prędkości. 
+
+Silniki zasilane są napięciem stałym, pochodzącym prosto z akumulatorów, którego wartość wynosi około 6V i zależy od stopnia naładowania. Robot nie posiada stabilizatora napięcia dla obwodu zasilania silników, dlatego ich prędkość zmienia się w zależności od napięcia baterii. W rezultacie charakterystyka prędkości robota jest częściowo uzależniona od poziomu naładowania akumulatorów.
+
+Poprzez wykorzystanie tylko dwóch napędzanych kół, skręcanie ogranicza się do różnicowania ich prędkości. Aby robot zmienił kierunek jazdy wystarczy zmniejszyć prędkość jednego z kół. Dzięki takiemu rozwiązaniu nie ma konieczności stosowania przekładni kierowniczych.
 
 %---------------------------------------------------------------------------
 
 \section{RaspberryPi}
 \label{sec:raspberryPi}
 
-Opisać raspberryPi. Jakieś sprzętowe informacje, architekture mikroprocesora. Dlaczego raspberryPi. Napisać, że może łączyć się z siecią WI-FI co jest niezbędne do ciągłej komunikacji z serwerem.
+Jednostką sterującą robota jest jednopłytkowy komputer Raspberry Pi 4B. Opiera się na 4-rdzeniowym, 64-bitowym procesorze Broadcom BCM2711 ARM Cortex-A72 o taktowaniu 1,8 GHz oraz posiada 8 GB pamięci RAM. Mikrokomputer wyposażony jest w dwa porty USB 3.0, dwa porty microHDMI, gniazdo Ethernet oraz złącze USB-C do zasilania. Do komunikacji bezprzewodowej można wykorzystać Wi-Fi w zakresach 2.4 GHz i 5 GHz oraz Bluetooth. Posiada 40 pinowe złącze wejścia/wyjścia GPIO, które umożliwia połączenie akcesoriów, lub wykorzystanie interfejsów komunikacyjncyh np. I$^2$C.
+
+Do głównych zalet Raspberry Pi 4B należy możliwość zainstalowania systemu operacyjnego Raspberry Pi OS, opartego na Debianie, co umożliwia programowanie w dowolnym języku programowania np. Python. Kolejnym atutem jest możliwość komunikacji bezprzewodowej przez Wi-Fi. Dodatkowo platforma oferuje szeroką bazę akcesoriów i urządzeń peryfejnych, rozbudowaną i dobrze dostępną dokumentację, rozwiniętą bazę wiedzy i ogromną społeczność użytkowników. Słabą stroną Raspberry Pi 4B jest większy pobór prądu w porównaniu z platformami opartymi na  mikrokontrolerach, co skutkuje szybszym rozładowaniem akumulatorów robota.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/Raspberry_Pi_4_Model_B-wikimedia.jpg}
+    \caption{Raspberry Pi Model B (źródło: \cite{RaspberryPi4B})}
+    \label{fig:RaspberryPi}
+\end{figure}
 
 %---------------------------------------------------------------------------
 
 \section{Moduł NFC}
 \label{sec:modulNfc}
 
-Jeśli zostanie zaimplementowany moduł NFC to coś o nim napisać.
+Do walidacji odbieranego produktu wykorzystano tagi NFC. Near Field Communication to technologia komunikacji bezprzewodowej krótkiego zasięgu. Maksymalny zasięg komunikacji zależy od parametrów wykorzystanej anteny w konkretnym tagu oraz użytego czytnika NFC i wynosi do kilku centrymetrów. Tagi pozwalają na zapis i przechowywanie małych ilości danych, zazwyczaj do kilkuset bajtów. Każdy tag posiada unikalny identyfikator nadawany przez producenta, który pozwala na jego rozpoznanie bez konieczności zapisywania dodatkowych danych.
+
+W pracy dyplomowej wykorzystano moduł RFID/NFC PN532, który umożliwia komunikację z Raspberry Pi przy użyciu intefejsu szeregowego I$^2$C.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/nfc_pn532_elechouse.jpg}
+    \caption{Moduł NFC RFID PN532 (źródło: \cite{PN532_Manual})}
+    \label{fig:pn532}
+\end{figure}
+
+%---------------------------------------------------------------------------
+
+\subsection{Tagi NFC}
+
+Do identyfikacji konkretnego produktu wykorzystano dwa tagi S436D-TT26 oraz S436D-TT28. Oba tagi wykorzystują chip zgodny funkcjonalnie z chipem Ntag 213 firmy NxP. To zapewnie, że są zgodne ze specyfikacją Type 2 zdefiniowaną przez NFC Forum. Jest to najpopularniejszy standard używany w tagach NFC.
+Rodzaje, różnice, zdjęcie
+
+%---------------------------------------------------------------------------
+
+\subsection{Integracja tagów NFC w systemie produktów}
+
+Jak tag został połączony z produktem, i po co walidowanie tego produktu
+
+%---------------------------------------------------------------------------
+
+\subsection{Odczyt tagu NFC przez robota}
+
+jaka odległość tagu od robota aby robot go odczytał, jakieś zdjęcie przedstawiające tą minimalną odległość (na zdjęciu robot i tag NFC), pokazanie screena logów w robocie z odczytem tych wartości
