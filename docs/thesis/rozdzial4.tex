@@ -72,7 +72,7 @@ Poprzez wykorzystanie tylko dwóch napędzanych kół, skręcanie ogranicza się
 
 Jednostką sterującą robota jest jednopłytkowy komputer Raspberry Pi 4B. Opiera się na 4-rdzeniowym, 64-bitowym procesorze Broadcom BCM2711 ARM Cortex-A72 o taktowaniu 1,8 GHz oraz posiada 8 GB pamięci RAM. Mikrokomputer wyposażony jest w dwa porty USB 3.0, dwa porty microHDMI, gniazdo Ethernet oraz złącze USB-C do zasilania. Do komunikacji bezprzewodowej można wykorzystać Wi-Fi w zakresach 2.4 GHz i 5 GHz oraz Bluetooth. Posiada 40 pinowe złącze wejścia/wyjścia GPIO, które umożliwia połączenie akcesoriów, lub wykorzystanie interfejsów komunikacyjncyh np. I$^2$C.
 
-Do głównych zalet Raspberry Pi 4B należy możliwość zainstalowania systemu operacyjnego Raspberry Pi OS, opartego na Debianie, co umożliwia programowanie w dowolnym języku programowania np. Python. Kolejnym atutem jest możliwość komunikacji bezprzewodowej przez Wi-Fi. Dodatkowo platforma oferuje szeroką bazę akcesoriów i urządzeń peryfejnych, rozbudowaną i dobrze dostępną dokumentację, rozwiniętą bazę wiedzy i ogromną społeczność użytkowników. Słabą stroną Raspberry Pi 4B jest większy pobór prądu w porównaniu z platformami opartymi na  mikrokontrolerach, co skutkuje szybszym rozładowaniem akumulatorów robota.
+Do głównych zalet Raspberry Pi 4B należy możliwość zainstalowania systemu operacyjnego Raspberry Pi OS, opartego na Debianie, co umożliwia programowanie w dowolnym języku programowania np. Python. Kolejnym atutem jest możliwość komunikacji bezprzewodowej przez Wi-Fi. Dodatkowo platforma oferuje szeroką bazę akcesoriów i urządzeń peryfejnych, rozbudowaną i dobrze dostępną dokumentację, rozwiniętą bazę wiedzy i ogromną społeczność użytkowników. Słabą stroną Raspberry Pi 4B jest większy pobór prądu w porównaniu z platformami opartymi na mikrokontrolerach, co skutkuje szybszym rozładowaniem akumulatorów robota.
 
 \begin{figure}[htbp]
     \centering
@@ -88,7 +88,7 @@ Do głównych zalet Raspberry Pi 4B należy możliwość zainstalowania systemu 
 
 Do walidacji odbieranego produktu wykorzystano tagi NFC. Near Field Communication to technologia komunikacji bezprzewodowej krótkiego zasięgu. Maksymalny zasięg komunikacji zależy od parametrów wykorzystanej anteny w konkretnym tagu oraz użytego czytnika NFC i wynosi do kilku centrymetrów. Tagi pozwalają na zapis i przechowywanie małych ilości danych, zazwyczaj do kilkuset bajtów. Każdy tag posiada unikalny identyfikator nadawany przez producenta, który pozwala na jego rozpoznanie bez konieczności zapisywania dodatkowych danych.
 
-W pracy dyplomowej wykorzystano moduł RFID/NFC PN532, który umożliwia komunikację z Raspberry Pi przy użyciu intefejsu szeregowego I$^2$C.
+W pracy dyplomowej wykorzystano moduł RFID/NFC PN532, który umożliwia komunikację z Raspberry Pi przy użyciu intefejsu szeregowego I$^2$C. Moduł obsługuje tagi NFC typów od 1 do 4 zgodne ze specyfikacją NFC Forum. Nie obsługuje tagów typu 5, które są przeznaczone do komunikacji dalekiego zasięgu.
 
 \begin{figure}[htbp]
     \centering
@@ -101,14 +101,18 @@ W pracy dyplomowej wykorzystano moduł RFID/NFC PN532, który umożliwia komunik
 
 \subsection{Tagi NFC}
 
-Do identyfikacji konkretnego produktu wykorzystano dwa tagi S436D-TT26 oraz S436D-TT28. Oba tagi wykorzystują chip zgodny funkcjonalnie z chipem Ntag 213 firmy NxP. To zapewnie, że są zgodne ze specyfikacją Type 2 zdefiniowaną przez NFC Forum. Jest to najpopularniejszy standard używany w tagach NFC.
-Rodzaje, różnice, zdjęcie
+Do identyfikacji konkretnego produktu wykorzystano dwa tagi S436D-TT26 oraz S436D-TT28. Oba tagi wykorzystują chip zgodny funkcjonalnie z chipem Ntag 213 firmy NxP. To zapewnia, że są zgodne ze specyfikacją typu 2 zdefiniowaną przez NFC Forum. Jest to najpopularniejszy standard używany w tagach NFC.
+
+Wymienione tagi różnią się od siebie rozmiarem więc średnicą anteny - TT26 ma 26 mm średnicy, TT28 ma 28 mm średnicy, co może minimalnie wpływać na maksymalny zasięg komunikacji.
+
+<< tutaj dodać zdjęcie >>
 
 %---------------------------------------------------------------------------
 
 \subsection{Integracja tagów NFC w systemie produktów}
 
 Jak tag został połączony z produktem, i po co walidowanie tego produktu
+Z każdego tagu NFC odczytano jego identyfikator, a następnie w bazie danych powiązano go z konkretnym produktem. Umożliwiło to walidację pozycji robota. Po wykonaniu sekwencji komend prowadzących do konkretnego produktu robot zatrzymuje się i odczytuje identyfikator tagu. Następnie waliduje czy odczytano odpowiedni kod, po czym kontynuuje swoją pracę. 
 
 %---------------------------------------------------------------------------
 
