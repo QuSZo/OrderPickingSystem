@@ -11,6 +11,30 @@ Czy ten rozdział powinien być rozdzielony na mniejsze zamiast dodawać nowe se
 \label{sec:oprogramowanieRobota}
 
 Technologie, biblioteki, dwie implementacje - fizyczna i symulacja. Napisać że został użyty kod do integracji z czujnikami i silnikami oraz zmodyfikowany kod do śledzenia linii.
+Aplikacja sterowania robotem została napisana w języku Python. Realizuje dwie podstawowe funkcjonalności - komunikację przy użyciu protokołu MQTT oraz sterowanie robotem. Dodatkowo program można uruchomić w dwóch trybach - normalnym oraz symulacji. Tryb normalny działa bezpośrednio na robocie i wykorzystuje kod odpowiedzialny za sterowanie. Tryb symulacji działa w dowolnym środowisku, a każdy ruch robota jest symulowany. 
+
+%---------------------------------------------------------------------------
+
+\subsection{Obsługa komunikacji MQTT}
+\label{sec:komunikacjaMqtt}
+
+Do obsługi komunikacji MQTT wykorzystano bibliotekę paho-mqtt. Zaraz po uruchomieniu program próbuje nawiązać połączenie z brokerem wiadomości, którego adres IP został podany w parametrach startowych. Następnie subskrybuje się na dwa tematy. Pierwszy to robot/command, z którego odbiera listę komend do wykonania, takie jak forward, left, right, back czy stop. Drugi temat to robot/stop, który służy do awaryjnego zatrzymania robota.
+
+%---------------------------------------------------------------------------
+
+\subsection{Sterowanie robotem}
+\label{sec:sterowanieRobotem}
+
+Po otrzymaniu listy komend robot rozpoczyna proces kompletacji zamówienia. Rozpoczyna od kalibracji czujników odbiciowych. Następnie rozpoczyna przejazd pobierając pierwszy element z listy komend. Jeśli każdy z czujników odczyta kolor czarny to wysyła swój status i pobiera następną komendę z listy i ją wykonuje. W przypadku komendy stop służącej do symulacji pobrania produktu z regału magazynu, robot zatrzymuje się na określony czas, a następnie kontynuuje jazdę pobierając kolejną komendę z listy. Po wykonaniu wszystkich komend robot wysyła status o zakończeniu kompletacji zamówienia i zatrzymuje się.
+
+Robot w łatwy sposób jest w stanie zmienić kierunek jazdy. Robi to zmieniając prędkości obrotowe kół. Jednak między punktami synchronizacji musi przebyć odpowiednią drogę. Robi to przy użyciu mechanizmu śledzenia linii z wykorzystaniem algorytmu / metody PID. Aglorytm PID (Proporcjonalno-Całkująco-Różniczkujący) na podstawie wartości generowanych przez czujniki odbiciowe dynamicznie koryguje pozycję robota starając się nie dość że utrzymać robota na linii to możliwie kierować go jak najbardziej prosto. XD 
+
+obrazek z PID
+
+\subsection{Tryb symulacji}
+\label{sec:symulacjaRobota}
+
+Program można uruchomić w trybie symulacji. Program nadal korzysta z tego samego interfejsu dlatego komunikacja robota z aplikacją serwerową pozostała identyczna. Poza listą komend jaką robot ma wykonać przesyłana jest informacja o odległości, jaką robot ma przejechać do następnego punktu. Na podstawie tej odległości obliczany jest czas do wysłania następnego statusu.
 
 %---------------------------------------------------------------------------
 
