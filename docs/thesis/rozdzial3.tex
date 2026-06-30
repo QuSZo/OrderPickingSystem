@@ -1,105 +1,121 @@
 % !TEX root = praca.tex
 
-\chapter{Architektura systemu}
-\label{cha:architekturaSystemu}
+\chapter{Warstwa sprzętowa}
+\label{cha:hardware}
 
-Napisać coś o tym, że całość architektury zawiera wiele integracji, używa kilka protokołów komunikacyjnych itp.
-Dobra architektura systemu powinna zapewnić łatwe skalowanie oraz utrzymanie. Należy zrozumieć wymagania zarówno funkcjonalne czyli jakie zadania system ma spełniać, oraz niefunkcjonalne czyli wydajność lub bezpieczeństwo. Innym ważnym aspektem jest podział odpowiedzialności czyli na jakie komponenty powinien zostać podzielony system.
+Głównym problemem autonomicznej kompletacji zamówień jest wybór odpowiedniego środka transportu wewnętrznego. Robot przemieszczający się po odpowiedniej planszy odwzorowującej magazyn lub sklep w odpowiedniej skali, powinien być wyposażony w odpowiednią aparaturę, która umożliwi dynamiczne rozpoznanie w przestrzeni oraz wykonanie powierzonych zadań. Wybór odpowiedniego pojazdu jest kluczowy, ponieważ definiuje sposób implementacji całego systemu.
 
-Zdecydowano, że autonomiczny system kompletacji zamówień musi zostać podzielony na trzy aplikacje: aplikacja internetowa, aplikacja serwerowa oraz aplikacja sterowania robotem. Taka architektura zapewniła odpowiedni podział odpowiedzialności na warstwę prezentacji, warstwę logiki biznesowej i warstwę zarządzania i sterowaniem robotem. Dzięki temu wszystkie trzy systemy można rozwijać niezależnie. Dodatkowo taki podział umożliwia wykorzystanie wielu robotów, poprzez odpowiednią integrację z aplikacją serwerową. Podział na trzy aplikacje można zobaczyć na rysunku \ref{fig:c4Modelc1}, który przedstawia poziom C1 w modelu C4 architektury systemu.
+Po przeprowadzeniu analizy problemu rozważanego w pracy zdecydowano, że robot ma opierać się na mikrokomputerze z systemem operacyjnym, co zapewni dużą elastyczność podczas wdrażania rozwiązania, bez konieczności dostosowania się do konkretnego sprzętu. Przyjęto, że robot ma być wyposażony w czujniki odbiciowe, umożliwiające śledzenie kontrastowych linii, co umożliwi poruszanie się po wyznaczonej trasie.
 
-Może coś o procesie decyzyjnym, jakie inne zalety ma to rozwiązanie, albo jakie wady lub ograniczenia. Zaletą jest to że aplikacja frontendowa nie komunikuje się bezpośrednio z robotem. 
+%---------------------------------------------------------------------------
+
+\section{AlphaBot2}
+\label{sec:alphaBot2}
+
+Po przeprowadzeniu przeglądu dostępnych rozwiązań zdecydowano się na wybór robota o nazwie AlphaBot2. Wariant z dopiskiem ``Pi'' jest kompatybilny z mikrokomputerem Raspberry Pi za pośrednictwem odpowiedniej płytki rozszerzeń o nazwie AlphaBot2-Pi. Posiada odpowiedni interfejs, który służy do bezpośredniego podłączenia wszystkich wyprowadzeń GPIO mikrokomputera. AlphaBot2 jest wyposażony w dwa koła napędowe oraz dwa koła wielokierunkowe służące jako koła podporowe. Robot posiada pięć czujników odbiciowych, które umożliwiły efektywne śledzenie linii.
+
+Do głównych zalet robota należy jego wyposażenie, kompatybilność z Raspberry Pi i łatwość budowy, dzięki czemu po złożeniu jest on od razu gotowy do pracy i nie wymaga zmian konstrukcyjnych. Jego głównym ograniczeniem są wykorzystane akumulatory, charakteryzujące się szybkim spadkiem pojemności.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=1\textwidth]{images/c4_architecture-C1.jpg}
-    \caption{Model C4 architektury systemu - poziom C1}
-    \label{fig:c4Modelc1}
+    \includegraphics[width=0.7\textwidth]{images/alphabot2-pi_waveshare.jpg}
+    \caption{Robot AlphaBot2 (źródło: \cite{AlphaBot2Pi_ProductPage})}
+    \label{fig:alphabot}
 \end{figure}
 
 %---------------------------------------------------------------------------
 
-\section{Integracje aplikacji i usług}
-\label{sec:integracje}
+\subsection{Czujniki odbiciowe}
+\label{sec:sensory}
 
-Podział na trzy niezależne aplikacje wymaga zaprojektowania odpowiedniej komunikacji między nimi. Jednak każdy z systemów ma inne odpowiedzialności i wymagania co wymagało zastosowania różnych mechanizmów komunikacji. Dodatkowo może jakiś ogólny opis np. użytkownik coś tam wysyła a robot wysyła dane o stanie itd.
+Jednym z kluczowych elementów wyposażenia robota jest zestaw pięciu czujników odbiciowych ITR20001/T, umożliwiających śledzenie linii. Każdy z nich jest zbudowany z diody emitującej promieniowanie podczerwone oraz fototranzystora pełniącego funkcję odbiornika. 
+
+Dioda emituje światło podczerwone, które po odbiciu się od dowolnego obiektu trafia do fototranzystora. Jego przewodnictwo zależy od natężenia odebranego światła podczerwonego - powierzchnie jasne odbijają więcej promieniowania niż powierzchnie czarne. Na podstawie wartości generowanych przez czujniki w czasie rzeczywistym jest obliczana pozycja robota względem linii, a przy użyciu odpowiedniego algorytmu jego pozycja jest dynamicznie korygowana.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/ITR-20001_T_everlight.jpg}
+    \caption{Czujnik odbiciowy ITR20001/T (źródło: \cite{ITR20001_ProductPage})}
+    \label{fig:czujnik}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/pradPromieniowanie.jpg}
+    \caption{Zależność prądu kolektora od natężenia promieniowania (źródło: \cite{ITR20001T_Datasheet})}
+    \label{fig:pradPromieniowanie}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/czuloscDlugoscFali.jpg}
+    \caption{Zależność czułości od długości fali (źródło: \cite{ITR20001T_Datasheet})}
+    \label{fig:czuloscDlugoscFali}
+\end{figure}
+
 
 %---------------------------------------------------------------------------
 
-\subsection{Komunikacja aplikacji internetowej i serwerowej}
-\label{sec:komunikacjaBackendFrontend}
+\subsection{Silniki}
+\label{sec:silniki}
 
-\subsubsection*{REST API}
+Kolejnym elementem wyposażenia robota są dwa koła napędzane mikrosilnikami prądu stałego N20 z przekładnią 1:30. Przekładnie zmniejszają prędkość obrotową koła z 18000 RPM (obrotów na minutę) do 600 RPM. Ten mechanizm ułatwia poruszanie robota, kosztem mniejszej prędkości. 
 
-Główną odpowiedzialnością aplikacji internetowej jest integracja z użytkownikiem, który może wyświetlić listę produktów, stworzyć zamówienie czy wyświetlić historię zamówień. Do realizacji takiej komunikacji wykorzystano REST API.
+Silniki zasilane są napięciem stałym, pochodzącym prosto z akumulatorów, którego wartość wynosi około 6V i zależy od stopnia naładowania. Robot nie posiada stabilizatora napięcia dla obwodu zasilania silników, dlatego ich prędkość zmienia się w zależności od napięcia baterii. W rezultacie charakterystyka prędkości robota jest częściowo uzależniona od poziomu naładowania akumulatorów.
 
-API (z ang. Application Programming Interface) to zestaw reguł, które umożliwiają systemom komunikować się między sobą. REST jest stylem architektonicznym definiującym zasady projektowania systemów sieciowych, a REST API jest konkretnym interfejsem realizującym te zasady. W REST wszystko jest zasobem, a każdy zasób ma swój adres URL. Do wykonania operacji na tych zasobach wykorzystywany jest protokół HTTP.
-
-REST API jest dobrym wyborem dla operacji inicjowanych przez użytkownika, które polegają na wysłaniu żądania i otrzymaniu odpowiedzi, szczególnie gdy nie jest wymagana komunikacja w czasie rzeczywistym. Architektura REST jest bezstanowa, co sprawia że każde żądanie jest niezależne. To sprawia, że kod po stronie serwera staje się prostszy, a cały system bardziej skalowalny.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.9\textwidth]{images/httpWebSocket-medium-http.jpg}
-    \caption{Komunikacja przy użyciu protokołu HTTP (źródło: \cite{websockets})}
-    \label{fig:http}
-\end{figure}
-
-\subsubsection*{SignalR}
-
-Użytkownik oprócz wysyłania pojedycznych żądań powinien móc śledzić stan swojego zamówienia. Jednak ciągłe odświeżadanie strony lub cykliczne wysyłanie zapytań do serwera o stan zamówienia nie jest najlepszym wyborem. Dlatego zdecydowano się na SignalR, technologię która najczęściej wykorzystuje protokół WebSocket. 
-
-WebSocket zapewnia ciągłą, dwukierunkową komunikację przez jedno, stałe połączenie TCP. Aby nawiązać połączenie WebSocket aplikacja kliencka wysyła żądanie HTTP, co ma na celu uzgodnić protokół WebSocket. Serwer, który obsługuje WebSocket, akceptuje tą zmianę i nawiązuje stałe połączenie TCP. SignalR jest technologią, która wykorzystując najczęściej WebSocket, ułatwiając implementację dzięki dodatkowej warstwie abstrakcji.
-
-Dzięki zapewnieniu stałego połączenia TCP, aplikacja internetowa w czasie rzeczywistym otrzymuje dane z aplikacji serwerowej o statusie zamówienia. Użytkownik może śledzić pozycję robota lub jakie produkty zebrał.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.9\textwidth]{images/httpWebSocket-medium-websocket.jpg}
-    \caption{Komunikacja przy użyciu protokołu WebSocket (źródło: \cite{websockets})}
-    \label{fig:websocket}
-\end{figure}
+Poprzez wykorzystanie tylko dwóch napędzanych kół, skręcanie ogranicza się do różnicowania ich prędkości. Aby robot zmienił kierunek jazdy wystarczy zmniejszyć prędkość jednego z kół. Dzięki takiemu rozwiązaniu nie ma konieczności stosowania przekładni kierowniczych.
 
 %---------------------------------------------------------------------------
 
-\subsection{Komunikacja aplikacji sterowania robotem i serwerowej}
-\label{sec:komunikacjaRobotBackend}
+\section{RaspberryPi}
+\label{sec:raspberryPi}
 
-Dwukierunkowa komunikacja w czasie rzeczywistym była konieczna dla aplikacji sterowania robotem i aplikacji serwerowej. Robot musiał wysyłać informacje o swoim stanie, to gdzie się znajduje i jaki ruch wykonał, aby użytkownik mógł zweryfikować status swojego zamówienia. Do tego zadania wykorzystano protokół MQTT.
+Jednostką sterującą robota jest jednopłytkowy komputer Raspberry Pi 4B. Opiera się na 4-rdzeniowym, 64-bitowym procesorze Broadcom BCM2711 ARM Cortex-A72 o taktowaniu 1,8 GHz oraz posiada 8 GB pamięci RAM. Mikrokomputer wyposażony jest w dwa porty USB 3.0, dwa porty microHDMI, gniazdo Ethernet oraz złącze USB-C do zasilania. Do komunikacji bezprzewodowej można wykorzystać Wi-Fi w zakresach 2.4 GHz i 5 GHz oraz Bluetooth. Posiada 40 pinowe złącze wejścia/wyjścia GPIO, które umożliwia połączenie akcesoriów, lub wykorzystanie interfejsów komunikacyjncyh np. I$^2$C.
 
-MQTT to lekki protokół komunikacyjny oparty o wzorzec publish/subscribe. Znajduje zastosowanie w sieciach o niskiej przepustowości z uwagi na mały rozmiar nagłówków wiadomości. Charakteryzuje się niskim zużyciem energii przez co jest używany w urządzeniach zasilanymi bateriami. W protokole MQTT rozróżniamy dwa elementy: broker oraz klient. Broker MQTT jest centralnym serwerem zarządzającym komunikacją, z którym łączą się klienci aby za jego pomocą wysyłać dane. Klienci po połączeniu z brokerem wiadomości, subskrybują temat lub publikują wiadomości na dany temat. Jeśli klient wyśle wiadomość na dany temat to każdy klient, który subskrybuje ten sam temat otrzyma tą wiadomość.
-
-Jakie są zalety i ograniczenia / wady w kontekście wyboru mqtt dla robota
+Do głównych zalet Raspberry Pi 4B należy możliwość zainstalowania systemu operacyjnego Raspberry Pi OS, opartego na Debianie, co umożliwia programowanie w dowolnym języku programowania np. Python. Kolejnym atutem jest możliwość komunikacji bezprzewodowej przez Wi-Fi. Dodatkowo platforma oferuje szeroką bazę akcesoriów i urządzeń peryfejnych, rozbudowaną i dobrze dostępną dokumentację, rozwiniętą bazę wiedzy i ogromną społeczność użytkowników. Słabą stroną Raspberry Pi 4B jest większy pobór prądu w porównaniu z platformami opartymi na mikrokontrolerach, co skutkuje szybszym rozładowaniem akumulatorów robota.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\textwidth]{images/MQTT_schema-opc_router.jpg}
-    \caption{Komunikacja przy użyciu protokołu WebSocket (źródło: \cite{opcrouter_mqtt_1})}
-    \label{fig:mqttSchema}
-\end{figure}
-
-%---------------------------------------------------------------------------
-
-\section{Baza danych}
-\label{sec:bazaDanych}
-
-Dane o historycznych zamówieniach klientów przechowano w bazie danych. Zdecydowano się na relacyjną bazę danych PostgreSQL. Dodatkowo w bazie danych znajdują się pozycje przez jakie robot musi przejechać w konkretnym zamówieniu.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=1\textwidth]{images/ERD_diagram.jpg}
-    \caption{Diagram związków encji}
-    \label{fig:erdDiagram}
+    \includegraphics[width=0.7\textwidth]{images/Raspberry_Pi_4_Model_B-wikimedia.jpg}
+    \caption{Raspberry Pi Model B (źródło: \cite{RaspberryPi4B})}
+    \label{fig:RaspberryPi}
 \end{figure}
 
 %---------------------------------------------------------------------------
 
-\section{Relacje między aplikacjami}
-\label{sec:integracjecd}
-To z jakich aplikacji oraz usług składa się system oraz jak one się ze sobą komunikują doskonale widać na diagramie poziomu C2 modelu C4 architektury systemu, który został przedstawiony na rysunku \ref{fig:c4Modelc2}.
+\section{Moduł NFC}
+\label{sec:modulNfc}
+
+Do walidacji odbieranego produktu wykorzystano tagi NFC. Near Field Communication to technologia komunikacji bezprzewodowej krótkiego zasięgu. Maksymalny zasięg komunikacji zależy od parametrów wykorzystanej anteny w konkretnym tagu oraz użytego czytnika NFC i wynosi do kilku centrymetrów. Tagi pozwalają na zapis i przechowywanie małych ilości danych, zazwyczaj do kilkuset bajtów. Każdy tag posiada unikalny identyfikator nadawany przez producenta, który pozwala na jego rozpoznanie bez konieczności zapisywania dodatkowych danych.
+
+W pracy dyplomowej wykorzystano moduł RFID/NFC PN532, który umożliwia komunikację z Raspberry Pi przy użyciu intefejsu szeregowego I$^2$C. Moduł obsługuje tagi NFC typów od 1 do 4 zgodne ze specyfikacją NFC Forum. Nie obsługuje tagów typu 5, które są przeznaczone do komunikacji dalekiego zasięgu.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=1\textwidth]{images/c4_architecture-C2.jpg}
-    \caption{Model C4 architektury systemu - poziom C2}
-    \label{fig:c4Modelc2}
+    \includegraphics[width=0.7\textwidth]{images/nfc_pn532_elechouse.jpg}
+    \caption{Moduł NFC RFID PN532 (źródło: \cite{PN532_Manual})}
+    \label{fig:pn532}
 \end{figure}
+
+%---------------------------------------------------------------------------
+
+\subsection{Tagi NFC}
+
+Do identyfikacji konkretnego produktu wykorzystano dwa tagi S436D-TT26 oraz S436D-TT28. Oba tagi wykorzystują chip zgodny funkcjonalnie z chipem Ntag 213 firmy NxP. To zapewnia, że są zgodne ze specyfikacją typu 2 zdefiniowaną przez NFC Forum. Jest to najpopularniejszy standard używany w tagach NFC.
+
+Wymienione tagi różnią się od siebie rozmiarem więc średnicą anteny - TT26 ma 26 mm średnicy, TT28 ma 28 mm średnicy, co może minimalnie wpływać na maksymalny zasięg komunikacji.
+
+<< tutaj dodać zdjęcie >>
+
+%---------------------------------------------------------------------------
+
+\subsection{Integracja tagów NFC w systemie produktów}
+
+Jak tag został połączony z produktem, i po co walidowanie tego produktu
+Z każdego tagu NFC odczytano jego identyfikator, a następnie w bazie danych powiązano go z konkretnym produktem. Umożliwiło to walidację pozycji robota. Po wykonaniu sekwencji komend prowadzących do konkretnego produktu robot zatrzymuje się i odczytuje identyfikator tagu. Następnie waliduje czy odczytano odpowiedni kod, po czym kontynuuje swoją pracę. 
+
+%---------------------------------------------------------------------------
+
+\subsection{Odczyt tagu NFC przez robota}
+
+jaka odległość tagu od robota aby robot go odczytał, jakieś zdjęcie przedstawiające tą minimalną odległość (na zdjęciu robot i tag NFC), pokazanie screena logów w robocie z odczytem tych wartości
